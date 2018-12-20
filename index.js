@@ -24,6 +24,20 @@ const Router = new KoaRouter();
 
 const CredentialStore = new Credentials('./database.json');
 
+const ParseUrlEnc = KoaBody({
+    multipart: false,
+    urlencoded: true,
+    text: false,
+    json: false
+});
+
+const ParseMultipart = KoaBody({
+    multipart: true,
+    urlencoded: false,
+    text: false,
+    json: false
+});
+
 const EmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,72}$/;
 const NameRegex = /^[\wΑ-Ωάέόώίύή ,.'-]{1,32}$/;
@@ -82,13 +96,13 @@ App.use(Nunjucks({
 // Publicly available
 App.use(KoaStatic('static'));
 
-Router.post('/api/login', KoaBody(), KoaPassport.authenticate('local', {
+Router.post('/api/login', ParseUrlEnc, KoaPassport.authenticate('local', {
     successRedirect: '/home',
     failureRedirect: '/',
     failureFlash: 'Invalid username or password combination'
 }));
 
-Router.post('/api/register', KoaBody(), async ctx => {
+Router.post('/api/register', ParseUrlEnc, async ctx => {
     // TODO: Check if email exists
     const body = ctx.request.body;
 
@@ -179,7 +193,7 @@ Router.get('/laef', async ctx => {
     });
 });
 
-Router.post('/api/laef', KoaBody(),
+Router.post('/api/laef', ParseUrlEnc,
     async ctx => {
         try {
             const MailOptions = {
@@ -221,7 +235,7 @@ Router.get('/protasis', async ctx => {
     });
 });
 
-Router.post('/api/protasis', KoaBody(),
+Router.post('/api/protasis', ParseUrlEnc,
     async ctx => {
         try {
             const MailOptions = {
@@ -268,7 +282,7 @@ Router.get('/kaay', async ctx => {
     });
 });
 
-Router.post('/api/kaay', KoaBody(),
+Router.post('/api/kaay', ParseUrlEnc,
     async ctx => {
         try {
             let Attachments = [];
@@ -348,11 +362,7 @@ Router.post('/api/upload', async (ctx, next) => {
         console.log(Err);
         ctx.status = 400;
     }
-},
-    KoaBody({
-        multipart: true,
-        formidable: { maxFileSize: 10 * 1024 * 1024 }
-    }));
+}, ParseMultipart);
 
 App.use(Router.routes());
 App.use(Router.allowedMethods());

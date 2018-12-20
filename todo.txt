@@ -9,7 +9,7 @@ must:
 - mark fields as required
 - cookie warning (EU)
 - rename cookies (information leak)
-- harden koa-body (limit attack surface)
+✓ harden koa-body (limit attack surface)
 - fix email file name leak (temp directory)
 - cache static assets
 - Nunjucks enable caching
