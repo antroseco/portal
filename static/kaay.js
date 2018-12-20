@@ -170,7 +170,7 @@ async function Upload(event) {
         Spinner.style.removeProperty('display');
 
         const Response = await fetch('/api/upload', {
-            method: 'POST',
+            method: 'PUT',
             body: Data,
             mode: 'same-origin',
             credentials: 'same-origin',

@@ -348,8 +348,7 @@ Router.get('/periodika', async ctx => {
     });
 });
 
-// TODO: Consider PUT
-Router.post('/api/upload', async (ctx, next) => {
+Router.put('/api/upload', async (ctx, next) => {
     try {
         // Catch Formidable erorrs
         await next();
