@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        {% include "head.html" %}
+        <link rel="stylesheet" href="login.css">
+        <script src="login.js"></script>
+    </head>
+
+    <body class="text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 offset-md-4">
+                    <img class="mb-4" src="logo.svg" alt="ΓΕΕΦ" width="128">
+                    <div id="btn-group">
+                        <button type="button" class="btn btn-secondary" id="login">Log in</button>
+                        <button type="button" class="btn btn-secondary" id="register">Register</button>
+                    </div>
+
+                    {% if register %}
+                        <form class="form-signin" action="/api/login" method="post">
+                        {% else %}
+                            <form class="form-signin active" action="/api/login" method="post">
+                            {% endif %}
+                            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+                            <label for="signinEmail" class="sr-only">Email address</label>
+                            <input name="email" type="email" id="signinEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
+                            <label for="signinPassword" class="sr-only">Password</label>
+                            <input name="password" type="password" id="signinPassword" class="form-control" placeholder="Password" required="required">
+                            <div class="checkbox mb-3">
+                                <label>
+                                    <input type="checkbox" value="remember-me" disabled="disabled">
+                                    Remember me
+                                </label>
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                        </form>
+
+                        {% if register %}
+                            <form class="form-register active" action="/api/register" method="post">
+                            {% else %}
+                                <form class="form-register" action="/api/register" method="post">
+                                {% endif %}
+                                <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
+
+                                <label for="registerEmail" class="sr-only">Email address</label>
+                                <input name="email" type="email" id="registerEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
+
+                                <label for="registerPassword" class="sr-only">Password</label>
+                                <input name="password" type="password" id="registerPassword" class="form-control" placeholder="Password" required="required">
+
+                                <label for="registerPassword2" class="sr-only">Repeat your password</label>
+                                <input type="password" id="registerPassword2" class="form-control" placeholder="Repeat Password" required="required">
+
+                                <label for="registerOnoma" class="sr-only">Όνομα</label>
+                                <input name="onoma" type="text" id="registerOnoma" class="form-control" placeholder="Όνομα" required="required">
+
+                                <label for="registerEpitheto" class="sr-only">Επίθετο</label>
+                                <input name="epitheto" type="text" id="registerEpitheto" class="form-control" placeholder="Επίθετο" required="required">
+
+                                <label for="registerKinito" class="sr-only">Κινητό Τηλέφωνο</label>
+                                <input name="kinito" type="tel" id="registerKinito" class="form-control mb-3" placeholder="Κινητό Τηλέφωνο" required="required">
+
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+                            </form>
+
+                            {% for i in error %}
+                                <div class="alert alert-warning" role="alert">
+                                    {{ i }}
+                                </div>
+                            {% endfor %}
+
+                            {% for i in success %}
+                                <div class="alert alert-success" role="alert">
+                                    {{ i }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div clas="row">
+                        Καλώς ήλθατε στην Ηλεκτρονική Πύλη Διαδικτυακών Υπηρεσιών του Γενικού Επιτελείου Εθνικής Φρουράς.
+                        <br>
+                        Μέσω της πύλης είναι διαθέσιμες υπηρεσίες που αφορούν τα στελέχη της ΕΦ.
+                    </div>
+                    <p class="mt-5 mb-3 text-muted">&copy; 2018</p>
+                </div>
+
+            </body>
+
+        </html>

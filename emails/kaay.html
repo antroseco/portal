@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="el">
+
+    <head>
+        <title>Αναφορά Αίτησης Παραθερισμού στο ΚΑΑΥ Κυτίου</title>
+
+        <style>
+            body {
+                font-family: "Arial";
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>&emsp;1.&emsp;Κατηγορία:
+            <b>{{ proelevsi }}&nbsp;{{ katigoria }}</b>
+        </p>
+
+        <p>&emsp;2.&emsp;&emsp;α.&emsp;Βαθμός:
+            <b>{{ vathmos }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;&emsp;β.&emsp;Όπλο ή Σώμα:
+            <b>{{ os }}</b>
+        </p>
+
+        <p>&emsp;3.&emsp;Επώνυμο:
+            <b>{{ epitheto }}</b>
+        </p>
+
+        <p>&emsp;4.&emsp;Όνομα:
+            <b>{{ onoma }}</b>
+        </p>
+
+        <p>&emsp;5.&emsp;Αριθμός Μητρώου:
+            <b>(TODO)</b>
+        </p>
+
+        <p>&emsp;6.&emsp;Όνομα Πατέρα:
+            <b>{{ onomapatera }}</b>
+        </p>
+
+        <p>&emsp;7.&emsp;Μονάδα:
+            <b>{{ monada }}</b>
+        </p>
+
+        <p>&emsp;8.&emsp;Ημερομηνία τοποθέτησης στην Κύπρο:
+            <b>{{ imerominia }}</b>
+        </p>
+
+        <p>&emsp;9.&emsp;Οικογενειακή Κατάσταση:
+            <b>{{ oikogeniaki }}</b>
+        </p>
+
+        <p>&emsp;10.&emsp;&emsp;α.&emsp;Επιμελούμενα Τέκνα:
+            <b>{{ arithmosteknon }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;&emsp;&emsp;β.&emsp;Ηλικίες:
+            <b>{{ ilikies | join(', ')}}</b>
+        </p>
+
+        <p>&emsp;11.&emsp;Ονοματεπώνυμο Συζύγου:
+            <b>{{ sizigos }}</b>
+        </p>
+
+        <p>&emsp;12.&emsp;Υπηρεσία/Μονάδα Συζύγου:
+            <b>{{ monadasizigou }}</b>
+        </p>
+
+        <p>&emsp;13.&emsp;Σειρά Προτίμησης:
+            <b>{{ protimisi1 }}</b>
+        </p>
+
+        <p>&emsp;14.&emsp;Εναλλακτική Σειρά Προτίμησης:
+            <b>{{ protimisi2 }}</b>
+        </p>
+
+        <p>&emsp;15.&emsp;Αριθμός Μελών Οικογένειας:
+            <b>{{ arithmosmelon }}</b>
+        </p>
+
+        <p>&emsp;16.&emsp;&emsp;α.&emsp;Διεύθυνση:
+            <b>{{ diefthinsi }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;&emsp;β.&emsp;Πόλη ή Χωριό:
+            <b>{{ poli }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;&emsp;γ.&emsp;ΤΚ:
+            <b>{{ tk }}</b>
+        </p>
+
+        <p>&emsp;17.&emsp;Τηλέφωνα:</p>
+        <p>&emsp;&emsp;&emsp;&emsp;α.&emsp;Υπηρεσίας:
+            <b>{{ ipiresias }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;&emsp;β.&emsp;Οικίας:
+            <b>{{ oikias }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;&emsp;γ.&emsp;Κινητό:
+            <b>{{ kinito }}</b>
+        </p>
+
+        <p>&emsp;18.&emsp;Χρονολογίες - Σειρά Παραθερισμού στο ΚΑΑΥ τα τελευταία 5 χρόνια:</p>
+        {% for i, j in sira %}
+            <p>
+                &emsp;&emsp;&emsp;&emsp;{{ loop.index0 | Letter }}.&emsp;<b>{{ i }}&nbsp;-&nbsp;{{ j }}</b>
+            </p>
+        {% endfor %}
+
+        <p>&emsp;19.&emsp;ΚΑΑΥ Εξωτερικού:</p>
+        {% for i, j in exoterikou %}
+            <p>
+                &emsp;&emsp;&emsp;&emsp;{{ loop.index0 | Letter }}.&emsp;<b>{{ i }}&nbsp;-&nbsp;{{ j }}</b>
+            </p>
+        {% endfor %}
+
+    </body>
+
+</html>

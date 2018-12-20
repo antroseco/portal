@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        {% include "head.html" %}
+
+        <link rel="stylesheet" href="home.css">
+
+        <style>
+            form {
+                margin-bottom: 32px;
+            }
+        </style>
+    </head>
+
+    <body>
+        {% include "navbar.html" %}
+
+        <main role="main" class="container">
+
+            {% for i in error %}
+                <div class="d-flex justify-content-center">
+                    <div class="alert alert-danger" role="alert">
+                        {{ i }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% for i in success %}
+                <div class="d-flex justify-content-center">
+                    <div class="alert alert-success" role="alert">
+                        {{ i }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <form action="/api/protasis" method="post">
+                <h2>Υποβολή Προτάσεων</h2>
+                <br>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="pros">Προς</label>
+                        <input type="text" class="form-control" id="pros" value="ΓΕΕΦ/ΔΙΠΡΟ" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="imerominia">Ημερομηνία</label>
+                        <input type="date" class="form-control" id="imerominia" value="{{ date }}" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="epitheto">Επίθετο</label>
+                        <input type="text" class="form-control" id="epitheto" value="{{ epitheto }}" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="onoma">Όνομα</label>
+                        <input type="text" class="form-control" id="onoma" value="{{ onoma }}" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{ email }}" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="am">ΑΜ</label>
+                        <input type="text" class="form-control" id="am" value="(TODO)" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="tilefono">Τηλέφωνο</label>
+                        <input type="text" class="form-control" id="tilefono" value="{{ kinito }}" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="monada">Μονάδα</label>
+                        <input type="text" class="form-control" id="monada" name="monada" maxlength="16">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="vathmos">Βαθμός</label>
+                        <input type="text" class="form-control" id="vathmos" name="vathmos" maxlength="16">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="os">Όπλο - Σώμα</label>
+                        <input type="text" class="form-control" id="os" name="os" maxlength="16">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="thema">Θέμα</label>
+                    <input type="text" class="form-control" id="thema" name="thema" maxlength="200">
+                </div>
+
+                <div class="form-group">
+                    <label for="paratirisis">Συμπληρώστε παρατηρήσεις ή προτάσεις οι οποίες θα μας έκαναν καλύτερους</label>
+                    <textarea class="form-control" name="paratirisis" rows="5" maxlength="10000"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-default">Submit</button>
+
+            </form>
+
+        </main>
+    </body>
+
+</html>

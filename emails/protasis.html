@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="el">
+
+    <head>
+        <title>Αναφορά Υποβολής Πρότασης</title>
+
+        <style>
+            body {
+                font-family: "Arial";
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>&emsp;1.&emsp;Ημερομηνία:
+            <b>{{ date }}</b>
+        </p>
+        <p>&emsp;2.&emsp;Αποστολέας:</p>
+        <p>&emsp;&emsp;&emsp;α.&emsp;Ονοματεπώνυμο:
+            <b>{{ vathmos }}
+                ({{ os }})
+                {{ epitheto }}
+                {{ onoma }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;β.&emsp;ΑΜ:
+            <b>(TODO)</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;γ.&emsp;Email:
+            <b>{{ email }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;δ.&emsp;Τηλέφωνο:
+            <b>{{ kinito }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;ε.&emsp;Μονάδα:
+            <b>{{ monada }}</b>
+        </p>
+        <p>&emsp;3.&emsp;Θέμα:
+            <b>{{ thema }}</b>
+        </p>
+        <p>&emsp;4.&emsp;Προτάσεις:</p>
+        <p>
+            <b>{{ paratirisis | striptags(true) | escape | nl2br }}</b>
+        </p>
+    </body>
+
+</html>

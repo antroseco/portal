@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        {% include "head.html" %}
+
+        <link rel="stylesheet" href="home.css">
+    </head>
+
+    <body>
+
+        {% include "navbar.html" %}
+
+        {% macro item(title, icon = "logo.svg", url = "#") %}
+            <div class="col-sm-2 col-6 mb-4">
+                <a class="card" href="{{ url }}">
+                    <img class="card-img-top my-3" src="{{ icon }}" alt="{{ title }}" height="100px">
+                    <!--div class="card-body"> <p class="card-text">Short description.</p> </div-->
+                    <div class="card-footer">
+                        <h5 class="text-center">{{ title }}</h5>
+                    </div>
+                </a>
+            </div>
+        {% endmacro %}
+
+        <main role="main" class="container">
+
+            <div class="row">
+                {{ item("Αξιολόγηση ΛΑΕΦ", "/svg/laef.svg", "/laef") }}
+                {{ item("Υποβολή Προτάσεων", "/svg/protasis.svg", "/protasis") }}
+                {{ item("Αίτηση για ΚΑΑΥ", "/svg/kaay.svg", "/kaay") }}
+                {{ item("Περιοδικά ΔΙΕΦ", "/svg/periodika.svg", "/periodika") }}
+            </div>
+
+        </main>
+    </body>
+
+</html>

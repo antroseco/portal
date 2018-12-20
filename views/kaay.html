@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        {% include "head.html" %}
+
+        <script src="/kaay.js"></script>
+        <link rel="stylesheet" href="home.css">
+
+        <script defer="defer" src="https://use.fontawesome.com/releases/v5.6.1/js/solid.js" integrity="sha384-8Lgyylu0vfTGCXDKe435hJgX8s96c19R+dvpH0NHKdX47GA7TmMj+BDiZZ76qqhT" crossorigin="anonymous"></script>
+        <script defer="defer" src="https://use.fontawesome.com/releases/v5.6.1/js/fontawesome.js" integrity="sha384-T6YzYwAGZAItTIkYlBzfwqa07o9R1AND3Lgt6Or6c5IdukY7tqShoryqwpKrpeIB" crossorigin="anonymous"></script>
+
+        <style>
+            form {
+                margin-bottom: 32px;
+            }
+
+            .mt-8 {
+                margin-top: 2rem;
+            }
+
+            label.custom-file-label {
+                overflow: hidden;
+            }
+
+            label.custom-file-label.done::after {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        {% include "navbar.html" %}
+
+        <main role="main" class="container">
+
+            {% for i in error %}
+                <div class="d-flex justify-content-center">
+                    <div class="alert alert-danger" role="alert">
+                        {{ i }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% for i in success %}
+                <div class="d-flex justify-content-center">
+                    <div class="alert alert-success" role="alert">
+                        {{ i }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- TODO: Mark required fields -->
+            <form action="/api/kaay" method="post">
+                <h2>Αίτηση Παραθερισμού στο ΚΑΑΥ Κυτίου</h2>
+                <br>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="epitheto">Επίθετο</label>
+                        <input type="text" class="form-control" id="epitheto" value="{{ epitheto }}" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="onoma">Όνομα</label>
+                        <input type="text" class="form-control" id="onoma" value="{{ onoma }}" readonly="readonly">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="onomapatera">Όνομα Πατέρα</label>
+                        <input type="text" class="form-control" id="onomapatera" name="onomapatera" maxlength="35" required="required">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="am">ΑΜ</label>
+                        <input type="text" class="form-control" id="am" value="(TODO)" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-1">
+                        <label for="proelevsi">Προέλευση</label>
+                        <select class="custom-select" id="proelevsi" name="proelevsi" required="required">
+                            <option value="0">Ε/Κ</option>
+                            <option value="1">Ε/Ε</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="katigoria">Κατηγορία</label>
+                        <select class="custom-select" id="katigoria" name="katigoria" required="required">
+                            <option value="0">Αξκός</option>
+                            <option value="1">Ανθστής</option>
+                            <option value="2">Υπξκός</option>
+                            <option value="3">Απόστρατος</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="os">Όπλο - Σώμα</label>
+                        <select class="custom-select" id="os" name="os" required="required">
+                            <option value="0">ΠΖ</option>
+                            <option value="1">ΤΘ</option>
+                            <option value="2">ΠΒ</option>
+                            <option value="3">ΜΧ</option>
+                            <option value="4">ΔΒ</option>
+                            <option value="5">ΤΧ</option>
+                            <option value="6">ΥΠ</option>
+                            <option value="7">ΕΜ</option>
+                            <option value="8">ΥΓ</option>
+                            <option value="9">ΝΟΜ</option>
+                            <option value="10">ΠΑ</option>
+                            <option value="11">ΠΝ</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="vathmos">Βαθμός</label>
+                        <select class="custom-select" id="vathmos" name="vathmos" required="required">
+                            <option value="0">Αντγος</option>
+                            <option value="1">Υπγος</option>
+                            <option value="2">Ταξχος</option>
+                            <option value="3">Σχης</option>
+                            <option value="4">Ανχης</option>
+                            <option value="5">Τχης</option>
+                            <option value="6">Λγός</option>
+                            <option value="7">Υπλγός</option>
+                            <option value="8">Ανθλγός</option>
+                            <option value="9">Ανθστής Α</option>
+                            <option value="10">Ανθστής Β</option>
+                            <option value="11">Ανθστής Γ</option>
+                            <option value="12">Αλχίας</option>
+                            <option value="13">Επχίας</option>
+                            <option value="14">Λχίας</option>
+                            <option value="15">Δνέας</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="monada">Μονάδα</label>
+                        <input type="text" class="form-control" id="monada" name="monada" maxlength="32" required="required">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="imerominia">Τοποθέτηση στην Κύπρο</label>
+                        <input type="date" class="form-control" id="imerominia" name="imerominia" disabled="disabled">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="kinito">Κινητό Τηλέφωνο</label>
+                        <input type="text" class="form-control" id="kinito" value="{{ kinito }}" readonly="readonly">
+                    </div>
+                    <!-- TODO: Max length -->
+                    <div class="form-group col-md-3">
+                        <label for="oikias">Τηλέφωνο Οικίας</label>
+                        <input type="text" class="form-control" id="oikias" name="oikias" required="required">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="ipiresias">Τηλέφωνο Υπηρεσίας</label>
+                        <input type="text" class="form-control" id="ipiresias" name="ipiresias" required="required">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="oikogeniaki">Οικογενειακή Κατάσταση</label>
+                        <select class="custom-select" id="oikogeniaki" name="oikogeniaki" required="required">
+                            <option value="0">Έγγαμος</option>
+                            <option value="1">Άγαμος</option>
+                            <option value="2">Άλλο</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="sizigos">Ονοματεπώνυμο Συζύγου</label>
+                        <input type="text" class="form-control" id="sizigos" maxlength="100" disabled="disabled">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="monadasizigou">Υπηρεσία/Μονάδα Συζύγου</label>
+                        <input type="text" class="form-control" id="monadasizigou" maxlength="32" disabled="disabled">
+                    </div>
+                </div>
+
+                <div class="form-row" id="ilikies">
+                    <div class="form-group col-md-3">
+                        <label for="arithmosmelon">Αριθμός Μελών Οικογένειας</label>
+                        <input type="number" class="form-control" id="arithmosmelon" name="arithmosmelon" min="1" max="20" required="required">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="arithmosteknon">Αριθμός Επιμελούμενων Τέκνων</label>
+                        <input type="number" class="form-control" id="arithmosteknon" name="arithmosteknon" min="0" max="6" required="required">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label for="ilikia1">Ηλικία&nbsp;Επιμελούμενων&nbsp;Τέκνων</label>
+                        <input type="number" class="form-control" id="ilikia1" name="ilikia1" min="0" max="99" disabled="disabled">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <label for="diefthinsi">Διεύθυνση</label>
+                        <input type="text" class="form-control" id="diefthinsi" name="diefthinsi" maxlength="100" required="required">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="poli">Πόλη ή Χωριό</label>
+                        <input type="text" class="form-control" id="poli" name="poli" required="required">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label for="tk">ΤΚ</label>
+                        <input type="number" class="form-control" id="tk" name="tk" min="1000" max="9999" required="required">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- TODO: Determine maxlength -->
+                    <div class="form-group col-md-6">
+                        <label for="protimisi1">Σειρά Προτίμησης</label>
+                        <input type="number" class="form-control" id="protimisi1" name="protimisi1" min="1" max="4">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="protimisi2">Εναλλακτική Σειρά Προτίμησης</label>
+                        <input type="number" class="form-control" id="protimisi2" name="protimisi2" min="1" max="4">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Έτος - Σειρά Παραθερισμού στο ΚΑΑΥ τα τελευταία 5 χρόνια</label>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>ΚΑΑΥ Εξωτερικού (Έτος - Χώρα)</label>
+                    </div>
+                </div>
+                {% for i in range(1, 6) %}
+                    <div class="form-row">
+
+                        <div class="form-group col-md-1">
+                            <input type="number" class="form-control" id="sira{{ i }}year" name="sira{{ i }}year" min="1900" max="2100">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <input type="number" class="form-control" id="sira{{ i }}sira" name="sira{{ i }}sira" min="1" max="4">
+                        </div>
+
+                        <div class="form-group col-md-1 offset-md-1">
+                            <input type="number" class="form-control" id="exoterikou{{ i }}year" name="exoterikou{{ i }}year" min="1900" max="2100">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <!-- TODO: maxlength, etc -->
+                            <input type="text" class="form-control" id="exoterikou{{ i }}xora" name="exoterikou{{ i }}xora">
+                        </div>
+                    </div>
+
+                </div>
+            {% endfor %}
+
+            <div class="form-row">
+                <div class="form-group col-md-5">
+                    <label for="browse1">Συνημμένα Λοιπά Δικαιολογιτικά</label>
+
+                    <div class="custom-file">
+                        <label class="custom-file-label" for="browse1">Choose file</label>
+                        <input type="file" class="custom-file-input" id="browse1">
+                        <input type="hidden" id="file1" name="file1">
+                        <input type="hidden" id="filename1" name="filename1">
+                    </div>
+                </div>
+
+                <div class="form-group col-md-1">
+                    <i class="fas fa-spinner fa-spin fa-2x mt-8" for="browse1" style="display: none"></i>
+                    <i class="fas fa-check fa-2x mt-8" for="browse1" style="display: none"></i>
+                    <i class="fas fa-times fa-2x mt-8" for="browse1" style="display: none"></i>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label>&nbsp;</label>
+
+                    <div class="custom-file">
+                        <label class="custom-file-label" for="browse2">Choose file</label>
+                        <input type="file" class="custom-file-input" id="browse2">
+                        <input type="hidden" id="file2" name="file2">
+                        <input type="hidden" id="filename2" name="filename2">
+                    </div>
+                </div>
+
+                <div class="form-group col-md-1">
+                    <i class="fas fa-spinner fa-spin fa-2x mt-8" for="browse2" style="display: none"></i>
+                    <i class="fas fa-check fa-2x mt-8" for="browse2" style="display: none"></i>
+                    <i class="fas fa-times fa-2x mt-8" for="browse2" style="display: none"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+    </main>
+</body>
+</html>

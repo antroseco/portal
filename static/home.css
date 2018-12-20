@@ -1,0 +1,35 @@
+body {
+    padding-top: 5rem;
+}
+
+.starter-template {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+div.card:hover {
+    border-color: var(--primary) !important;
+    background-color: var(--light);
+}
+
+div.card {
+    transition: all 600ms ease;
+    transition-property: border-color, background-color;
+}
+
+.navbar-brand {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+a:link, a:hover {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+a.card:hover {
+    box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.5);
+}
+
+a.card {
+    transition-duration: 400ms;
+}

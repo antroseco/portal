@@ -1,0 +1,29 @@
+must:
+
+- email credentials
+- email queue
+- user database
+- remember me
+- home icons
+- trim whitepsace from input
+- mark fields as required
+- cookie warning (EU)
+- rename cookies (information leak)
+- harden koa-body (limit attack surface)
+- fix email file name leak (temp directory)
+- cache static assets
+- Nunjucks enable caching
+- CSRF
+
+nice to have:
+
+- one function to serve all views (need a list of all data necessary to render *most* views)
+- proper error screens (404, 500...)
+- colour scheme
+- footer
+- async js loading
+- maybe use main.container-fluid
+- use nunjucks blocks
+- zxcvbn
+- properly align emails
+- do not return password hashes in Get()
