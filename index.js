@@ -242,7 +242,6 @@ Router.post('/api/protasis', ParseUrlEnc,
                 from: '"Fred Foo 👻" <foo@example.com>',
                 to: 'bar@example.com, baz@example.com',
                 subject: 'Αναφορά Υποβολής Πρότασης',
-                //text: 'Plaintext body', TODO: plain text body
                 html: await RenderProtasis(ctx.request.body, {
                     'date': new Date().toISOString().substring(0, 10),
                     'onoma': ctx.state.user.onoma,
@@ -309,7 +308,6 @@ Router.post('/api/kaay', ParseUrlEnc,
                 from: '"Fred Foo 👻" <foo@example.com>',
                 to: 'bar@example.com, baz@example.com',
                 subject: 'Αναφορά Αίτησης Παραθερισμού στο ΚΑΑΥ Κυτίου',
-                //text: 'Plaintext body', TODO: plain text body
                 html: await RenderKaay(body, {
                     'onoma': ctx.state.user.onoma,
                     'epitheto': ctx.state.user.epitheto,
