@@ -149,15 +149,10 @@ async function Upload(event) {
 
     const Id = event.target.id.substr(-1);
     const File = event.target.files[0];
-    const Spinner = document.querySelector(`svg.fa-spinner[for="browse${Id}"]`);
-    const Check = document.querySelector(`svg.fa-check[for="browse${Id}"]`);
-    const Times = document.querySelector(`svg.fa-times[for="browse${Id}"]`);
+    const Svg = () => document.querySelector(`svg[for="browse${Id}"]`);
     const Label = document.querySelector(`label.custom-file-label[for="browse${Id}"]`);
     const FileInput = document.getElementById(`file${Id}`);
     const FilenameInput = document.getElementById(`filename${Id}`);
-
-    Check.style.display = 'none';
-    Times.style.display = 'none';
 
     try {
         if (File.size > 10 * 1024 * 1024)
@@ -167,7 +162,7 @@ async function Upload(event) {
         Data.append('file', File);
 
         Label.textContent = File.name;
-        Spinner.style.removeProperty('display');
+        Svg().classList.remove('d-none');
 
         const Response = await fetch('/api/upload', {
             method: 'PUT',
@@ -180,15 +175,15 @@ async function Upload(event) {
         FileInput.value = await Response.text();
         FilenameInput.value = File.name;
 
-        Check.style.removeProperty('display');
+        Svg().setAttribute('data-icon', 'check');
         Label.classList.add('done');
     } catch (Err) {
         console.log(Err);
 
-        Times.style.removeProperty('display');
+        Svg().setAttribute('data-icon', 'times');
         event.target.addEventListener('change', Upload);
     } finally {
-        Spinner.style.display = 'none';
+        Svg().classList.remove('fa-spin');
     }
 }
 
