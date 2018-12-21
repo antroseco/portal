@@ -18,6 +18,10 @@ function Clamp(x, Min, Max) {
     return Math.min(Math.max(x, Min), Max);
 }
 
+function PreventDefault(e) {
+    e.preventDefault();
+}
+
 function GenerateAgeFields(event) {
     let Value = Clamp(event.target.value, 0, 12);
 
@@ -143,12 +147,11 @@ function FilterRanks(event) {
     }
 }
 
-async function Upload(event) {
-    event.target.removeEventListener('change', Upload);
-    event.target.addEventListener('click', e => e.preventDefault());
+async function Upload() {
+    this.addEventListener('click', PreventDefault);
 
-    const Id = event.target.id.substr(-1);
-    const File = event.target.files[0];
+    const Id = this.id.substr(-1);
+    const File = this.files[0];
     const Svg = () => document.querySelector(`svg[for="browse${Id}"]`);
     const Label = document.querySelector(`label.custom-file-label[for="browse${Id}"]`);
     const FileInput = document.getElementById(`file${Id}`);
@@ -162,6 +165,8 @@ async function Upload(event) {
         Data.append('file', File);
 
         Label.textContent = File.name;
+        Svg().setAttribute('data-icon', 'spinner');
+        Svg().classList.add('fa-spin');
         Svg().classList.remove('d-none');
 
         const Response = await fetch('/api/upload', {
@@ -181,7 +186,8 @@ async function Upload(event) {
         console.log(Err);
 
         Svg().setAttribute('data-icon', 'times');
-        event.target.addEventListener('change', Upload);
+        this.addEventListener('change', Upload, { once: true });
+        this.removeEventListener('click', PreventDefault);
     } finally {
         Svg().classList.remove('fa-spin');
     }
@@ -231,8 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('arithmosteknon').addEventListener('change', GenerateAgeFields);
 
-    document.getElementById('browse1').addEventListener('change', Upload);
-    document.getElementById('browse2').addEventListener('change', Upload);
+    document.getElementById('browse1').addEventListener('change', Upload, { once: true });
+    document.getElementById('browse2').addEventListener('change', Upload, { once: true });
 
     for (const Button of document.querySelectorAll('button[data-for][data-next]'))
         Button.addEventListener('click', Expand, { once: true });
