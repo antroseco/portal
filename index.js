@@ -367,6 +367,14 @@ Router.put('/api/upload', async (ctx, next) => {
     }
 }, ParseMultipart);
 
+Router.get('/anakoinosis', async ctx => {
+    await ctx.render('anakoinosis', {
+        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
+        'onoma': ctx.state.user.onoma,
+        'epitheto': ctx.state.user.epitheto
+    });
+});
+
 App.use(Router.routes());
 App.use(Router.allowedMethods());
 
