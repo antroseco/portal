@@ -1,17 +1,20 @@
+function ClearAlerts() {
+    for (const Alert of document.getElementsByClassName('alert'))
+        Alert.remove();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('login').addEventListener('click', () => {
-        document.querySelector('form.form-signin').classList.add('active');
-        document.querySelector('form.form-register').classList.remove('active');
+        document.querySelector('form.form-signin').style.removeProperty('display');
+        document.querySelector('form.form-register').style.display = 'none';
 
-        for (const Alert of document.getElementsByClassName('alert'))
-            Alert.remove();
+        ClearAlerts();
     });
     document.getElementById('register').addEventListener('click', () => {
-        document.querySelector('form.form-signin').classList.remove('active');
-        document.querySelector('form.form-register').classList.add('active');
+        document.querySelector('form.form-signin').style.display = 'none';
+        document.querySelector('form.form-register').style.removeProperty('display');
 
-        for (const Alert of document.getElementsByClassName('alert'))
-            Alert.remove();
+        ClearAlerts();
     });
 
     const Password1 = document.getElementById('registerPassword');

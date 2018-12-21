@@ -57,14 +57,3 @@ body {
 #btn-group button {
   width: 40%;
 }
-
-form {
-  position: absolute;
-  opacity: 0;
-}
-
-form.active {
-  position: static;
-  opacity: 1;
-  transition: opacity 0.5s ease-out;
-}
