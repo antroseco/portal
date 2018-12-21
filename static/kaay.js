@@ -192,6 +192,24 @@ async function Upload(event) {
     }
 }
 
+function Expand() {
+    const For = this.getAttribute('data-for');
+    const Next = this.getAttribute('data-next');
+
+    // Check if we need to add an offset
+    if (For == 'exoterikou' &&
+        document.querySelector(`div[data-is="sira"][data-n="${Next}"]`).style.display == 'none')
+        document.getElementById(`exoterikou${Next}year`).parentElement.classList.add('offset-md-6');
+    // Or remove an offset
+    else if (For == 'sira')
+        document.getElementById(`exoterikou${Next}year`).parentElement.classList.remove('offset-md-6');
+
+    for (const Div of document.querySelectorAll(`div[data-is="${For}"][data-n="${Next}"]`))
+        Div.style.removeProperty('display');
+
+    this.remove();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     for (const Select of document.getElementsByTagName('select'))
         Select.selectedIndex = -1;
@@ -219,4 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('browse1').addEventListener('change', Upload);
     document.getElementById('browse2').addEventListener('change', Upload);
+
+    for (const Button of document.querySelectorAll('button[data-for][data-next]'))
+        Button.addEventListener('click', Expand, { once: true });
 });
