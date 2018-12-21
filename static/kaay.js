@@ -207,8 +207,8 @@ function Expand() {
     for (const Div of document.querySelectorAll(`div[data-is="${For}"][data-n="${Next}"]`))
         Div.style.removeProperty('display');
 
+    this.addEventListener('transitionend', () => this.remove());
     this.classList.add('fade-out');
-    setTimeout(() => this.remove(), 512);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
