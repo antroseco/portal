@@ -52,9 +52,22 @@ function ValidateDate(x) {
         throw Error('Malformed POST request: ValidateDate');
 }
 
-function ValidatePhone(x) {
-    // TODO
-    return x;
+function ValidatePhone(Phone) {
+    if (typeof Phone !== 'string')
+        throw Error('Malformed POST request: ValidatePhone');
+
+    // Trim whitespace
+    Phone = Phone.replace(/\s/g, '');
+    // Normalise the international call prefix
+    Phone = Phone.replace(/^\+/, '00');
+
+    const CyRegex = /^(?:00357)?[2|9]\d{7}$/;
+    const GrRegex = /^(?:0030)?[1-9]\d{9}$/;
+
+    if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
+        throw Error('Malformed POST request: ValidatePhone')
+
+    return Phone;
 }
 
 function ValidateFileToken(x) {

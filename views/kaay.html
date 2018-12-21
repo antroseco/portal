@@ -142,16 +142,16 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="kinito">Κινητό Τηλέφωνο</label>
-                        <input type="text" class="form-control" id="kinito" value="{{ kinito }}" readonly="readonly">
+                        <input type="tel" class="form-control" id="kinito" value="{{ kinito }}" readonly="readonly">
                     </div>
                     <!-- TODO: Max length -->
                     <div class="form-group col-md-3">
                         <label for="oikias">Τηλέφωνο Οικίας</label>
-                        <input type="text" class="form-control" id="oikias" name="oikias" required="required">
+                        <input type="tel" class="form-control" id="oikias" name="oikias" required="required" minlength="8" maxlength="14">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="ipiresias">Τηλέφωνο Υπηρεσίας</label>
-                        <input type="text" class="form-control" id="ipiresias" name="ipiresias" required="required">
+                        <input type="tel" class="form-control" id="ipiresias" name="ipiresias" required="required" minlength="8" maxlength="14">
                     </div>
                 </div>
 

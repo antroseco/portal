@@ -135,7 +135,13 @@ Router.post('/api/register', ParseUrlEnc, async ctx => {
         return ctx.redirect('/');
     }
 
-    // TODO: validate kinito
+    try {
+        body.kinito = Validate.Phone(body.kinito);
+    } catch (Err) {
+        ctx.flash('error', 'Invalid phone number');
+        ctx.session.register = true;
+        return ctx.redirect('/');
+    }
 
     const Id = await CredentialStore.Add({
         email: body.email,
