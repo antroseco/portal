@@ -226,10 +226,10 @@
                     <div class="form-row">
 
                         <div class="form-group col-md-1" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="sira" {% endif %}>
-                            <input type="number" class="form-control" id="sira{{ i }}year" name="sira{{ i }}year" min="1900" max="2100">
+                            <input type="number" class="form-control" id="sira{{ i }}year" name="sira{{ i }}year" min="1900" max="2100" placeholder="Έτος">
                         </div>
                         <div class="form-group col-md-4" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="sira" {% endif %}>
-                            <input type="number" class="form-control" id="sira{{ i }}sira" name="sira{{ i }}sira" min="1" max="4">
+                            <input type="number" class="form-control" id="sira{{ i }}sira" name="sira{{ i }}sira" min="1" max="4" placeholder="Σειρά Παραθερισμού">
                         </div>
 
                         <div class="form-group col-md-1" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="sira" {% endif %}>
@@ -241,11 +241,11 @@
                         </div>
 
                         <div class="form-group col-md-1" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="exoterikou" {% endif %}>
-                            <input type="number" class="form-control" id="exoterikou{{ i }}year" name="exoterikou{{ i }}year" min="1900" max="2100">
+                            <input type="number" class="form-control" id="exoterikou{{ i }}year" name="exoterikou{{ i }}year" min="1900" max="2100" placeholder="Έτος">
                         </div>
                         <div class="form-group col-md-4" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="exoterikou" {% endif %}>
                             <!-- TODO: maxlength, etc -->
-                            <input type="text" class="form-control" id="exoterikou{{ i }}xora" name="exoterikou{{ i }}xora">
+                            <input type="text" class="form-control" id="exoterikou{{ i }}xora" name="exoterikou{{ i }}xora" placeholder="Χώρα">
                         </div>
 
                         <div class="form-group col-md-1" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="exoterikou" {% endif %}>
