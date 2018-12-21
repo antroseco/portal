@@ -82,3 +82,4 @@ typings/
 # Custom
 ignore/
 static/periodika/
+database.json
