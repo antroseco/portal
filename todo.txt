@@ -14,6 +14,8 @@ must:
 - cache static assets
 - Nunjucks enable caching
 - CSRF
+- Use one CDN for all
+- Add max upload size warning
 
 nice to have:
 
@@ -27,3 +29,4 @@ nice to have:
 - zxcvbn
 - properly align emails
 - do not return password hashes in Get()
+- consider using .d-none instead of style="display: none;"
