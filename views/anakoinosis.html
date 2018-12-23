@@ -52,22 +52,18 @@
             </div>
         {% endmacro %}
 
+        {% macro heading(text) %}
+            <div class="col-md-4">
+                <h1 class="display-5">{{ text }}</h1>
+            </div>
+        {% endmacro %}
+
         <main role="main" class="container">
 
             <div class="row text-center">
-
-                <div class="col-md-4">
-                    <h1 class="display-5">Ανακοινώσεις</h1>
-                </div>
-
-                <div class="col-md-4">
-                    <h1 class="display-5">Προσφορές Πρατηρίων ΕΦ</h1>
-                </div>
-
-                <div class="col-md-4">
-                    <h1 class="display-5">Προσφορές Τρίτων</h1>
-                </div>
-
+                {{ heading("Ανακοινώσεις") }}
+                {{ heading("Προσφορές Πρατηρίων ΕΦ") }}
+                {{ heading("Προσφορές Τρίτων") }}
             </div>
 
             <div class="row">
