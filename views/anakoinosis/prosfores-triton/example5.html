@@ -1,0 +1,6 @@
+{% from "../post.html" import post %}
+{% set id = 5 %}
+
+{% call post(id, not read[id], "Lorem Ipsum #5", "https://placeimg.com/600/200/people", "#") %}
+Sed eget lacus ut lectus blandit vulputate eget non ante. Aenean rhoncus leo vitae orci interdum aliquet. Cras et vulputate mi. Nulla facilisi. Fusce nec urna venenatis, euismod ligula nec, varius lacus. Etiam eget urna ut ligula venenatis consectetur ac ut nibh. Praesent efficitur vitae est vel pellentesque.
+{% endcall %}

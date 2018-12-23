@@ -30,28 +30,6 @@
     <body>
         {% include "navbar.html" %}
 
-        {% macro card(id, img, titlos, url) %}
-            <div id="{{ id }}" class="card my-4 {{ 'unread' if not read[id] }}">
-                <img class="card-img-top" src="{{ img }}">
-                <div class="card-body text-justify">
-                    <h5 class="card-title">{{ titlos }}</h5>
-                    <p class="card-text" data-desc="">{{ caller() | truncate(200) }}</p>
-                    <p class="card-text d-none" data-full="">{{ caller() }}</p>
-
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ url }}" class="btn btn-primary">
-                            <i class="fas fa-paperclip"></i>
-                            Download
-                        </a>
-                        <button type="button" class="btn btn-outline-primary">
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        {% endmacro %}
-
         {% macro heading(text) %}
             <div class="col-md-4">
                 <h1 class="display-5">{{ text }}</h1>
@@ -68,35 +46,17 @@
 
             <div class="row">
                 <div class="col-md-4 mb-4">
-
-                    {% call card(1, "https://placeimg.com/600/200/people", "Lorem Ipsum") %}
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et mattis elit, non pulvinar velit. Maecenas molestie est a pretium pulvinar. Vivamus eu ornare tellus. Proin cursus sem elit, eu eleifend lacus pharetra vitae. Nulla consectetur justo at feugiat molestie. Pellentesque ultricies diam gravida libero facilisis tempus. Phasellus tincidunt quis est in maximus. Mauris a sollicitudin eros. Praesent dictum odio vitae urna aliquet, a congue eros lobortis. Aenean eu nisl ac nisl condimentum hendrerit dictum nec enim. Sed ac orci imperdiet, suscipit est ut, tristique nisi. Nullam tortor massa, euismod non justo ut, accumsan auctor lacus. Etiam consectetur egestas dictum. Etiam fermentum dolor ex, nec consequat eros laoreet eu. Nunc sed ultricies quam. Nullam viverra augue eget lorem sodales, non convallis justo posuere. Duis a neque luctus, suscipit lorem ut, mollis velit. Integer metus massa, lobortis quis placerat a, rutrum at sem. Duis convallis urna sed volutpat fermentum posuere.
-                    {% endcall %}
-
-                    {% call card(2, "https://placeimg.com/600/200/people", "Lorem Ipsum") %}
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel neque ac augue venenatis finibus. Nulla facilisi. Vivamus sed magna et dolor tempus posuere. Proin viverra viverra felis, ac malesuada dui semper ac. Nam quis viverra metus. Etiam at dictum elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    {% endcall %}
-
+                    {% include "./anakoinosis/anakoinosis/example1.html" %}
+                    {% include "./anakoinosis/anakoinosis/example2.html" %}
                 </div>
 
                 <div class="col-md-4 mb-4">
-
-                    {% call card(3, "https://placeimg.com/600/200/people", "Lorem Ipsum") %}
-                    Integer rutrum libero eu metus rhoncus, euismod tincidunt lectus luctus. In sit amet aliquam enim. Vestibulum ornare laoreet hendrerit. Nam vulputate sapien at consequat ultricies. Quisque consectetur varius convallis. Curabitur faucibus viverra massa, vitae gravida ante rhoncus non. Fusce ultrices sagittis lacus, eu finibus purus faucibus vel. Donec malesuada turpis vitae justo feugiat elementum. Sed cursus congue facilisis. Sed ultrices ex quis felis volutpat lobortis. Pellentesque vitae interdum mauris.
-                    {% endcall %}
-
-                    {% call card(4, "https://placeimg.com/600/200/people", "Lorem Ipsum") %}
-                    Maecenas in enim eros. Duis augue nulla, ultricies sit amet pulvinar eget, vehicula eget augue. Proin eget nulla commodo, blandit ante porttitor, aliquet erat. Etiam vel turpis at arcu venenatis mattis ut at libero. Cras commodo turpis quis libero egestas placerat. Ut sit amet interdum ante, eu sodales metus. Integer tristique pharetra felis, sit amet bibendum lacus faucibus ac.
-                    {% endcall %}
-
+                    {% include "./anakoinosis/prosfores-ef/example3.html" %}
+                    {% include "./anakoinosis/prosfores-ef/example4.html" %}
                 </div>
 
                 <div class="col-md-4 mb-4">
-
-                    {% call card(5, "https://placeimg.com/600/200/people", "Lorem Ipsum") %}
-                    Sed eget lacus ut lectus blandit vulputate eget non ante. Aenean rhoncus leo vitae orci interdum aliquet. Cras et vulputate mi. Nulla facilisi. Fusce nec urna venenatis, euismod ligula nec, varius lacus. Etiam eget urna ut ligula venenatis consectetur ac ut nibh. Praesent efficitur vitae est vel pellentesque.
-                    {% endcall %}
-
+                    {% include "./anakoinosis/prosfores-triton/example5.html" %}
                 </div>
             </div>
         </div>
