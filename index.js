@@ -368,12 +368,33 @@ Router.put('/api/upload', async (ctx, next) => {
 }, ParseMultipart);
 
 Router.get('/anakoinosis', async ctx => {
+    //todo
+    if (ctx.state.user.anakoinosis == null)
+        ctx.state.user.anakoinosis = {};
+
+    console.log(ctx.state.user.anakoinosis);
+
     await ctx.render('anakoinosis', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
         'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto
+        'epitheto': ctx.state.user.epitheto,
+        'read': ctx.state.user.anakoinosis //todo
     });
 });
+
+Router.put('/api/anakoinosis/read', async (ctx, next) => {
+    try {
+        await next();
+        const body = JSON.parse(ctx.request.body);
+        console.log(body);
+
+        ctx.state.user.anakoinosis[body.read] = true;
+
+        ctx.status = 200;
+    } catch (Err) {
+        console.log(Err);
+    }
+}, KoaBody()); // todo
 
 App.use(Router.routes());
 App.use(Router.allowedMethods());

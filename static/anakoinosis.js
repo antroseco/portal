@@ -8,6 +8,20 @@ function Expand() {
 
     this.querySelector('svg').setAttribute('data-icon', 'chevron-up');
     this.addEventListener('click', Contract, { once: true });
+
+    const Card = CardBody.parentElement;
+    if (Card.classList.contains('unread')) {
+        Card.classList.remove('unread');
+
+        // TODO: Better ID system
+        fetch('/api/anakoinosis/read', {
+            method: 'PUT',
+            body: JSON.stringify({ read: Card.id }),
+            mode: 'same-origin',
+            credentials: 'same-origin',
+            redirect: 'error'
+        });
+    }
 }
 
 function Contract() {
