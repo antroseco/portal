@@ -7,6 +7,7 @@ function Expand() {
     Full.classList.remove('d-none');
 
     this.querySelector('svg').setAttribute('data-icon', 'chevron-up');
+    this.previousElementSibling.querySelector('svg').setAttribute('data-icon', 'envelope-open');
     this.addEventListener('click', Contract, { once: true });
 
     const Card = CardBody.parentElement;
