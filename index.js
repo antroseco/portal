@@ -367,6 +367,16 @@ Router.put('/api/upload', async (ctx, next) => {
     }
 }, ParseMultipart);
 
+async function ResolveDirectory(Path, n = 0) {
+    const Result = await fs.readdir(Path, {
+        encoding: 'utf-8',
+        withFileTypes: true
+    });
+
+    return Result.filter(Dirent => Dirent.isFile())
+        .map(Dirent => Dirent.name).sort().splice(-n).reverse();
+}
+
 Router.get('/anakoinosis', async ctx => {
     //todo
     if (ctx.state.user.anakoinosis == null)
@@ -378,7 +388,10 @@ Router.get('/anakoinosis', async ctx => {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
         'onoma': ctx.state.user.onoma,
         'epitheto': ctx.state.user.epitheto,
-        'read': ctx.state.user.anakoinosis //todo
+        'read': ctx.state.user.anakoinosis, //todo
+        'anakoinosis': await ResolveDirectory('./views/anakoinosis/anakoinosis', 3),
+        'prosfores_ef': await ResolveDirectory('./views/anakoinosis/prosfores-ef', 3),
+        'prosfores_triton': await ResolveDirectory('./views/anakoinosis/prosfores-triton', 3)
     });
 });
 

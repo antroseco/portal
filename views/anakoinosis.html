@@ -45,17 +45,21 @@
 
             <div class="row mb-4">
                 <div class="col-md-4">
-                    {% include "./anakoinosis/anakoinosis/example1.html" %}
-                    {% include "./anakoinosis/anakoinosis/example2.html" %}
+                    {% for file in anakoinosis %}
+                        {% include "./anakoinosis/anakoinosis/" + file %}
+                    {% endfor %}
                 </div>
 
                 <div class="col-md-4">
-                    {% include "./anakoinosis/prosfores-ef/example3.html" %}
-                    {% include "./anakoinosis/prosfores-ef/example4.html" %}
+                    {% for file in prosfores_ef %}
+                        {% include "./anakoinosis/prosfores-ef/" + file %}
+                    {% endfor %}
                 </div>
 
                 <div class="col-md-4">
-                    {% include "./anakoinosis/prosfores-triton/example5.html" %}
+                    {% for file in prosfores_triton %}
+                        {% include "./anakoinosis/prosfores-triton/" + file %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
