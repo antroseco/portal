@@ -4,15 +4,18 @@ function ClearAlerts() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const Login = document.querySelector('form.form-signin');
+    const Register = document.querySelector('form.form-register');
+
     document.getElementById('login').addEventListener('click', () => {
-        document.querySelector('form.form-signin').style.removeProperty('display');
-        document.querySelector('form.form-register').style.display = 'none';
+        Login.classList.remove('d-none');
+        Register.classList.add('d-none');
 
         ClearAlerts();
     });
     document.getElementById('register').addEventListener('click', () => {
-        document.querySelector('form.form-signin').style.display = 'none';
-        document.querySelector('form.form-register').style.removeProperty('display');
+        Login.classList.add('d-none');
+        Register.classList.remove('d-none');
 
         ClearAlerts();
     });
