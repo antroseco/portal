@@ -52,9 +52,11 @@
             </div>
 
             <div class="row mb-4">
-                {% for file in posts %}
+                {% for files in posts | slice(3) %}
                     <div class="col-md-4">
-                        {% include directory + file %}
+                        {% for file in files %}
+                            {% include directory + file %}
+                        {% endfor %}
                     </div>
                 {% endfor %}
             </div>
