@@ -71,9 +71,6 @@ KoaPassport.use('local', new LocalStrategy({
     passwordField: 'password'
 }, Auth.Strategy));
 
-App.use(KoaPassport.initialize());
-App.use(KoaPassport.session());
-
 App.use(Nunjucks({
     noCache: true,
     filters: {
@@ -174,9 +171,11 @@ Router.get('/', async ctx => {
 });
 
 // Require Authentication beyond this point
+App.use(KoaPassport.initialize());
+App.use(KoaPassport.session());
+
 Router.use(async (ctx, next) => {
-    if (ctx.isUnauthenticated())
-        ctx.throw(401);
+    ctx.assert(ctx.isAuthenticated(), 401);
 
     await next();
 });
