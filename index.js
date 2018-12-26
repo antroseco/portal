@@ -7,7 +7,6 @@ const KoaBody = require('koa-body');
 const KoaPassport = require('koa-passport');
 const LocalStrategy = require('passport-local').Strategy;
 const KoaFlash = require('koa-better-flash');
-const Credentials = require('./credentials.js');
 const Auth = require('./auth.js');
 const bcrypt = require('bcrypt');
 const NodeMailer = require('nodemailer');
@@ -18,11 +17,19 @@ const Validate = require('./validate.js');
 const Os = require('os');
 const Path = require('path');
 const fs = require('fs').promises;
+const Mongoose = require('mongoose');
+const UserModel = require('./models/user.js');
 
 const App = new Koa();
 const Router = new KoaRouter();
 
-const CredentialStore = new Credentials('./database.json');
+const DbURI = 'mongodb://localhost:27017/testdb';
+Mongoose.set('debug', true);
+Mongoose.connection.on('connected', () => console.log(`Connected to ${DbURI}`));
+Mongoose.connect(DbURI, {
+    useNewUrlParser: true,
+    family: 4
+});
 
 const ParseUrlEnc = KoaBody({
     multipart: false,
@@ -58,11 +65,11 @@ App.use(KoaSession({}, App));
 App.use(KoaFlash());
 
 KoaPassport.serializeUser(Auth.Serialize);
-KoaPassport.deserializeUser(Auth.Deserialize.bind(null, CredentialStore));
+KoaPassport.deserializeUser(Auth.Deserialize);
 KoaPassport.use('local', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
-}, Auth.Strategy.bind(null, CredentialStore)));
+}, Auth.Strategy));
 
 App.use(KoaPassport.initialize());
 App.use(KoaPassport.session());
@@ -143,7 +150,7 @@ Router.post('/api/register', ParseUrlEnc, async ctx => {
         return ctx.redirect('/');
     }
 
-    const Id = await CredentialStore.Add({
+    const User = await UserModel.create({
         email: body.email,
         password: await bcrypt.hash(body.password, 10),
         onoma: body.onoma,
@@ -151,7 +158,7 @@ Router.post('/api/register', ParseUrlEnc, async ctx => {
         kinito: body.kinito,
     });
 
-    await ctx.login(await CredentialStore.Get(Id));
+    await ctx.login(User);
     ctx.redirect('/home');
 });
 
@@ -170,7 +177,6 @@ Router.get('/', async ctx => {
 Router.use(async (ctx, next) => {
     if (ctx.isUnauthenticated())
         ctx.throw(401);
-    console.log(ctx.state.user);
 
     await next();
 });
@@ -184,16 +190,14 @@ Router.get('/api/logout', async ctx => {
 Router.get('/home', async ctx => {
     await ctx.render('home', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Home',
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto
+        'onomateponymo': ctx.state.user.onomateponymo
     });
 });
 
 Router.get('/laef', async ctx => {
     await ctx.render('laef', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Αξιολόγηση ΛΑΕΦ',
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto,
+        'onomateponymo': ctx.state.user.onomateponymo,
         'success': ctx.flash('success'),
         'error': ctx.flash('error')
     });
@@ -231,6 +235,7 @@ Router.post('/api/laef', ParseUrlEnc,
 Router.get('/protasis', async ctx => {
     await ctx.render('protasis', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Υποβολή Προτάσεων',
+        'onomateponymo': ctx.state.user.onomateponymo,
         'onoma': ctx.state.user.onoma,
         'epitheto': ctx.state.user.epitheto,
         'success': ctx.flash('success'),
@@ -250,8 +255,7 @@ Router.post('/api/protasis', ParseUrlEnc,
                 subject: 'Αναφορά Υποβολής Πρότασης',
                 html: await RenderProtasis(ctx.request.body, {
                     'date': new Date().toISOString().substring(0, 10),
-                    'onoma': ctx.state.user.onoma,
-                    'epitheto': ctx.state.user.epitheto,
+                    'onomateponymo': ctx.state.user.onomateponymo,
                     'email': ctx.state.user.email,
                     'kinito': ctx.state.user.kinito
                 })
@@ -277,8 +281,7 @@ Router.post('/api/protasis', ParseUrlEnc,
 Router.get('/kaay', async ctx => {
     await ctx.render('kaay', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Υποβολή Προτάσεων',
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto,
+        'onomateponymo': ctx.state.user.onomateponymo,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'date': new Date().toISOString().substring(0, 10),
@@ -349,8 +352,7 @@ Router.post('/api/kaay', ParseUrlEnc,
 Router.get('/periodika', async ctx => {
     await ctx.render('periodika', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Περιοδικά ΔΙΕΦ',
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto
+        'onomateponymo': ctx.state.user.onomateponymo,
     });
 });
 
@@ -378,17 +380,10 @@ async function ResolveDirectory(Path, n = 0) {
 }
 
 Router.get('/anakoinosis', async ctx => {
-    //todo
-    if (ctx.state.user.anakoinosis == null)
-        ctx.state.user.anakoinosis = {};
-
-    console.log(ctx.state.user.anakoinosis);
-
     await ctx.render('anakoinosis', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto,
-        'read': ctx.state.user.anakoinosis, //todo
+        'onomateponymo': ctx.state.user.onomateponymo,
+        'read': ctx.state.user.anakoinosis,
         'anakoinosis': await ResolveDirectory('./views/anakoinosis/anakoinosis', 3),
         'prosfores_ef': await ResolveDirectory('./views/anakoinosis/prosfores-ef', 3),
         'prosfores_triton': await ResolveDirectory('./views/anakoinosis/prosfores-triton', 3)
@@ -398,9 +393,8 @@ Router.get('/anakoinosis', async ctx => {
 Router.get('/anakoinosis/:category', async ctx => {
     const Options = {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto,
-        'read': ctx.state.user.anakoinosis, //todo
+        'onomateponymo': ctx.state.user.onomateponymo,
+        'read': ctx.state.user.anakoinosis
     };
 
     switch (ctx.params.category) {
@@ -425,10 +419,11 @@ Router.get('/anakoinosis/:category', async ctx => {
 Router.put('/api/anakoinosis/read', async (ctx, next) => {
     try {
         await next();
-        const body = JSON.parse(ctx.request.body);
-        console.log(body);
+        const body = JSON.parse(ctx.request.body); // TODO: validate
+        console.log('PUT /api/anakoinosis/read', body);
 
-        ctx.state.user.anakoinosis[body.read] = true;
+        ctx.state.user.anakoinosis.set(body.read, true);
+        await ctx.state.user.save();
 
         ctx.status = 200;
     } catch (Err) {

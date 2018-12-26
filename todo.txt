@@ -2,7 +2,7 @@ must:
 
 - email credentials
 - email queue
-- user database
+✓ user database
 - remember me
 - home icons
 - trim whitepsace from input
@@ -29,5 +29,5 @@ nice to have:
 - use nunjucks blocks
 - zxcvbn
 - properly align emails
-- do not return password hashes in Get()
+✓ do not return password hashes in Get()
 - consider using .d-none instead of style="display: none;"
