@@ -14,7 +14,7 @@ must:
 - cache static assets
 - Nunjucks enable caching
 - CSRF
-- Use one CDN for all
+✓ Use one CDN for all
 - Add max upload size warning
 - properly use relative paths
 
