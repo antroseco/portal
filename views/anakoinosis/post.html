@@ -1,6 +1,6 @@
 {% macro post(id, unread, titlos, img, url) %}
     <div id="{{ id }}" class="card my-4 {{ 'unread' if unread }}">
-        <img class="card-img-top" src="{{ img }}">
+        <img class="card-img-custom mx-auto" src="{{ img }}">
         <div class="card-body text-justify">
             <h5 class="card-title">{{ titlos }}</h5>
             <p class="card-text" data-desc="">{{ caller() | truncate(200) }}</p>

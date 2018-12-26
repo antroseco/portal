@@ -1,0 +1,26 @@
+.display-5 {
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.unread {
+    border-color: var(--primary);
+    border-width: 2px;
+}
+
+a span {
+    color: #212529;
+}
+
+.btn-primary:link {
+    color: #fff;
+}
+
+.card-img-custom {
+    height: 116px;
+    width: auto;
+}
+
+div.card {
+    overflow: hidden;
+}
