@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        {% include "head.html" %}
+
+        <script src="/anakoinosis.js"></script>
+        <link rel="stylesheet" href="/home.css">
+
+        <script defer="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
+
+        <style>
+            div.card {
+                transition: height 0.5s;
+            }
+
+            .display-5 {
+                font-weight: 300;
+                line-height: 1.2;
+            }
+
+            .unread {
+                border-color: var(--primary);
+                border-width: 2px;
+            }
+
+            a span {
+                color: #212529;
+            }
+
+            .btn-primary:link {
+                color: #fff;
+            }
+        </style>
+    </head>
+
+    <body>
+        {% include "navbar.html" %}
+
+        <main role="main" class="container">
+
+            <div class="row">
+                <h1 class="display-5">
+                    <a href="/anakoinosis">
+                        <i class="fas fa-chevron-circle-left align-middle"></i>
+                        <span class="align-middle">
+                            Ανακοινώσεις
+                        </span>
+                    </a>
+
+                </h1>
+            </div>
+
+            <div class="row mb-4">
+                {% for file in posts %}
+                    <div class="col-md-4">
+                        {% include directory + file %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>

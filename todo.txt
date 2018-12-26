@@ -16,6 +16,7 @@ must:
 - CSRF
 - Use one CDN for all
 - Add max upload size warning
+- properly use relative paths
 
 nice to have:
 

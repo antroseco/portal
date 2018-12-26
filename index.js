@@ -395,6 +395,33 @@ Router.get('/anakoinosis', async ctx => {
     });
 });
 
+Router.get('/anakoinosis/:category', async ctx => {
+    const Options = {
+        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
+        'onoma': ctx.state.user.onoma,
+        'epitheto': ctx.state.user.epitheto,
+        'read': ctx.state.user.anakoinosis, //todo
+    };
+
+    switch (ctx.params.category) {
+        case 'anakoinosis':
+            Options.directory = './anakoinosis/anakoinosis/';
+            break;
+        case 'prosfores-ef':
+            Options.directory = './anakoinosis/prosfores-ef/';
+            break;
+        case 'prosfores-triton':
+            Options.directory = './anakoinosis/prosfores-triton/';
+            break;
+        default:
+            return ctx.status = 404;
+    }
+
+    Options.posts = await ResolveDirectory(Path.join('./views', Options.directory));
+
+    await ctx.render('anakoinosis_perissotera', Options);
+});
+
 Router.put('/api/anakoinosis/read', async (ctx, next) => {
     try {
         await next();
