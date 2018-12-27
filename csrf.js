@@ -27,4 +27,10 @@ async function ValidateToken(User, Token) {
     return DbObject != null;
 }
 
-module.exports = { GenerateToken, ValidateToken };
+async function PurgeTokens(User) {
+    await TokenModel.deleteMany({
+        user: User
+    });
+}
+
+module.exports = { GenerateToken, ValidateToken, PurgeTokens };

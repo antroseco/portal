@@ -191,6 +191,8 @@ Router.use(async (ctx, next) => {
 
 // TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
+    Csrf.PurgeTokens(ctx.state.user._id);
+
     ctx.logout();
     ctx.flash('success', 'You have been logged out successfully')
     ctx.redirect('/');
