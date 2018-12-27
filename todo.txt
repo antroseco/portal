@@ -18,6 +18,7 @@ must:
 - Add max upload size warning
 - properly use relative paths
 - set cookies to Secure once HTTPS is enabled
+- request throttling
 
 nice to have:
 
