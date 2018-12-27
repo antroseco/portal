@@ -61,7 +61,12 @@ const Mx = NodeMailer.createTransport({
 });
 
 App.keys = ['session-secret :)']; //TODO: Session Secret
-App.use(KoaSession({}, App));
+App.use(KoaSession({
+    key: 'session',
+    maxAge: 'session',
+    httpOnly: true,
+    signed: true
+}, App));
 
 App.use(KoaFlash());
 
