@@ -281,6 +281,8 @@ Router.get('/kaay', async ctx => {
     await ctx.render('kaay', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Υποβολή Προτάσεων',
         'onomateponymo': ctx.state.user.onomateponymo,
+        'onoma': ctx.state.user.onoma,
+        'epitheto': ctx.state.user.epitheto,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'date': new Date().toISOString().substring(0, 10),
