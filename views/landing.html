@@ -30,6 +30,9 @@
                                 Remember me
                             </label>
                         </div>
+
+                        <input type="hidden" name="csrf" value="{{ csrf }}">
+
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                     </form>
 
@@ -53,6 +56,8 @@
 
                         <label for="registerKinito" class="sr-only">Κινητό Τηλέφωνο</label>
                         <input name="kinito" type="tel" id="registerKinito" class="form-control mb-3" placeholder="Κινητό Τηλέφωνο" required="required" minlength="8" maxlength="14">
+
+                        <input type="hidden" name="csrf" value="{{ csrf }}">
 
                         <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
                     </form>

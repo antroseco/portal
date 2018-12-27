@@ -19,6 +19,7 @@ const Path = require('path');
 const fs = require('fs').promises;
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user.js');
+const Csrf = require('./csrf.js');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -97,16 +98,23 @@ App.use(Nunjucks({
     }
 }));
 
+async function CheckCsrf(ctx, next) {
+    const User = ctx.state.user ? ctx.state.user._id : 'landingtoken';
+    ctx.assert(await Csrf.ValidateToken(User, ctx.request.body.csrf), 401);
+
+    await next();
+}
+
 // Publicly available
 App.use(KoaStatic('static'));
 
-Router.post('/api/login', ParseUrlEnc, KoaPassport.authenticate('local', {
+Router.post('/api/login', ParseUrlEnc, CheckCsrf, KoaPassport.authenticate('local', {
     successRedirect: '/home',
     failureRedirect: '/',
     failureFlash: 'Invalid username or password combination'
 }));
 
-Router.post('/api/register', ParseUrlEnc, async ctx => {
+Router.post('/api/register', ParseUrlEnc, CheckCsrf, async ctx => {
     // TODO: Check if email exists
     const body = ctx.request.body;
 
@@ -164,6 +172,7 @@ Router.get('/', async ctx => {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ',
         'error': ctx.flash('error'),
         'success': ctx.flash('success'),
+        'csrf': await Csrf.GenerateToken('landingtoken'),
         'register': ctx.session.register
     });
 
@@ -180,6 +189,7 @@ Router.use(async (ctx, next) => {
     await next();
 });
 
+// TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
     ctx.logout();
     ctx.flash('success', 'You have been logged out successfully')
@@ -198,11 +208,12 @@ Router.get('/laef', async ctx => {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Αξιολόγηση ΛΑΕΦ',
         'onomateponymo': ctx.state.user.onomateponymo,
         'success': ctx.flash('success'),
-        'error': ctx.flash('error')
+        'error': ctx.flash('error'),
+        'csrf': await Csrf.GenerateToken(ctx.state.user._id)
     });
 });
 
-Router.post('/api/laef', ParseUrlEnc,
+Router.post('/api/laef', ParseUrlEnc, CheckCsrf,
     async ctx => {
         try {
             const MailOptions = {
@@ -239,13 +250,14 @@ Router.get('/protasis', async ctx => {
         'epitheto': ctx.state.user.epitheto,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
+        'csrf': await Csrf.GenerateToken(ctx.state.user._id),
         'date': new Date().toISOString().substring(0, 10),
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });
 });
 
-Router.post('/api/protasis', ParseUrlEnc,
+Router.post('/api/protasis', ParseUrlEnc, CheckCsrf,
     async ctx => {
         try {
             const MailOptions = {
@@ -285,13 +297,16 @@ Router.get('/kaay', async ctx => {
         'epitheto': ctx.state.user.epitheto,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
+        'csrf': await Csrf.GenerateToken(ctx.state.user._id),
+        'csrf1': await Csrf.GenerateToken(ctx.state.user._id),
+        'csrf2': await Csrf.GenerateToken(ctx.state.user._id),
         'date': new Date().toISOString().substring(0, 10),
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });
 });
 
-Router.post('/api/kaay', ParseUrlEnc,
+Router.post('/api/kaay', ParseUrlEnc, CheckCsrf,
     async ctx => {
         try {
             let Attachments = [];
@@ -366,9 +381,9 @@ Router.put('/api/upload', async (ctx, next) => {
         ctx.status = 200;
     } catch (Err) {
         console.log(Err);
-        ctx.status = 400;
+        ctx.status = Err.status ? Err.status : 400;
     }
-}, ParseMultipart);
+}, ParseMultipart, CheckCsrf);
 
 async function ResolveDirectory(Path, n = 0) {
     const Result = await fs.readdir(Path, {
@@ -417,6 +432,7 @@ Router.get('/anakoinosis/:category', async ctx => {
     await ctx.render('anakoinosis_perissotera', Options);
 });
 
+// TODO: CheckCsrf here and regenerate tokens on each request
 Router.put('/api/anakoinosis/read', async (ctx, next) => {
     try {
         await next();

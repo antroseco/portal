@@ -13,7 +13,7 @@ must:
 - fix email file name leak (temp directory)
 - cache static assets
 - Nunjucks enable caching
-- CSRF
+✓ CSRF
 ✓ Use one CDN for all
 - Add max upload size warning
 - properly use relative paths

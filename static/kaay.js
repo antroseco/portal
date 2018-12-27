@@ -156,12 +156,15 @@ async function Upload() {
     const Label = document.querySelector(`label.custom-file-label[for="browse${Id}"]`);
     const FileInput = document.getElementById(`file${Id}`);
     const FilenameInput = document.getElementById(`filename${Id}`);
+    const CsrfToken = document.getElementById(`csrf${Id}`);
+    // TODO: Regenerate token on console.error();
 
     try {
         if (File.size > 10 * 1024 * 1024)
             throw Error('File too large');
 
         const Data = new FormData();
+        Data.append('csrf', CsrfToken.value);
         Data.append('file', File);
 
         Label.textContent = File.name;
