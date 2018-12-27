@@ -168,15 +168,20 @@ Router.post('/api/register', ParseUrlEnc, CheckCsrf, async ctx => {
 });
 
 Router.get('/', async ctx => {
-    await ctx.render('landing', {
-        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ',
-        'error': ctx.flash('error'),
-        'success': ctx.flash('success'),
-        'csrf': await Csrf.GenerateToken('landingtoken'),
-        'register': ctx.session.register
-    });
+    if (ctx.isAuthenticated()) {
+        ctx.redirect('/home');
+    }
+    else {
+        await ctx.render('landing', {
+            'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ',
+            'error': ctx.flash('error'),
+            'success': ctx.flash('success'),
+            'csrf': await Csrf.GenerateToken('landingtoken'),
+            'register': ctx.session.register
+        });
 
-    ctx.session.register = false;
+        ctx.session.register = false;
+    }
 });
 
 // Require Authentication beyond this point
