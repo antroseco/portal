@@ -1,11 +1,11 @@
 const Mongoose = require('mongoose');
 
 const Schema = new Mongoose.Schema({
-    token: {
+    hash: {
         type: String,
         required: true,
-        minlength: 32,
-        maxlength: 32
+        minlength: 64,
+        maxlength: 64
     },
     user: {
         type: Mongoose.Schema.Types.ObjectId,

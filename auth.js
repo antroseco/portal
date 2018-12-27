@@ -3,6 +3,7 @@ const UserModel = require('./models/user');
 const Crypto = require('crypto');
 const Util = require('util');
 const TokenModel = require('./models/login-token');
+const { SHA256 } = require('sha2');
 
 const RandomBytes = Util.promisify(Crypto.randomBytes);
 
@@ -51,7 +52,7 @@ async function GenerateToken(User, done) {
         const Token = Bytes.toString('hex');
 
         await TokenModel.create({
-            token: Token,
+            hash: SHA256(Token).toString('hex'),
             user: User
         });
 
@@ -70,7 +71,7 @@ async function GenerateToken(User, done) {
 async function ValidateToken(Token, done) {
     try {
         const DbResponse = await TokenModel.findOneAndDelete({
-            token: Token,
+            hash: SHA256(Token).toString('hex'),
         }, {
                 select: { user: true }
             });
