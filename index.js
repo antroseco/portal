@@ -194,9 +194,12 @@ App.use(KoaPassport.initialize());
 App.use(KoaPassport.session());
 
 Router.use(async (ctx, next) => {
-    ctx.assert(ctx.isAuthenticated(), 401);
-
-    await next();
+    if (ctx.isAuthenticated()) {
+        await next();
+    } else {
+        ctx.flash('error', 'Your session has expired');
+        ctx.redirect('/');
+    }
 });
 
 // TODO: We shouldn't use GET here
