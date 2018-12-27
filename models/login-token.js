@@ -18,6 +18,6 @@ const Schema = new Mongoose.Schema({
     }
 });
 
-Schema.index({ createdAt: 1 }, { expires: '4 hours' });
+Schema.index({ createdAt: 1 }, { expires: '7 days' });
 
-module.exports = Mongoose.model('Token', Schema);
+module.exports = Mongoose.model('login-token', Schema);

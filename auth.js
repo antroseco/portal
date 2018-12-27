@@ -1,5 +1,10 @@
 const bcrypt = require('bcrypt');
 const UserModel = require('./models/user');
+const Crypto = require('crypto');
+const Util = require('util');
+const TokenModel = require('./models/login-token');
+
+const RandomBytes = Util.promisify(Crypto.randomBytes);
 
 function Serialize(User, done) {
     done(null, User._id);
@@ -40,4 +45,49 @@ async function Strategy(Username, Password, done) {
     }
 };
 
-module.exports = { Serialize, Deserialize, Strategy };
+async function GenerateToken(User, done) {
+    try {
+        const Bytes = await RandomBytes(16);
+        const Token = Bytes.toString('hex');
+
+        await TokenModel.create({
+            token: Token,
+            user: User
+        });
+
+        if (done)
+            done(null, Token);
+        else
+            return Token;
+    } catch (Err) {
+        if (done)
+            done(Err);
+        else
+            throw Err;
+    }
+}
+
+async function ValidateToken(Token, done) {
+    try {
+        const DbResponse = await TokenModel.findOneAndDelete({
+            token: Token,
+        }, {
+                select: { user: true }
+            });
+
+        if (DbResponse)
+            done(null, await UserModel.findById(DbResponse.user));
+        else
+            done(null, false);
+    } catch (Err) {
+        done(Err);
+    }
+}
+
+async function PurgeTokens(User) {
+    await TokenModel.deleteMany({
+        user: User
+    });
+}
+
+module.exports = { Serialize, Deserialize, Strategy, GenerateToken, ValidateToken, PurgeTokens };

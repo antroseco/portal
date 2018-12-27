@@ -3,7 +3,7 @@ must:
 - email credentials
 - email queue
 ✓ user database
-- remember me
+✓ remember me
 - home icons
 - trim whitepsace from input
 - mark fields as required
@@ -17,6 +17,7 @@ must:
 ✓ Use one CDN for all
 - Add max upload size warning
 - properly use relative paths
+- set cookies to Secure once HTTPS is enabled
 
 nice to have:
 

@@ -1,6 +1,6 @@
 const Crypto = require('crypto');
 const Util = require('util');
-const TokenModel = require('./models/token');
+const TokenModel = require('./models/csrf-token');
 
 const RandomBytes = Util.promisify(Crypto.randomBytes);
 

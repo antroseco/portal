@@ -6,6 +6,7 @@ const KoaSession = require('koa-session');
 const KoaBody = require('koa-body');
 const KoaPassport = require('koa-passport');
 const LocalStrategy = require('passport-local').Strategy;
+const RememberMeStrategy = require('koa-passport-remember-me').Strategy;
 const KoaFlash = require('koa-better-flash');
 const Auth = require('./auth.js');
 const bcrypt = require('bcrypt');
@@ -72,10 +73,15 @@ App.use(KoaFlash());
 
 KoaPassport.serializeUser(Auth.Serialize);
 KoaPassport.deserializeUser(Auth.Deserialize);
+
 KoaPassport.use('local', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
 }, Auth.Strategy));
+
+KoaPassport.use('rememberme', new RememberMeStrategy({
+    cookie: { signed: true }
+}, Auth.ValidateToken, Auth.GenerateToken));
 
 App.use(Nunjucks({
     noCache: true,
@@ -113,11 +119,27 @@ async function CheckCsrf(ctx, next) {
 // Publicly available
 App.use(KoaStatic('static'));
 
+App.use(KoaPassport.initialize());
+App.use(KoaPassport.session());
+
 Router.post('/api/login', ParseUrlEnc, CheckCsrf, KoaPassport.authenticate('local', {
-    successRedirect: '/home',
     failureRedirect: '/',
     failureFlash: 'Invalid username or password combination'
-}));
+}), async ctx => {
+    // TODO: Implement proper validation
+    if (ctx.request.body.remember_me && ctx.request.body.remember_me == 'on') {
+        const Token = await Auth.GenerateToken(ctx.state.user);
+
+        // TODO: Look into unifying cookie settings
+        ctx.cookies.set('remember_me', Token, {
+            maxAge: 604800000,
+            signed: true,
+            httpOnly: true
+        });
+    }
+
+    ctx.redirect('/home');
+});
 
 Router.post('/api/register', ParseUrlEnc, CheckCsrf, async ctx => {
     // TODO: Check if email exists
@@ -172,6 +194,8 @@ Router.post('/api/register', ParseUrlEnc, CheckCsrf, async ctx => {
     ctx.redirect('/home');
 });
 
+Router.use(KoaPassport.authenticate('rememberme'));
+
 Router.get('/', async ctx => {
     if (ctx.isAuthenticated()) {
         ctx.redirect('/home');
@@ -190,9 +214,6 @@ Router.get('/', async ctx => {
 });
 
 // Require Authentication beyond this point
-App.use(KoaPassport.initialize());
-App.use(KoaPassport.session());
-
 Router.use(async (ctx, next) => {
     if (ctx.isAuthenticated()) {
         await next();
@@ -205,6 +226,9 @@ Router.use(async (ctx, next) => {
 // TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
     Csrf.PurgeTokens(ctx.state.user._id);
+    Auth.PurgeTokens(ctx.state.user._id);
+    ctx.cookies.set('remember_me', null);
+    ctx.cookies.set('remember_me:sig', null);
 
     ctx.logout();
     ctx.flash('success', 'You have been logged out successfully')
