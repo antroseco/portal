@@ -136,6 +136,10 @@ Router.post('/api/login', ParseUrlEnc, CheckCsrf, KoaPassport.authenticate('loca
             signed: true,
             httpOnly: true
         });
+    } else {
+        // Clear any existing cookies
+        ctx.cookies.set('remember_me', null);
+        ctx.cookies.set('remember_me.sig', null);
     }
 
     ctx.redirect('/home');
