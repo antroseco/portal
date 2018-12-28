@@ -94,14 +94,14 @@ App.use(Nunjucks({
             if (n == 1) {
                 return 'Τεύχος 1<br>Ιούνιος 2003';
             } else if (n < 25) {
-                let Year = 2004 + Math.floor((n - 1) / 4);
-                let Month = ['Μάρτιος', 'Ιούνιος', 'Σεπτέμβριος', 'Δεκέμβριος'][(n - 1) % 4];
+                const Year = 2004 + Math.floor((n - 1) / 4);
+                const Month = ['Μάρτιος', 'Ιούνιος', 'Σεπτέμβριος', 'Δεκέμβριος'][(n - 1) % 4];
 
                 return `Τεύχος ${n}<br>${Month} ${Year}`;
 
             } else {
-                let Year = 2010 + Math.floor((n - 25) / 2);
-                let Month = n % 2 ? 'Ιούνιος' : 'Δεκέμβριος';
+                const Year = 2010 + Math.floor((n - 25) / 2);
+                const Month = n % 2 ? 'Ιούνιος' : 'Δεκέμβριος';
 
                 return `Τεύχος ${n}<br>${Month} ${Year}`;
             }
