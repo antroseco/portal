@@ -148,10 +148,21 @@ function FilterRanks(event) {
 }
 
 async function Upload() {
+    const File = this.files[0];
+    const Feedback = document.querySelector('small.invalid-feedback');
+
+    if (File.size > 10 * 1024 * 1024) {
+        Feedback.classList.remove('text-muted');
+        this.value = null;
+        this.addEventListener('change', Upload, { once: true });
+        return;
+    } else {
+        Feedback.classList.add('text-muted');
+    }
+
     this.addEventListener('click', PreventDefault);
 
     const Id = this.id.substr(-1);
-    const File = this.files[0];
     const Svg = () => document.querySelector(`svg[for="browse${Id}"]`);
     const Label = document.querySelector(`label.custom-file-label[for="browse${Id}"]`);
     const FileInput = document.getElementById(`file${Id}`);
@@ -160,9 +171,6 @@ async function Upload() {
     // TODO: Regenerate token on console.error();
 
     try {
-        if (File.size > 10 * 1024 * 1024)
-            throw Error('File too large');
-
         const Data = new FormData();
         Data.append('csrf', CsrfToken.value);
         Data.append('file', File);

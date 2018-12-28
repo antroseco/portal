@@ -15,7 +15,7 @@ must:
 - Nunjucks enable caching
 ✓ CSRF
 ✓ Use one CDN for all
-- Add max upload size warning
+✓ Add max upload size warning
 ✓ properly use relative paths
 - set cookies to Secure once HTTPS is enabled
 - request throttling
