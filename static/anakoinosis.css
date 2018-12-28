@@ -24,3 +24,13 @@ a span {
 div.card {
     overflow: hidden;
 }
+
+div.card:hover {
+    border-color: var(--primary) !important;
+    background-color: var(--light);
+}
+
+div.card {
+    transition: all 600ms ease;
+    transition-property: border-color, background-color;
+}

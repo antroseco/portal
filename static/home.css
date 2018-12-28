@@ -7,16 +7,6 @@ body {
     text-align: center;
 }
 
-div.card:hover {
-    border-color: var(--primary) !important;
-    background-color: var(--light);
-}
-
-div.card {
-    transition: all 600ms ease;
-    transition-property: border-color, background-color;
-}
-
 .navbar-brand {
     font-family: Arial, Helvetica, sans-serif;
 }
