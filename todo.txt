@@ -4,7 +4,7 @@ must:
 - email queue
 ✓ user database
 ✓ remember me
-- home icons
+✓ home icons
 - trim whitepsace from input
 - mark fields as required
 - cookie warning (EU)
