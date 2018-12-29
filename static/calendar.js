@@ -1,19 +1,20 @@
 const Now = new Date();
+Now.setDate(1);
+const Today = new Date();
+
 const Months = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος',
     'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος']
 
-function GetFirstDay(Month, Year) {
-    const date = new Date(Year, Month, 1);
+function GetFirstDay(date) {
     const Day = date.getDay();
 
     // Sunday is 0, but we want Monday to be 0
     return Day == 0 ? 6 : Day - 1;
 }
 
-function GetDaysInMonth(Month) {
-    const date = new Date();
-    date.setMonth(Month);
-    date.setDate(32);
+function GetDaysInMonth(date) {
+    const Temp = new Date(date.valueOf());
+    Temp.setDate(32);
 
     /*
     * By setting the date to 32, the month overflows
@@ -23,21 +24,21 @@ function GetDaysInMonth(Month) {
     * if this month is February (28 days) then the value
     * returned will be 4, i.e. 32 - 28 = 4.
     */
-    return 32 - date.getDate();
+    return 32 - Temp.getDate();
 }
 
 function GenerateCalendar(Now) {
     const Year = Now.getFullYear();
     const Month = Now.getMonth();
-    const Day = SameMonth(Now, new Date()) ? Now.getDate() : undefined;
+    const Day = SameMonth(Now, Today) ? Today.getDate() : undefined;
 
     const Header = document.querySelector('div.card div.card-header span');
     const Body = document.querySelector('tbody');
 
     Header.textContent = `${Months[Month]} ${Year}`;
 
-    const DaysInMonth = GetDaysInMonth(Month);
-    const FirstDay = GetFirstDay(Month, Year) - 1;
+    const DaysInMonth = GetDaysInMonth(Now);
+    const FirstDay = GetFirstDay(Now) - 1;
 
     for (let i = 0; i < 6; ++i) {
         const Row = document.createElement('tr');
