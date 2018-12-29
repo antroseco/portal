@@ -52,7 +52,7 @@ async function GenerateToken(User, done) {
         const Token = Bytes.toString('hex');
 
         await TokenModel.create({
-            hash: SHA256(Token).toString('hex'),
+            hash: SHA256(Token),
             user: User
         });
 
@@ -71,7 +71,7 @@ async function GenerateToken(User, done) {
 async function ValidateToken(Token, done) {
     try {
         const DbResponse = await TokenModel.findOneAndDelete({
-            hash: SHA256(Token).toString('hex'),
+            hash: SHA256(Token)
         }).select('user');
 
         if (DbResponse)

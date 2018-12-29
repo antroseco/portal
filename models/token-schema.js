@@ -2,10 +2,8 @@ const Mongoose = require('mongoose');
 
 module.exports = new Mongoose.Schema({
     hash: {
-        type: String,
-        required: true,
-        minlength: 64,
-        maxlength: 64
+        type: Buffer,
+        required: true
     },
     user: {
         type: Mongoose.Schema.Types.ObjectId,
