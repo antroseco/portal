@@ -1,6 +1,7 @@
 const Crypto = require('crypto');
 const Util = require('util');
 const TokenModel = require('./models/csrf-token');
+const { SHA256 } = require('sha2');
 
 const RandomBytes = Util.promisify(Crypto.randomBytes);
 
@@ -9,7 +10,7 @@ async function GenerateToken(User) {
     const Token = Bytes.toString('hex');
 
     TokenModel.create({
-        token: Token,
+        hash: SHA256(Token).toString('hex'),
         user: User
     });
 
@@ -18,11 +19,9 @@ async function GenerateToken(User) {
 
 async function ValidateToken(User, Token) {
     const DbObject = await TokenModel.findOneAndDelete({
-        token: Token,
+        hash: SHA256(Token).toString('hex'),
         user: User
-    }, {
-            select: { _id: true }
-        });
+    }).select('_id');
 
     return DbObject != null;
 }

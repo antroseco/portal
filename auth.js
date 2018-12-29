@@ -72,9 +72,7 @@ async function ValidateToken(Token, done) {
     try {
         const DbResponse = await TokenModel.findOneAndDelete({
             hash: SHA256(Token).toString('hex'),
-        }, {
-                select: { user: true }
-            });
+        }).select('user');
 
         if (DbResponse)
             done(null, await UserModel.findById(DbResponse.user));
