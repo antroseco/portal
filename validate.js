@@ -1,3 +1,9 @@
+const OS = ['ΠΖ', 'ΤΘ', 'ΠΒ', 'ΜΧ', 'ΔΒ', 'ΤΧ', 'ΥΠ', 'ΕΜ', 'ΥΓ', 'ΝΟΜ', 'ΠΑ', 'ΠΝ'];
+
+const Vathmos = ['Αντγος', 'Υπγος', 'Ταξχος', 'Σχης', 'Ανχης', 'Τχης', 'Λγός',
+    'Υπλγός', 'Ανθλγός', 'Ανθστής Α', 'Ανθστής Β', 'Ανθστής Γ', 'Αλχίας',
+    'Επχίας', 'Λχίας', 'Δνέας'];
+
 function ValidateCustom(x, Constraints) {
     const Value = Constraints.get(x);
     if (Value === undefined)
@@ -95,5 +101,6 @@ module.exports = {
     Date: ValidateDate,
     Phone: ValidatePhone,
     FileToken: ValidateFileToken,
-    Filename: ValidateFilename
+    Filename: ValidateFilename,
+    Common: { OS, Vathmos }
 }

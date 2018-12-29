@@ -7,12 +7,6 @@ const Proelevsi = ['Ε/Κ', 'Ε/Ε'];
 
 const Katigoria = ['Αξκός', 'Ανθστής', 'Υπξκός', 'Απόστρατος'];
 
-const OS = ['ΠΖ', 'ΤΘ', 'ΠΒ', 'ΜΧ', 'ΔΒ', 'ΤΧ', 'ΥΠ', 'ΕΜ', 'ΥΓ', 'ΝΟΜ', 'ΠΑ', 'ΠΝ'];
-
-const Vathmos = ['Αντγος', 'Υπγος', 'Ταξχος', 'Σχης', 'Ανχης', 'Τχης', 'Λγός',
-    'Υπλγός', 'Ανθλγός', 'Ανθστής Α', 'Ανθστής Β', 'Ανθστής Γ', 'Αλχίας',
-    'Επχίας', 'Λχίας', 'Δνέας'];
-
 const Oikogeniaki = ['Έγγαμος', 'Άγαμος', 'Άλλο'];
 
 function ValidatePost(body) {
@@ -20,8 +14,8 @@ function ValidatePost(body) {
         onomapatera: Validate.Text(body.onomapatera, 35),
         proelevsi: Validate.Array(body.proelevsi, Proelevsi),
         katigoria: Validate.Array(body.katigoria, Katigoria),
-        os: Validate.Array(body.os, OS),
-        vathmos: Validate.Array(body.vathmos, Vathmos),
+        os: Validate.Array(body.os, Validate.Common.OS),
+        vathmos: Validate.Array(body.vathmos, Validate.Common.Vathmos),
         monada: Validate.Text(body.monada, 32),
         oikias: Validate.Phone(body.oikias),
         ipiresias: Validate.Phone(body.ipiresias),
@@ -83,7 +77,6 @@ function ValidatePost(body) {
 };
 
 module.exports = (Body, Extra) => {
-    console.log(Body);
     const PostData = ValidatePost(Body);
 
     return Nunjucks.render('kaay.html', { ...PostData, ...Extra });

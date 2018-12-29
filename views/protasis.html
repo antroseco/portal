@@ -6,6 +6,7 @@
         {% include "head.html" %}
 
         <link rel="stylesheet" href="/home.css">
+        <script src="/protasis.js"></script>
 
         <style>
             form {
@@ -76,26 +77,56 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="monada">Μονάδα</label>
-                        <input type="text" class="form-control" id="monada" name="monada" maxlength="16">
+                        <input type="text" class="form-control" id="monada" name="monada" maxlength="16" required="">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="vathmos">Βαθμός</label>
-                        <input type="text" class="form-control" id="vathmos" name="vathmos" maxlength="16">
+                        <select class="custom-select" id="vathmos" name="vathmos" required="">
+                            <option value="0">Αντγος</option>
+                            <option value="1">Υπγος</option>
+                            <option value="2">Ταξχος</option>
+                            <option value="3">Σχης</option>
+                            <option value="4">Ανχης</option>
+                            <option value="5">Τχης</option>
+                            <option value="6">Λγός</option>
+                            <option value="7">Υπλγός</option>
+                            <option value="8">Ανθλγός</option>
+                            <option value="9">Ανθστής Α</option>
+                            <option value="10">Ανθστής Β</option>
+                            <option value="11">Ανθστής Γ</option>
+                            <option value="12">Αλχίας</option>
+                            <option value="13">Επχίας</option>
+                            <option value="14">Λχίας</option>
+                            <option value="15">Δνέας</option>
+                        </select>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="os">Όπλο - Σώμα</label>
-                        <input type="text" class="form-control" id="os" name="os" maxlength="16">
+                        <select class="custom-select" id="os" name="os" required="">
+                            <option value="0">ΠΖ</option>
+                            <option value="1">ΤΘ</option>
+                            <option value="2">ΠΒ</option>
+                            <option value="3">ΜΧ</option>
+                            <option value="4">ΔΒ</option>
+                            <option value="5">ΤΧ</option>
+                            <option value="6">ΥΠ</option>
+                            <option value="7">ΕΜ</option>
+                            <option value="8">ΥΓ</option>
+                            <option value="9">ΝΟΜ</option>
+                            <option value="10">ΠΑ</option>
+                            <option value="11">ΠΝ</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="thema">Θέμα</label>
-                    <input type="text" class="form-control" id="thema" name="thema" maxlength="200">
+                    <input type="text" class="form-control" id="thema" name="thema" maxlength="200" required="">
                 </div>
 
                 <div class="form-group">
                     <label for="paratirisis">Συμπληρώστε παρατηρήσεις ή προτάσεις οι οποίες θα μας έκαναν καλύτερους</label>
-                    <textarea class="form-control" name="paratirisis" rows="5" maxlength="10000"></textarea>
+                    <textarea class="form-control" name="paratirisis" rows="5" maxlength="10000" required=""></textarea>
                 </div>
 
                 <input type="hidden" name="csrf" value="{{ csrf }}">
