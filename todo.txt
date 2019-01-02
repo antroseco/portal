@@ -29,7 +29,7 @@ nice to have:
 - async js loading
 - maybe use main.container-fluid
 - use nunjucks blocks
-- zxcvbn
+✓ zxcvbn
 - properly align emails
 ✓ do not return password hashes in Get()
 - consider using .d-none instead of style="display: none;"

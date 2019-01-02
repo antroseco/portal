@@ -5,6 +5,7 @@
         {% include "head.html" %}
         <link rel="stylesheet" href="/login.css">
         <script src="/login.js"></script>
+        <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
     </head>
 
     <body class="text-center">
@@ -47,6 +48,10 @@
 
                         <label for="registerPassword2" class="sr-only">Repeat your password</label>
                         <input type="password" id="registerPassword2" class="form-control" placeholder="Repeat Password" required="required">
+
+                        <div class="progress d-none">
+                            <div class="progress-bar"></div>
+                        </div>
 
                         <label for="registerOnoma" class="sr-only">Όνομα</label>
                         <input name="onoma" type="text" id="registerOnoma" class="form-control" placeholder="Όνομα" required="required">

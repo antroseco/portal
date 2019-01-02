@@ -47,7 +47,7 @@ const ParseMultipart = KoaBody({
 });
 
 const EmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const PasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,72}$/;
+const PasswordRegex = /^[ -~]{8,72}$/;
 const NameRegex = /^[\wΑ-Ωάέόώίύή ,.'-]{1,32}$/;
 
 const Mx = NodeMailer.createTransport({
@@ -151,7 +151,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     // Password must be a string, between 8 and 72 characters long,
     // contain one lower case, one upper case, and one special character
     if (typeof body.password !== 'string' || !PasswordRegex.test(body.password)) {
-        ctx.flash('error', 'Password must be at least 8 characters long, and contain at least one lower case letter, upper case letter, and a special character');
+        ctx.flash('error', 'Password must be at least 8 characters long and only contain numbers, latin, and special characters');
         ctx.session.register = true;
         return ctx.redirect('/');
     }
