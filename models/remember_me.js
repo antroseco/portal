@@ -1,6 +1,6 @@
 const Mongoose = require('mongoose');
 
-module.exports = new Mongoose.Schema({
+const Schema = new Mongoose.Schema({
     hash: {
         type: Buffer,
         required: true
@@ -15,3 +15,7 @@ module.exports = new Mongoose.Schema({
         default: Mongoose.now
     }
 });
+
+Schema.index({ createdAt: 1 }, { expires: '7 days' });
+
+module.exports = Mongoose.model('remember_me', Schema);

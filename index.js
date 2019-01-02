@@ -20,7 +20,6 @@ const Path = require('path');
 const fs = require('fs').promises;
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user.js');
-const Csrf = require('./csrf.js');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -81,7 +80,7 @@ KoaPassport.use('local', new LocalStrategy({
 
 KoaPassport.use('rememberme', new RememberMeStrategy({
     cookie: { signed: true }
-}, Auth.ValidateToken, Auth.GenerateToken));
+}, Auth.ValidateRemember, Auth.Remember));
 
 App.use(Nunjucks({
     noCache: true,
@@ -109,33 +108,26 @@ App.use(Nunjucks({
     }
 }));
 
-async function CheckCsrf(ctx, next) {
-    const User = ctx.state.user ? ctx.state.user._id : 'landingtoken';
-    ctx.assert(await Csrf.ValidateToken(User, ctx.request.body.csrf), 401);
-
-    await next();
-}
-
 // Publicly available
 App.use(KoaStatic('static'));
 
 App.use(KoaPassport.initialize());
 App.use(KoaPassport.session());
 
-Router.post('/api/login', ParseUrlEnc, CheckCsrf, KoaPassport.authenticate('local', {
+Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate('local', {
     failureRedirect: '/',
     failureFlash: 'Invalid username or password combination'
 }), async ctx => {
+    // TODO: Destroy existing session
     // TODO: Implement proper validation
     if (ctx.request.body.remember_me && ctx.request.body.remember_me == 'on') {
-        const Token = await Auth.GenerateToken(ctx.state.user);
-
         // TODO: Look into unifying cookie settings
-        ctx.cookies.set('remember_me', Token, {
-            maxAge: 604800000,
-            signed: true,
-            httpOnly: true
-        });
+        ctx.cookies.set('remember_me',
+            await Auth.Remember(ctx.state.user), {
+                maxAge: 604800000,
+                signed: true,
+                httpOnly: true
+            });
     } else {
         // Clear any existing cookies
         ctx.cookies.set('remember_me', null);
@@ -145,7 +137,7 @@ Router.post('/api/login', ParseUrlEnc, CheckCsrf, KoaPassport.authenticate('loca
     ctx.redirect('/home');
 });
 
-Router.post('/api/register', ParseUrlEnc, CheckCsrf, async ctx => {
+Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     // TODO: Check if email exists
     const body = ctx.request.body;
 
@@ -203,13 +195,12 @@ Router.use(KoaPassport.authenticate('rememberme'));
 Router.get('/', async ctx => {
     if (ctx.isAuthenticated()) {
         ctx.redirect('/home');
-    }
-    else {
+    } else {
         await ctx.render('landing', {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ',
             'error': ctx.flash('error'),
             'success': ctx.flash('success'),
-            'csrf': await Csrf.GenerateToken('landingtoken'),
+            'csrf': await Auth.GetCsrf(ctx.state.user),
             'register': ctx.session.register
         });
 
@@ -229,8 +220,7 @@ Router.use(async (ctx, next) => {
 
 // TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
-    Csrf.PurgeTokens(ctx.state.user._id);
-    Auth.PurgeTokens(ctx.state.user._id);
+    await Auth.DestroySession(ctx.state.user.session_hash);
     ctx.cookies.set('remember_me', null);
     ctx.cookies.set('remember_me:sig', null);
 
@@ -252,11 +242,11 @@ Router.get('/laef', async ctx => {
         'onomateponymo': ctx.state.user.onomateponymo,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
-        'csrf': await Csrf.GenerateToken(ctx.state.user._id)
+        'csrf': await Auth.GetCsrf(ctx.state.user)
     });
 });
 
-Router.post('/api/laef', ParseUrlEnc, CheckCsrf,
+Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
             const MailOptions = {
@@ -293,14 +283,14 @@ Router.get('/protasis', async ctx => {
         'epitheto': ctx.state.user.epitheto,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
-        'csrf': await Csrf.GenerateToken(ctx.state.user._id),
+        'csrf': await Auth.GetCsrf(ctx.state.user),
         'date': new Date().toISOString().substring(0, 10),
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });
 });
 
-Router.post('/api/protasis', ParseUrlEnc, CheckCsrf,
+Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
             const MailOptions = {
@@ -340,16 +330,14 @@ Router.get('/kaay', async ctx => {
         'epitheto': ctx.state.user.epitheto,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
-        'csrf': await Csrf.GenerateToken(ctx.state.user._id),
-        'csrf1': await Csrf.GenerateToken(ctx.state.user._id),
-        'csrf2': await Csrf.GenerateToken(ctx.state.user._id),
+        'csrf': await Auth.GetCsrf(ctx.state.user),
         'date': new Date().toISOString().substring(0, 10),
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });
 });
 
-Router.post('/api/kaay', ParseUrlEnc, CheckCsrf,
+Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
             let Attachments = [];
@@ -393,7 +381,7 @@ Router.post('/api/kaay', ParseUrlEnc, CheckCsrf,
 
                 // Clean-up uploaded attatchments
                 for (const Attachment of Attachments) {
-                    console.log('deleting ', Attachment.path);
+                    console.log('deleting', Attachment.path);
                     fs.unlink(Attachment.path);
                 }
             });
@@ -426,7 +414,7 @@ Router.put('/api/upload', async (ctx, next) => {
         console.log(Err);
         ctx.status = Err.status ? Err.status : 400;
     }
-}, ParseMultipart, CheckCsrf);
+}, ParseMultipart, Auth.CheckCsrf);
 
 async function ResolveDirectory(Path, n = 0) {
     const Result = await fs.readdir(Path, {
@@ -475,7 +463,7 @@ Router.get('/anakoinosis/:category', async ctx => {
     await ctx.render('anakoinosis_perissotera', Options);
 });
 
-// TODO: CheckCsrf here and regenerate tokens on each request
+// TODO: Auth.CheckCsrf here and regenerate tokens on each request
 Router.put('/api/anakoinosis/read', async (ctx, next) => {
     try {
         await next();

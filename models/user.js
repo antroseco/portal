@@ -36,4 +36,10 @@ Schema.virtual('onomateponymo').get(function () {
     return `${this.onoma} ${this.epitheto}`;
 });
 
+Schema.virtual('session_hash').get(function () {
+    return this._session;
+}).set(function (Hash) {
+    this._session = Hash;
+});
+
 module.exports = Mongoose.model('User', Schema);

@@ -274,7 +274,6 @@
                         <input type="file" class="custom-file-input" id="browse1">
                         <input type="hidden" id="file1" name="file1">
                         <input type="hidden" id="filename1" name="filename1">
-                        <input type="hidden" id="csrf1" value="{{ csrf1 }}">
                     </div>
 
                     <small class="d-inline text-muted invalid-feedback">Μέγιστο μέγεθος κάθε αρχείου: 10 MB</small>
@@ -292,7 +291,6 @@
                         <input type="file" class="custom-file-input" id="browse2">
                         <input type="hidden" id="file2" name="file2">
                         <input type="hidden" id="filename2" name="filename2">
-                        <input type="hidden" id="csrf2" value="{{ csrf2 }}">
                     </div>
                 </div>
 
@@ -301,7 +299,7 @@
                 </div>
             </div>
 
-            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <input type="hidden" id="csrf" name="csrf" value="{{ csrf }}">
 
             <button type="submit" class="btn btn-outline-primary">Submit</button>
         </form>

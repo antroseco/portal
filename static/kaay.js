@@ -167,8 +167,7 @@ async function Upload() {
     const Label = document.querySelector(`label.custom-file-label[for="browse${Id}"]`);
     const FileInput = document.getElementById(`file${Id}`);
     const FilenameInput = document.getElementById(`filename${Id}`);
-    const CsrfToken = document.getElementById(`csrf${Id}`);
-    // TODO: Regenerate token on console.error();
+    const CsrfToken = document.getElementById('csrf');
 
     try {
         const Data = new FormData();

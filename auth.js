@@ -1,66 +1,139 @@
 const bcrypt = require('bcrypt');
 const UserModel = require('./models/user');
-const Crypto = require('crypto');
-const Util = require('util');
-const TokenModel = require('./models/login-token');
-const { SHA256 } = require('sha2');
+const SessionModel = require('./models/session');
+const RememberModel = require('./models/remember_me');
+const Token = require('./token');
 
-const RandomBytes = Util.promisify(Crypto.randomBytes);
+// Called once on user login
+async function Serialize(User, done) {
+    console.log('CALLED SERIALIZE', User, done);
+    const CsrfToken = new Token();
+    const SessionToken = new Token();
 
-function Serialize(User, done) {
-    done(null, User._id);
-};
+    await SessionModel.create({
+        csrf: await CsrfToken.hex,
+        session_hash: await SessionToken.hash,
+        user: User._id
+    });
 
-async function Deserialize(Id, done) {
+    console.log('SERIALIZE', await SessionToken.hex);
+    done(null, await SessionToken.hex);
+}
+
+// Called on every authenticated request
+async function Deserialize(SessionHex, done) {
     try {
-        const User = await UserModel.findById(Id).lean(false);
+        console.log('CALLED DESERIALIZE', SessionHex, done);
 
-        done(null, User);
+        if (typeof SessionHex !== 'string')
+            return done(null, false);
+
+        const SessionToken = new Token(SessionHex);
+        const Session = await SessionModel.findOne({
+            session_hash: await SessionToken.hash
+        }).select('user');
+
+        if (!Session) {
+            // TODO: Log
+            console.log('DESERIALIZE NULL SESSION');
+            done(null, false);
+        } else {
+            const User = await UserModel.findById(Session.user).lean(false);
+            User.session_hash = await SessionToken.hash;
+
+            console.log('DESERIALIZE OK', User.toJSON({ virtuals: true }));
+            done(null, User);
+        }
     } catch (Err) {
         console.log(Err);
 
         done(Err);
     }
-};
+}
+
+async function DestroySession(SessionHash) {
+    console.log('CALLED DESTROYSESSION', SessionHash);
+
+    return await SessionModel.findOneAndDelete({
+        session_hash: SessionHash
+    });
+}
 
 async function Strategy(Username, Password, done) {
     try {
-        const User = await UserModel.findOne({ email: Username },
-            { password: true });
+        console.log('CALLED STRATEGY', Username, Password, done);
 
-        if (User && await bcrypt.compare(Password, User.password)) {
-            /*
-            * We won't use the user object for anything else
-            * so only provide the _id field to allow the
-            * serialization of the user
-            */
-            done(null, { _id: User._id });
-        }
-        else {
+        const User = await UserModel.findOne({ email: Username }).select('password');
+
+        if (User && await bcrypt.compare(Password, User.password))
+            done(null, User);
+        else
             done(null, false);
-        }
     } catch (Err) {
-        console.log(Err);
+        console.log('STRATEGY ERROR', Err);
 
         done(Err);
     }
-};
+}
 
-async function GenerateToken(User, done) {
+async function GetCsrf(User) {
+    console.log('CALLED GETCSRF', User);
+
+    if (User) {
+        const Session = await SessionModel.findOne({
+            session_hash: User.session_hash
+        }).select('csrf');
+
+        console.log(Session.csrf);
+
+        return Session.csrf;
+    } else {
+        const CsrfToken = new Token();
+
+        await SessionModel.create({
+            csrf: await CsrfToken.hex
+        });
+
+        return await CsrfToken.hex;
+    }
+}
+
+async function CheckCsrf(ctx, next) {
+    console.log('CALLED CHECKCSRF', ctx, next);
+
+    const Csrf = new Token(ctx.request.body.csrf);
+    const User = ctx.state.user;
+
+    const Session = await SessionModel.findOne({
+        csrf: await Csrf.hex,
+        user: User ? User._id : undefined
+    }).select('_id');
+
+    console.log('CHECKCSRF', Session);
+
+    // TODO: Log
+    ctx.assert(Session, 401);
+
+    await next();
+}
+
+async function Remember(User, done) {
     try {
-        const Bytes = await RandomBytes(16);
-        const Token = Bytes.toString('hex');
+        const RememberToken = new Token();
+        console.log('CALLED REMEMBER', User);
 
-        await TokenModel.create({
-            hash: SHA256(Token),
-            user: User
+        await RememberModel.create({
+            hash: await RememberToken.hash,
+            user: User._id
         });
 
         if (done)
-            done(null, Token);
+            done(null, await RememberToken.hex);
         else
-            return Token;
+            return await RememberToken.hex;
     } catch (Err) {
+        console.log('REMEMBER ERROR', Err);
+
         if (done)
             done(Err);
         else
@@ -68,25 +141,22 @@ async function GenerateToken(User, done) {
     }
 }
 
-async function ValidateToken(Token, done) {
+async function ValidateRemember(RememberHex, done) {
     try {
-        const DbResponse = await TokenModel.findOneAndDelete({
-            hash: SHA256(Token)
+        console.log('CALLED VALIDATEREMEMBER', RememberHex);
+
+        const RememberToken = new Token(RememberHex);
+
+        const Remember = await RememberModel.findOneAndDelete({
+            hash: await RememberToken.hash
         }).select('user');
 
-        if (DbResponse)
-            done(null, await UserModel.findById(DbResponse.user));
-        else
-            done(null, false);
+        done(null, Remember ? await UserModel.findById(Remember.user) : false);
     } catch (Err) {
+        console.log('VALIDATEREMEMBER ERROR', Err);
+
         done(Err);
     }
 }
 
-async function PurgeTokens(User) {
-    await TokenModel.deleteMany({
-        user: User
-    });
-}
-
-module.exports = { Serialize, Deserialize, Strategy, GenerateToken, ValidateToken, PurgeTokens };
+module.exports = { Serialize, Deserialize, DestroySession, Strategy, GetCsrf, CheckCsrf, Remember, ValidateRemember };
