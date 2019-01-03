@@ -10,7 +10,7 @@ must:
 - cookie warning (EU)
 ✓ rename cookies (information leak)
 ✓ harden koa-body (limit attack surface)
-- fix email file name leak (temp directory)
+✓ fix email file name leak (temp directory)
 - cache static assets
 - Nunjucks enable caching
 ✓ CSRF
@@ -19,6 +19,8 @@ must:
 ✓ properly use relative paths
 - set cookies to Secure once HTTPS is enabled
 - request throttling
+- better logs
+- keep track of uploads and expire them
 
 nice to have:
 
