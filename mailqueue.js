@@ -19,20 +19,22 @@ class Queue {
             () => this.Check());
     }
 
-    async Push(Mail) {
-        let Id = undefined;
+    async Push(MailOptions) {
+        let Mail = undefined;
 
         try {
-            Id = (await EmailModel.create(Mail))._id;
+            Mail = await EmailModel.create(MailOptions);
 
-            await this.Send(Mail);
+            await this.Send(Mail.toObject());
 
-            await EmailModel.deleteOne({ _id: Id });
+            await EmailModel.deleteOne({ _id: Mail._id });
         } catch (Err) {
             console.log('SENDMAIL ERROR', Err);
 
-            await EmailModel.findByIdAndUpdate(Id, { sending: false });
-            this.Interval = true;
+            if (Mail) {
+                await Mail.updateOne({ sending: false });
+                this.Interval = true;
+            }
         }
     }
 
@@ -54,7 +56,6 @@ class Queue {
         let Mail = undefined;
 
         try {
-            // Delete to prevent race conditions
             Mail = await EmailModel.findOneAndUpdate({ sending: false },
                 { sending: true });
 
@@ -69,8 +70,8 @@ class Queue {
 
             if (Mail) {
                 console.log('CHECK MAIL FAILED, REVERTING');
-                await EmailModel.findByIdAndUpdate(Mail._id, { sending: false });
 
+                await Mail.updateOne({ sending: false });
                 this.Interval = true;
             }
         }

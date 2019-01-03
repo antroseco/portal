@@ -1,7 +1,7 @@
 must:
 
 - email credentials
-- email queue
+✓ email queue
 ✓ user database
 ✓ remember me
 ✓ home icons
