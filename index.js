@@ -10,7 +10,6 @@ const RememberMeStrategy = require('koa-passport-remember-me').Strategy;
 const KoaFlash = require('koa-better-flash');
 const Auth = require('./auth.js');
 const bcrypt = require('bcrypt');
-const NodeMailer = require('nodemailer');
 const RenderLaef = require('./laef.js');
 const RenderProtasis = require('./protasis.js');
 const RenderKaay = require('./kaay.js');
@@ -20,6 +19,7 @@ const Path = require('path');
 const fs = require('fs').promises;
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user.js');
+const MailQueue = require('./mailqueue');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -50,14 +50,17 @@ const EmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+")
 const PasswordRegex = /^[ -~]{8,72}$/;
 const NameRegex = /^[\wΑ-Ωάέόώίύή ,.'-]{1,32}$/;
 
-const Mx = NodeMailer.createTransport({
+const Mq = new MailQueue({
     host: 'smtp.ethereal.email',
     port: 587,
+    pool: true,
     requireTLS: true,
     auth: {
         user: 'duydqmvx7l6nyvpg@ethereal.email',
         pass: 'fXXWHQ95jphZdWh8eW'
-    }
+    },
+    disableUrlAccess: true
+    // TODO: consider disableFileAccess 
 });
 
 App.keys = ['session-secret :)']; //TODO: Session Secret
@@ -249,20 +252,12 @@ Router.get('/laef', async ctx => {
 Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
-            const MailOptions = {
+            Mq.Push({
                 from: '"Fred Foo 👻" <foo@example.com>',
                 to: 'bar@example.com, baz@example.com',
                 subject: 'Αναφορά Αξιολόγησης ΛΑΕΦ',
                 //text: 'Plaintext body', TODO: plain text body
                 html: await RenderLaef(ctx.request.body)
-            };
-
-            Mx.sendMail(MailOptions, (Err, Info) => {
-                if (Err) console.log(Err);
-
-                //TODO: error handling
-                console.log('Message sent: %s', Info.messageId);
-                console.log('Preview URL: %s', NodeMailer.getTestMessageUrl(Info));
             });
 
             ctx.flash('success', 'Ευχαριστούμε, η αξιολόγηση σας έχει σταλεί');
@@ -293,7 +288,7 @@ Router.get('/protasis', async ctx => {
 Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
-            const MailOptions = {
+            Mq.Push({
                 from: '"Fred Foo 👻" <foo@example.com>',
                 to: 'bar@example.com, baz@example.com',
                 subject: 'Αναφορά Υποβολής Πρότασης',
@@ -303,13 +298,6 @@ Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf,
                     'email': ctx.state.user.email,
                     'kinito': ctx.state.user.kinito
                 })
-            };
-
-            Mx.sendMail(MailOptions, (Err, Info) => {
-                if (Err) console.log(Err);
-                //TODO: error handling
-                console.log('Message sent: %s', Info.messageId);
-                console.log('Preview URL: %s', NodeMailer.getTestMessageUrl(Info));
             });
 
             ctx.flash('success', 'Ευχαριστούμε, η πρότασή σας έχει σταλεί');
@@ -360,7 +348,7 @@ Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf,
 
             console.log(Attachments);
 
-            const MailOptions = {
+            Mq.Push({
                 from: '"Fred Foo 👻" <foo@example.com>',
                 to: 'bar@example.com, baz@example.com',
                 subject: 'Αναφορά Αίτησης Παραθερισμού στο ΚΑΑΥ Κυτίου',
@@ -370,20 +358,6 @@ Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf,
                     'kinito': ctx.state.user.kinito
                 }),
                 attachments: Attachments
-            };
-
-            // TODO: determine if we need await
-            await Mx.sendMail(MailOptions, (Err, Info) => {
-                if (Err) console.log(Err);
-                //TODO: error handling
-                console.log('Message sent: %s', Info.messageId);
-                console.log('Preview URL: %s', NodeMailer.getTestMessageUrl(Info));
-
-                // Clean-up uploaded attatchments
-                for (const Attachment of Attachments) {
-                    console.log('deleting', Attachment.path);
-                    fs.unlink(Attachment.path);
-                }
             });
 
             ctx.flash('success', 'Ευχαριστούμε, η αίτησή σας έχει σταλεί');
