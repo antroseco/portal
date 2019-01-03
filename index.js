@@ -141,7 +141,6 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
 });
 
 Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
-    // TODO: Check if email exists
     const body = ctx.request.body;
 
     // Email must be string, maximum length 320 characters, validate using regex
@@ -181,16 +180,28 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
         return ctx.redirect('/');
     }
 
-    const User = await UserModel.create({
-        email: body.email,
-        password: await bcrypt.hash(body.password, 10),
-        onoma: body.onoma,
-        epitheto: body.epitheto,
-        kinito: body.kinito,
-    });
+    try {
+        const User = await UserModel.create({
+            email: body.email,
+            password: await bcrypt.hash(body.password, 10),
+            onoma: body.onoma,
+            epitheto: body.epitheto,
+            kinito: body.kinito,
+        });
 
-    await ctx.login(User);
-    ctx.redirect('/home');
+        await ctx.login(User);
+        ctx.redirect('/home');
+    } catch (Err) {
+        if (Err.code == 11000) {
+            ctx.flash('error', 'This email address is already in use');
+            ctx.session.register = true;
+            return ctx.redirect('/');
+        } else {
+            console.log('REGISTRATION ERROR', Err);
+
+            throw Err;
+        }
+    }
 });
 
 Router.use(KoaPassport.authenticate('rememberme'));
