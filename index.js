@@ -122,8 +122,7 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
     failureFlash: 'Invalid username or password combination'
 }), async ctx => {
     // TODO: Destroy existing session
-    // TODO: Implement proper validation
-    if (ctx.request.body.remember_me && ctx.request.body.remember_me == 'on') {
+    if (Validate.Checkbox(ctx.request.body.remember_me)) {
         // TODO: Look into unifying cookie settings
         ctx.cookies.set('remember_me',
             await Auth.Remember(ctx.state.user), {

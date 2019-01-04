@@ -92,6 +92,10 @@ function ValidateFilename(x) {
     return x.substring(0, 100);
 }
 
+function ValidateCheckbox(x) {
+    return typeof x === 'string' && x === 'on';
+}
+
 module.exports = {
     Custom: ValidateCustom,
     Array: ValidateArray,
@@ -102,5 +106,6 @@ module.exports = {
     Phone: ValidatePhone,
     FileToken: ValidateFileToken,
     Filename: ValidateFilename,
+    Checkbox: ValidateCheckbox,
     Common: { OS, Vathmos }
 }
