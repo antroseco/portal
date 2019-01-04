@@ -59,6 +59,14 @@ async function DestroySession(SessionHash) {
     });
 }
 
+async function DestoryCsrf(CsrfToken) {
+    console.log('CALLED DESTROYCSRF', CsrfToken);
+
+    return await SessionModel.deleteOne({
+        csrf: CsrfToken
+    });
+}
+
 async function Strategy(Username, Password, done) {
     try {
         console.log('CALLED STRATEGY', Username, Password, done);
@@ -159,4 +167,4 @@ async function ValidateRemember(RememberHex, done) {
     }
 }
 
-module.exports = { Serialize, Deserialize, DestroySession, Strategy, GetCsrf, CheckCsrf, Remember, ValidateRemember };
+module.exports = { Serialize, Deserialize, DestroySession, DestoryCsrf, Strategy, GetCsrf, CheckCsrf, Remember, ValidateRemember };

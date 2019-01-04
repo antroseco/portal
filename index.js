@@ -121,7 +121,14 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
     failureRedirect: '/',
     failureFlash: 'Invalid username or password combination'
 }), async ctx => {
-    // TODO: Destroy existing session
+    /*
+    * Destroy the CSRF token used since a new
+    * one has been generated with the new session.
+    * If the same token would be used, we would be
+    * vulnerable to session fixation attacks.
+    */
+    Auth.DestoryCsrf(ctx.request.body.csrf);
+
     if (Validate.Checkbox(ctx.request.body.remember_me)) {
         // TODO: Look into unifying cookie settings
         ctx.cookies.set('remember_me',
