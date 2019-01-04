@@ -54,7 +54,7 @@ async function Deserialize(SessionHex, done) {
 async function DestroySession(SessionHash) {
     console.log('CALLED DESTROYSESSION', SessionHash);
 
-    return await SessionModel.findOneAndDelete({
+    return await SessionModel.deleteOne({
         session_hash: SessionHash
     });
 }
