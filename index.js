@@ -318,6 +318,7 @@ Router.use(async (ctx, next) => {
 Router.get('/home', async ctx => {
     await ctx.render('home', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Home',
+        'current': 'home',
         'onomateponymo': ctx.state.user.onomateponymo,
         'success': ctx.flash('success'),
         'error': ctx.flash('error')
