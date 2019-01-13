@@ -50,7 +50,7 @@ const ParseMultipart = KoaBody({
 
 const EmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PasswordRegex = /^[ -~]{8,72}$/;
-const NameRegex = /^[\wΑ-Ωάέόώίύή ,.'-]{1,32}$/;
+const NameRegex = /^[\wα-ωάέόώίύή ,.'-]{1,32}$/i;
 
 const Mq = new MailQueue({
     host: 'smtp.ethereal.email',
