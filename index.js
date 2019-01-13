@@ -241,7 +241,7 @@ Router.get('/', async ctx => {
             'register': ctx.session.register
         });
 
-        ctx.session.register = false;
+        delete ctx.session.register;
     }
 });
 
