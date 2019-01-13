@@ -234,8 +234,7 @@
                             <input type="number" class="form-control" id="exoterikou{{ i }}year" name="exoterikou{{ i }}year" min="1900" max="2100" placeholder="Έτος">
                         </div>
                         <div class="form-group col-md-4" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="exoterikou" {% endif %}>
-                            <!-- TODO: maxlength, etc -->
-                            <input type="text" class="form-control" id="exoterikou{{ i }}xora" name="exoterikou{{ i }}xora" placeholder="Χώρα">
+                            <input type="text" class="form-control" id="exoterikou{{ i }}xora" name="exoterikou{{ i }}xora" maxlength="64" placeholder="Χώρα">
                         </div>
 
                         <div class="form-group col-md-1" {% if not loop.first %} style="display: none" data-n="{{ i }}" data-is="exoterikou" {% endif %}>
