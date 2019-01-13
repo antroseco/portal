@@ -41,7 +41,6 @@
 
             {% include "flash.html" %}
 
-            <!-- TODO: Mark required fields -->
             <form action="/api/kaay" method="post">
                 <h2>Αίτηση Παραθερισμού στο ΚΑΑΥ Κυτίου</h2>
                 <br>
@@ -49,33 +48,33 @@
                 <div class="form-row">
                     <div class="form-group col-md-3">
                         <label for="epitheto">Επίθετο</label>
-                        <input type="text" class="form-control" id="epitheto" value="{{ epitheto }}" readonly="readonly">
+                        <input type="text" class="form-control" id="epitheto" value="{{ epitheto }}" readonly="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="onoma">Όνομα</label>
-                        <input type="text" class="form-control" id="onoma" value="{{ onoma }}" readonly="readonly">
+                        <input type="text" class="form-control" id="onoma" value="{{ onoma }}" readonly="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="onomapatera">Όνομα Πατέρα</label>
-                        <input type="text" class="form-control" id="onomapatera" name="onomapatera" maxlength="35" required="required">
+                        <input type="text" class="form-control" id="onomapatera" name="onomapatera" maxlength="35" required="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="am">ΑΜ</label>
-                        <input type="text" class="form-control" id="am" value="(TODO)" readonly="readonly">
+                        <input type="text" class="form-control" id="am" value="(TODO)" readonly="">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-1">
                         <label for="proelevsi">Προέλευση</label>
-                        <select class="custom-select" id="proelevsi" name="proelevsi" required="required">
+                        <select class="custom-select" id="proelevsi" name="proelevsi" required="">
                             <option value="0">Ε/Κ</option>
                             <option value="1">Ε/Ε</option>
                         </select>
                     </div>
                     <div class="form-group col-md-2">
                         <label for="katigoria">Κατηγορία</label>
-                        <select class="custom-select" id="katigoria" name="katigoria" required="required">
+                        <select class="custom-select" id="katigoria" name="katigoria" required="">
                             <option value="0">Αξκός</option>
                             <option value="1">Ανθστής</option>
                             <option value="2">Υπξκός</option>
@@ -84,7 +83,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="os">Όπλο - Σώμα</label>
-                        <select class="custom-select" id="os" name="os" required="required">
+                        <select class="custom-select" id="os" name="os" required="">
                             <option value="0">ΠΖ</option>
                             <option value="1">ΤΘ</option>
                             <option value="2">ΠΒ</option>
@@ -101,7 +100,7 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="vathmos">Βαθμός</label>
-                        <select class="custom-select" id="vathmos" name="vathmos" required="required">
+                        <select class="custom-select" id="vathmos" name="vathmos" required="">
                             <option value="0">Αντγος</option>
                             <option value="1">Υπγος</option>
                             <option value="2">Ταξχος</option>
@@ -122,33 +121,33 @@
                     </div>
                     <div class="form-group col-md-3">
                         <label for="monada">Μονάδα</label>
-                        <input type="text" class="form-control" id="monada" name="monada" maxlength="32" required="required">
+                        <input type="text" class="form-control" id="monada" name="monada" maxlength="32" required="">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-3">
                         <label for="imerominia">Τοποθέτηση στην Κύπρο</label>
-                        <input type="date" class="form-control" id="imerominia" name="imerominia" disabled="disabled">
+                        <input type="date" class="form-control" id="imerominia" name="imerominia" disabled="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="kinito">Κινητό Τηλέφωνο</label>
-                        <input type="tel" class="form-control" id="kinito" value="{{ kinito }}" readonly="readonly">
+                        <input type="tel" class="form-control" id="kinito" value="{{ kinito }}" readonly="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="oikias">Τηλέφωνο Οικίας</label>
-                        <input type="tel" class="form-control" id="oikias" name="oikias" required="required" minlength="8" maxlength="14">
+                        <input type="tel" class="form-control" id="oikias" name="oikias" required="" minlength="8" maxlength="14">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="ipiresias">Τηλέφωνο Υπηρεσίας</label>
-                        <input type="tel" class="form-control" id="ipiresias" name="ipiresias" required="required" minlength="8" maxlength="14">
+                        <input type="tel" class="form-control" id="ipiresias" name="ipiresias" required="" minlength="8" maxlength="14">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-3">
                         <label for="oikogeniaki">Οικογενειακή Κατάσταση</label>
-                        <select class="custom-select" id="oikogeniaki" name="oikogeniaki" required="required">
+                        <select class="custom-select" id="oikogeniaki" name="oikogeniaki" required="">
                             <option value="0">Έγγαμος</option>
                             <option value="1">Άγαμος</option>
                             <option value="2">Άλλο</option>
@@ -156,41 +155,41 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="sizigos">Ονοματεπώνυμο Συζύγου</label>
-                        <input type="text" class="form-control" id="sizigos" maxlength="100" disabled="disabled">
+                        <input type="text" class="form-control" id="sizigos" maxlength="100" disabled="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="monadasizigou">Υπηρεσία/Μονάδα Συζύγου</label>
-                        <input type="text" class="form-control" id="monadasizigou" maxlength="32" disabled="disabled">
+                        <input type="text" class="form-control" id="monadasizigou" maxlength="32" disabled="">
                     </div>
                 </div>
 
                 <div class="form-row" id="ilikies">
                     <div class="form-group col-md-3">
                         <label for="arithmosmelon">Αριθμός Μελών Οικογένειας</label>
-                        <input type="number" class="form-control" id="arithmosmelon" name="arithmosmelon" min="1" max="20" required="required">
+                        <input type="number" class="form-control" id="arithmosmelon" name="arithmosmelon" min="1" max="20" required="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="arithmosteknon">Αριθμός Επιμελούμενων Τέκνων</label>
-                        <input type="number" class="form-control" id="arithmosteknon" name="arithmosteknon" min="0" max="6" required="required">
+                        <input type="number" class="form-control" id="arithmosteknon" name="arithmosteknon" min="0" max="6" required="">
                     </div>
                     <div class="form-group col-md-1">
                         <label for="ilikia1">Ηλικία&nbsp;Επιμελούμενων&nbsp;Τέκνων</label>
-                        <input type="number" class="form-control" id="ilikia1" name="ilikia1" min="0" max="99" disabled="disabled">
+                        <input type="number" class="form-control" id="ilikia1" name="ilikia1" min="0" max="99" disabled="">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-8">
                         <label for="diefthinsi">Διεύθυνση</label>
-                        <input type="text" class="form-control" id="diefthinsi" name="diefthinsi" maxlength="100" required="required">
+                        <input type="text" class="form-control" id="diefthinsi" name="diefthinsi" maxlength="100" required="">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="poli">Πόλη ή Χωριό</label>
-                        <input type="text" class="form-control" id="poli" name="poli" required="required">
+                        <input type="text" class="form-control" id="poli" name="poli" required="">
                     </div>
                     <div class="form-group col-md-1">
                         <label for="tk">ΤΚ</label>
-                        <input type="number" class="form-control" id="tk" name="tk" min="1000" max="9999" required="required">
+                        <input type="number" class="form-control" id="tk" name="tk" min="1000" max="9999" required="">
                     </div>
                 </div>
 
