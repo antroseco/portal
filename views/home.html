@@ -60,22 +60,7 @@
 
         <main role="main" class="container">
 
-            <!-- TODO: Put error/success handling in a block -->
-            {% for i in error %}
-                <div class="d-flex justify-content-center">
-                    <div class="alert alert-danger" role="alert">
-                        {{ i }}
-                    </div>
-                </div>
-            {% endfor %}
-
-            {% for i in success %}
-                <div class="d-flex justify-content-center">
-                    <div class="alert alert-success" role="alert">
-                        {{ i }}
-                    </div>
-                </div>
-            {% endfor %}
+            {% include "flash.html" %}
 
             <div class="row">
                 <div class="col-md-8">
