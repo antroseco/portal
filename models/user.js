@@ -8,6 +8,12 @@ const Schema = new Mongoose.Schema({
         unique: true,
         lowercase: true
     },
+    verified_email: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    email_token_hash: Buffer,
     password: {
         type: String,
         required: true,

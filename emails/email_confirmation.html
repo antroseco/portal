@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="el">
+
+    <head>
+        <title>Επιβεβαίωση εγγραφής στη Ψηφιακή Πλατφόρμα της ΕΦ</title>
+
+        <style>
+            body {
+                font-family: "Arial";
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>
+            Καλωσορήσατε στην Ψηφιακή Πλατφόρμα της Εθνικής Φρουράς!
+        </p>
+        <p>
+            Επιβεβαιώστε το email σας:
+            {{ ["http://localhost:8000/confirm_email/", token] | join | urlize | safe }}
+        </p>
+    </body>
+
+</html>

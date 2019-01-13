@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        {% include "head.html" %}
+
+        <link rel="stylesheet" href="/css/home.css">
+    </head>
+
+    <body>
+
+        {% include "navbar.html" %}
+
+        <main role="main" class="container">
+
+            <div class="row align-items-center mt-5">
+                <div class="col-md-4">
+                    <img src="/svg/logo.svg" class="img-fluid align-middle">
+                </div>
+
+                <div class="col-md-8">
+                    <h4 class="display-4">
+                        Ψηφιακή Πλατφόρμα<br>
+                        <small class="text-muted text-uppercase font-weight-light">{{ onomateponymo }}</small>
+                    </h4>
+                    <p class="lead mt-5">
+                        Καλωσορίσατε!<br>
+                        Επιβεβαιώστε το email σας (<em>{{ email }}</em>) για να συνεχίσετε.
+                    </p>
+                </div>
+            </div>
+
+        </main>
+    </body>
+
+</html>

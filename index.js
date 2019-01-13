@@ -13,6 +13,7 @@ const bcrypt = require('bcrypt');
 const RenderLaef = require('./laef.js');
 const RenderProtasis = require('./protasis.js');
 const RenderKaay = require('./kaay.js');
+const RenderEmailConfirmation = require('./email_confirmation');
 const Validate = require('./validate.js');
 const Os = require('os');
 const Path = require('path');
@@ -20,6 +21,7 @@ const fs = require('fs').promises;
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user.js');
 const MailQueue = require('./mailqueue');
+const Token = require('./token');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -187,16 +189,31 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     }
 
     try {
+        const ConfirmationToken = new Token();
+
         const User = await UserModel.create({
             email: body.email,
+            email_token_hash: await ConfirmationToken.hash,
             password: await bcrypt.hash(body.password, 10),
             onoma: body.onoma,
             epitheto: body.epitheto,
-            kinito: body.kinito,
+            kinito: body.kinito
+        });
+
+        Mq.Push({
+            from: '"Fred Foo 👻" <foo@example.com>',
+            to: User.email,
+            subject: 'Επιβεβαίωση εγγραφής στη Ψηφιακή Πλατφόρμα της ΕΦ',
+            html: await RenderEmailConfirmation({
+                'onoma': User.onoma,
+                'epitheto': User.epitheto,
+                'email': User.email,
+                'token': await ConfirmationToken.hex
+            })
         });
 
         await ctx.login(User);
-        ctx.redirect('/home');
+        ctx.redirect('/confirm_email');
     } catch (Err) {
         if (Err.code == 11000) {
             ctx.flash('error', 'This email address is already in use');
@@ -249,10 +266,61 @@ Router.get('/api/logout', async ctx => {
     ctx.redirect('/');
 });
 
+Router.get('/confirm_email', async ctx => {
+    if (ctx.state.user.verified_email)
+        ctx.redirect('/home');
+    else
+        await ctx.render('confirm_email', {
+            'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Επιβεβαίωση Εγγραφής',
+            'onomateponymo': ctx.state.user.onomateponymo,
+            'email': ctx.state.user.email,
+            'error': ctx.flash('error'),
+            'csrf': await Auth.GetCsrf(ctx.state.user)
+        });
+});
+
+// TODO: GET is not a very good idea
+Router.get('/confirm_email/:token', async ctx => {
+    try {
+        const user = ctx.state.user;
+        const ConfirmationToken = new Token(ctx.params.token);
+
+        if (user.email_token_hash.equals(await ConfirmationToken.hash)) {
+            console.log('CONFIRM_EMAIL/TOKEN SUCCESS')
+            await UserModel.updateOne({ _id: user._id }, {
+                $set: { verified_email: true },
+                $unset: { email_token_hash: null }
+            });
+
+            ctx.flash('success', 'Το email σας έχει επαληθευτεί');
+        } else {
+            // TODO: LOG FAILURE DETAILS
+            console.log('CONFIRM_EMAIL/TOKEN FAILURE')
+        }
+
+        // TODO: if we redirect to /home then won't we go to /confirm_token?
+        ctx.redirect('/home');
+    } catch (Err) {
+        console.log('CONFIRM_EMAIL/TOKEN ERROR', Err);
+
+        ctx.status = 400;
+    }
+});
+
+// Require email confirmation beyond this point
+Router.use(async (ctx, next) => {
+    if (ctx.state.user.verified_email)
+        await next();
+    else
+        ctx.redirect('/confirm_email');
+});
+
 Router.get('/home', async ctx => {
     await ctx.render('home', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Home',
-        'onomateponymo': ctx.state.user.onomateponymo
+        'onomateponymo': ctx.state.user.onomateponymo,
+        'success': ctx.flash('success'),
+        'error': ctx.flash('error')
     });
 });
 
