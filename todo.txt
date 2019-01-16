@@ -27,7 +27,7 @@ nice to have:
 - one function to serve all views (need a list of all data necessary to render *most* views)
 - proper error screens (404, 500...)
 - colour scheme
-- footer
+✓ footer
 - async js loading
 - maybe use main.container-fluid
 ✓ use nunjucks blocks
@@ -35,3 +35,4 @@ nice to have:
 - properly align emails
 ✓ do not return password hashes in Get()
 - consider using .d-none instead of style="display: none;"
+- automatically update footer year
