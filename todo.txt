@@ -30,7 +30,7 @@ nice to have:
 - footer
 - async js loading
 - maybe use main.container-fluid
-- use nunjucks blocks
+✓ use nunjucks blocks
 ✓ zxcvbn
 - properly align emails
 ✓ do not return password hashes in Get()

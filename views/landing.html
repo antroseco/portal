@@ -1,84 +1,83 @@
-<!doctype html>
-<html lang="en">
+{% extends "templates/boilerplate.html" %}
 
-    <head>
-        {% include "head.html" %}
-        <link rel="stylesheet" href="/css/login.css">
-        <script src="/js/login.js"></script>
-        <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
-    </head>
+{% block head %}
+    {{ super() }}
 
-    <body class="text-center">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-4">
-                    <img class="mb-4" src="/svg/logo.svg" alt="ΓΕΕΦ" width="128">
+    <link rel="stylesheet" href="/css/login.css">
+    <script src="/js/login.js"></script>
+    <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
+{% endblock head %}
 
-                    {% include "flash.html" %}
+{% block body %}
+    <main class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <img class="mb-4" src="/svg/logo.svg" alt="ΓΕΕΦ" width="128">
 
-                    <div id="btn-group">
-                        <button type="button" class="btn btn-secondary" id="login">Log in</button>
-                        <button type="button" class="btn btn-secondary" id="register">Register</button>
+                {% include "flash.html" %}
+
+                <div id="btn-group">
+                    <button type="button" class="btn btn-secondary" id="login">Log in</button>
+                    <button type="button" class="btn btn-secondary" id="register">Register</button>
+                </div>
+
+                <form class="form-signin {{ 'd-none' if register }}" action="/api/login" method="post">
+                    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+                    <label for="signinEmail" class="sr-only">Email address</label>
+                    <input name="email" type="email" id="signinEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
+                    <label for="signinPassword" class="sr-only">Password</label>
+                    <input name="password" type="password" id="signinPassword" class="form-control" placeholder="Password" required="required">
+                    <div class="checkbox mb-3">
+                        <label>
+                            <input type="checkbox" name="remember_me">
+                            Remember me
+                        </label>
                     </div>
 
-                    <form class="form-signin {{ 'd-none' if register }}" action="/api/login" method="post">
-                        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+                    <input type="hidden" name="csrf" value="{{ csrf }}">
 
-                        <label for="signinEmail" class="sr-only">Email address</label>
-                        <input name="email" type="email" id="signinEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
-                        <label for="signinPassword" class="sr-only">Password</label>
-                        <input name="password" type="password" id="signinPassword" class="form-control" placeholder="Password" required="required">
-                        <div class="checkbox mb-3">
-                            <label>
-                                <input type="checkbox" name="remember_me">
-                                Remember me
-                            </label>
-                        </div>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                </form>
 
-                        <input type="hidden" name="csrf" value="{{ csrf }}">
+                <form class="form-register {{ 'd-none' if not register }}" action="/api/register" method="post">
+                    <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
 
-                        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-                    </form>
+                    <label for="registerEmail" class="sr-only">Email address</label>
+                    <input name="email" type="email" id="registerEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
 
-                    <form class="form-register {{ 'd-none' if not register }}" action="/api/register" method="post">
-                        <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
+                    <label for="registerPassword" class="sr-only">Password</label>
+                    <input name="password" type="password" id="registerPassword" class="form-control" placeholder="Password" required="required">
 
-                        <label for="registerEmail" class="sr-only">Email address</label>
-                        <input name="email" type="email" id="registerEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
+                    <label for="registerPassword2" class="sr-only">Repeat your password</label>
+                    <input type="password" id="registerPassword2" class="form-control" placeholder="Repeat Password" required="required">
 
-                        <label for="registerPassword" class="sr-only">Password</label>
-                        <input name="password" type="password" id="registerPassword" class="form-control" placeholder="Password" required="required">
+                    <div class="progress d-none">
+                        <div class="progress-bar"></div>
+                    </div>
 
-                        <label for="registerPassword2" class="sr-only">Repeat your password</label>
-                        <input type="password" id="registerPassword2" class="form-control" placeholder="Repeat Password" required="required">
+                    <label for="registerOnoma" class="sr-only">Όνομα</label>
+                    <input name="onoma" type="text" id="registerOnoma" class="form-control" placeholder="Όνομα" required="required">
 
-                        <div class="progress d-none">
-                            <div class="progress-bar"></div>
-                        </div>
+                    <label for="registerEpitheto" class="sr-only">Επίθετο</label>
+                    <input name="epitheto" type="text" id="registerEpitheto" class="form-control" placeholder="Επίθετο" required="required">
 
-                        <label for="registerOnoma" class="sr-only">Όνομα</label>
-                        <input name="onoma" type="text" id="registerOnoma" class="form-control" placeholder="Όνομα" required="required">
+                    <label for="registerKinito" class="sr-only">Κινητό Τηλέφωνο</label>
+                    <input name="kinito" type="tel" id="registerKinito" class="form-control mb-3" placeholder="Κινητό Τηλέφωνο" required="required" minlength="8" maxlength="14">
 
-                        <label for="registerEpitheto" class="sr-only">Επίθετο</label>
-                        <input name="epitheto" type="text" id="registerEpitheto" class="form-control" placeholder="Επίθετο" required="required">
+                    <input type="hidden" name="csrf" value="{{ csrf }}">
 
-                        <label for="registerKinito" class="sr-only">Κινητό Τηλέφωνο</label>
-                        <input name="kinito" type="tel" id="registerKinito" class="form-control mb-3" placeholder="Κινητό Τηλέφωνο" required="required" minlength="8" maxlength="14">
-
-                        <input type="hidden" name="csrf" value="{{ csrf }}">
-
-                        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
-                    </form>
-                </div>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+                </form>
             </div>
-            <div clas="row">
-                Καλώς ήλθατε στην Ηλεκτρονική Πύλη Διαδικτυακών Υπηρεσιών του Γενικού Επιτελείου Εθνικής Φρουράς.
-                <br>
-                Μέσω της πύλης είναι διαθέσιμες υπηρεσίες που αφορούν τα στελέχη της ΕΦ.
-            </div>
-            <p class="mt-5 mb-3 text-muted">&copy; 2018</p>
         </div>
 
-    </body>
+        <div class="row justify-content-center">
+            Καλώς ήλθατε στην Ηλεκτρονική Πύλη Διαδικτυακών Υπηρεσιών του Γενικού Επιτελείου Εθνικής Φρουράς.
+            <br>
+            Μέσω της πύλης είναι διαθέσιμες υπηρεσίες που αφορούν τα στελέχη της ΕΦ.
+        </div>
 
-</html>
+        <p class="mt-5 mb-3 text-muted">&copy; 2018</p>
+    </main>
+{% endblock body %}

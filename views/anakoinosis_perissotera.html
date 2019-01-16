@@ -1,45 +1,42 @@
-<!doctype html>
-<html lang="en">
+{% extends "templates/boilerplate.html" %}
 
-    <head>
-        {% include "head.html" %}
+{% block head %}
+    {{ super() }}
 
-        <script src="/js/anakoinosis.js"></script>
-        <link rel="stylesheet" href="/css/home.css">
-        <link rel="stylesheet" href="/css/anakoinosis.css">
+    <script src="/js/anakoinosis.js"></script>
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/anakoinosis.css">
 
-        <script defer="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
-    </head>
+    <script defer="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
+{% endblock head %}
 
-    <body>
-        {% include "navbar.html" %}
+{% block body %}
+    {{ super() }}
 
-        <main role="main" class="container">
+    <main role="main" class="container">
 
-            <div class="row">
-                <h1 class="display-5">
-                    <a href="/anakoinosis">
-                        <i class="fas fa-chevron-circle-left align-middle"></i>
-                        <span class="align-middle">
-                            Ανακοινώσεις
-                        </span>
-                    </a>
+        <div class="row">
+            <h1 class="display-5">
+                <a href="/anakoinosis">
+                    <i class="fas fa-chevron-circle-left align-middle"></i>
+                    <span class="align-middle">
+                        Ανακοινώσεις
+                    </span>
+                </a>
 
-                </h1>
-            </div>
-
-            <div class="row mb-4">
-                {% for files in posts | slice(3) %}
-                    <div class="col-md-4">
-                        {% for file in files %}
-                            {% include directory + file %}
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </div>
+            </h1>
         </div>
 
-    </main>
-</body>
+        <div class="row mb-4">
+            {% for files in posts | slice(3) %}
+                <div class="col-md-4">
+                    {% for file in files %}
+                        {% include directory + file %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
-</html>
+</main>
+{% endblock body %}

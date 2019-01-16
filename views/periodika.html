@@ -1,50 +1,47 @@
-<!doctype html>
-<html lang="en">
+{% extends "templates/boilerplate.html" %}
 
-    <head>
-        {% include "head.html" %}
-
-        <link rel="stylesheet" href="/css/home.css">
-
-        <style>
-            .card-text {
-                font-size: 0.9em;
-            }
-        </style>
-    </head>
-
-    <body>
-        {% include "navbar.html" %}
-
-        {% macro periodiko(title, thumbnail = "/svg/periodika.svg", url = "#") %}
-            <div class="col-sm-2 col-6 mb-4">
-                <a class="card" href="{{ url }}">
-                    <img class="card-img-top" src="{{ thumbnail }}" alt="{{ title }}">
-                    <div class="card-body">
-                        <p class="card-text text-center">{{ title }}</p>
-                    </div>
-                </a>
+{% macro periodiko(title, thumbnail = "/svg/periodika.svg", url = "#") %}
+    <div class="col-sm-2 col-6 mb-4">
+        <a class="card" href="{{ url }}">
+            <img class="card-img-top" src="{{ thumbnail }}" alt="{{ title }}">
+            <div class="card-body">
+                <p class="card-text text-center">{{ title }}</p>
             </div>
-        {% endmacro %}
+        </a>
+    </div>
+{% endmacro %}
 
-        {% macro row(start, end) %}
-            <div class="row">
-                {% for i in range(start, end, -1) %}
-                    {% set title = i | TitlosPeriodikou | safe %}
-                    {% set thumbnail = ["/periodika/", i, ".jpg"] | join %}
-                    {% set url = ["/periodika/Periodiko ", i, "_Compressed.pdf"] | join %}
+{% macro row(start, end) %}
+    <div class="row">
+        {% for i in range(start, end, -1) %}
+            {% set title = i | TitlosPeriodikou | safe %}
+            {% set thumbnail = ["/periodika/", i, ".jpg"] | join %}
+            {% set url = ["/periodika/Periodiko ", i, "_Compressed.pdf"] | join %}
 
-                    {{ periodiko(title, thumbnail, url) }}
-                {% endfor %}
-            </div>
-        {% endmacro %}
+            {{ periodiko(title, thumbnail, url) }}
+        {% endfor %}
+    </div>
+{% endmacro %}
 
-        <main role="main" class="container">
-            {% for i in range(41, 0, -6) %}
-                {% set end = i - 6 if (i - 6) > 0 else 0 %}
-                {{ row(i, end) }}
-            {% endfor %}
-        </main>
-    </body>
+{% block head %}
+    {{ super() }}
 
-</html>
+    <link rel="stylesheet" href="/css/home.css">
+
+    <style>
+        .card-text {
+            font-size: 0.9em;
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+        {% for i in range(41, 0, -6) %}
+            {% set end = i - 6 if (i - 6) > 0 else 0 %}
+            {{ row(i, end) }}
+        {% endfor %}
+    </main>
+{% endblock body %}

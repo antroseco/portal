@@ -1,67 +1,65 @@
-<!doctype html>
-<html lang="en">
+<!-- TODO: Use template inheritance to merge with anakoinosis_perissotera.html -->
+{% extends "templates/boilerplate.html" %}
 
-    <head>
-        {% include "head.html" %}
+{% macro heading(text) %}
+    <div class="col-md-4">
+        <h1 class="display-5">{{ text }}</h1>
+    </div>
+{% endmacro %}
 
-        <script src="/js/anakoinosis.js"></script>
-        <link rel="stylesheet" href="/css/home.css">
-        <link rel="stylesheet" href="/css/anakoinosis.css">
+{% block head %}
+    {{ super() }}
 
-        <script defer="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
-    </head>
+    <script src="/js/anakoinosis.js"></script>
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/anakoinosis.css">
 
-    <body>
-        {% include "navbar.html" %}
+    <script defer="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
+{% endblock head %}
 
-        {% macro heading(text) %}
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        <div class="row text-center">
+            {{ heading("Ανακοινώσεις") }}
+            {{ heading("Προσφορές Πρατηρίων ΕΦ") }}
+            {{ heading("Προσφορές Τρίτων") }}
+        </div>
+
+        <div class="row mb-4">
             <div class="col-md-4">
-                <h1 class="display-5">{{ text }}</h1>
-            </div>
-        {% endmacro %}
+                {% for file in anakoinosis %}
+                    {% include "./anakoinosis/anakoinosis/" + file %}
+                {% endfor %}
 
-        <main role="main" class="container">
-
-            <div class="row text-center">
-                {{ heading("Ανακοινώσεις") }}
-                {{ heading("Προσφορές Πρατηρίων ΕΦ") }}
-                {{ heading("Προσφορές Τρίτων") }}
+                <div class="text-right font-italic ">
+                    <a href="/anakoinosis/anakoinosis">Περισσότερα...</a>
+                </div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    {% for file in anakoinosis %}
-                        {% include "./anakoinosis/anakoinosis/" + file %}
-                    {% endfor %}
+            <div class="col-md-4">
+                {% for file in prosfores_ef %}
+                    {% include "./anakoinosis/prosfores-ef/" + file %}
+                {% endfor %}
 
-                    <div class="text-right font-italic ">
-                        <a href="/anakoinosis/anakoinosis">Περισσότερα...</a>
-                    </div>
+                <div class="text-right font-italic ">
+                    <a href="/anakoinosis/prosfores-ef">Περισσότερα...</a>
                 </div>
+            </div>
 
-                <div class="col-md-4">
-                    {% for file in prosfores_ef %}
-                        {% include "./anakoinosis/prosfores-ef/" + file %}
-                    {% endfor %}
+            <div class="col-md-4">
+                {% for file in prosfores_triton %}
+                    {% include "./anakoinosis/prosfores-triton/" + file %}
+                {% endfor %}
 
-                    <div class="text-right font-italic ">
-                        <a href="/anakoinosis/prosfores-ef">Περισσότερα...</a>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    {% for file in prosfores_triton %}
-                        {% include "./anakoinosis/prosfores-triton/" + file %}
-                    {% endfor %}
-
-                    <div class="text-right font-italic ">
-                        <a href="/anakoinosis/prosfores-triton">Περισσότερα...</a>
-                    </div>
+                <div class="text-right font-italic ">
+                    <a href="/anakoinosis/prosfores-triton">Περισσότερα...</a>
                 </div>
             </div>
         </div>
+    </div>
 
-    </main>
-</body>
-
-</html>
+</main>
+{% endblock body %}

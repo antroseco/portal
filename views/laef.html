@@ -1,167 +1,163 @@
-<!doctype html>
-<html lang="en">
+{% extends "templates/boilerplate.html" %}
 
-    <head>
-        {% include "head.html" %}
+{% macro radio(name, value, label) %}
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="required">
+        <label class="form-check-label">{{ label }}</label>
+    </div>
+{% endmacro %}
 
-        <link rel="stylesheet" href="/css/home.css">
+{% macro radioin(name, value, label) %}
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="required">
+        <label class="form-check-label col-form-label">{{ label }}</label>
+    </div>
+{% endmacro %}
 
-        <style>
-            form {
-                margin-bottom: 32px;
-            }
-        </style>
-    </head>
+{% macro inlinerow(name, label) %}
+    <div class="form-group form-row">
+        <label class="col-form-label col-sm-4">{{ label }}</label>
+        <div class="col-sm-8">
+            {{ radioin(name, "1", "1") }}
+            {{ radioin(name, "2", "2") }}
+            {{ radioin(name, "3", "3") }}
+            {{ radioin(name, "4", "4") }}
+            {{ radioin(name, "5", "5") }}
+        </div>
+    </div>
+{% endmacro %}
 
-    <body>
-        {% include "navbar.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/css/home.css">
 
-        {% macro radio(name, value, label) %}
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="required">
-                <label class="form-check-label">{{ label }}</label>
+    <style>
+        form {
+            margin-bottom: 32px;
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        {% include "flash.html" %}
+
+        <form action="/api/laef" method="post">
+            <h2>Ερωτηματολόγιο ικανοποίησης δικαιούχων της ΛΑΕΦ</h2>
+            <br>
+            <div class="form-group">
+                <h5>1. Κάθε πότε παίρνετε συσσίτιο από την Λέσχη;</h5>
+                {{ radio("erotisi1", "imera", "Κάθε ημέρα") }}
+                {{ radio("erotisi1", "evdomada", "2-3 φορές την εβδομάδα") }}
+                {{ radio("erotisi1", "mina", "2-3 φορές τον μήνα") }}
+                {{ radio("erotisi1", "pote", "Ποτέ") }}
             </div>
-        {% endmacro %}
 
-        {% macro radioin(name, value, label) %}
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="required">
-                <label class="form-check-label col-form-label">{{ label }}</label>
+            <div class="form-horizontal">
+                <h5>2. Θα θέλαμε να μας πείτε για τα παρακάτω κριτήρια, το κάθε ένα πόσο σημαντικό είναι όταν επιλέγετε να αγοράζετε φαγητό από την Λέσχη.
+                    <em>Επιλέξτε ένα αριθμό από το 1 εως το 5 (όπου 1 ασήμαντο και 5 πολύ σημαντικό).</em>
+                </h5>
+
+                {{ inlinerow("erotisi2a", "Είμαι άγαμος/η και με βολεύει")}}
+                {{ inlinerow("erotisi2b", "Κάποια εδέσματα δεν τα τρώω σπίτι μου")}}
+                {{ inlinerow("erotisi2c", "Με εξυπηρετεί λόγω ωραρίου εργασίας συζύγου")}}
+                {{ inlinerow("erotisi2d", "Οι τιμές είναι πολύ καλές")}}
+                {{ inlinerow("erotisi2e", "Έχει άνετους χώρους")}}
+                {{ inlinerow("erotisi2f", "Το προσωπικό είναι εξυπηρετικό")}}
+                {{ inlinerow("erotisi2g", "Υπάρχει ποικιλία στα γεύματα που παρασκευάζονται καθημερινά")}}
+                {{ inlinerow("erotisi2h", "Υπάρχει ποικιλία στα γεύματα της ώρας")}}
             </div>
-        {% endmacro %}
 
-        {% macro inlinerow(name, label) %}
-            <div class="form-group form-row">
-                <label class="col-form-label col-sm-4">{{ label }}</label>
-                <div class="col-sm-8">
-                    {{ radioin(name, "1", "1") }}
-                    {{ radioin(name, "2", "2") }}
-                    {{ radioin(name, "3", "3") }}
-                    {{ radioin(name, "4", "4") }}
-                    {{ radioin(name, "5", "5") }}
-                </div>
+            <div class="form-group">
+                <h5>3. Κατά την επίσκεψη σας στη Λέσχη συνοδεύεστε και από φίλους ή συγγενείς;</h5>
+                {{ radio("erotisi3", "nai", "Ναι") }}
+                {{ radio("erotisi3", "oxi", "Όχι") }}
             </div>
-        {% endmacro %}
 
-        <main role="main" class="container">
+            <div class="form-group">
+                <h5>4. Έχετε πραγματοποιήσει κάποια εκδήλωση κοινωνικού χαρακτήρα στους χώρους της Λέσχης (εορτή, γενέθλια, κλπ);</h5>
+                {{ radio("erotisi4", "nai", "Ναι") }}
+                {{ radio("erotisi4", "oxi", "Όχι") }}
+            </div>
 
-            {% include "flash.html" %}
+            <div class="form-group">
+                <h5>5. Έχετε έρθει σε εκδήλωση;</h5>
+                {{ radio("erotisi5", "nai", "Ναι") }}
+                {{ radio("erotisi5", "oxi", "Όχι") }}
+            </div>
 
-            <form action="/api/laef" method="post">
-                <h2>Ερωτηματολόγιο ικανοποίησης δικαιούχων της ΛΑΕΦ</h2>
-                <br>
-                <div class="form-group">
-                    <h5>1. Κάθε πότε παίρνετε συσσίτιο από την Λέσχη;</h5>
-                    {{ radio("erotisi1", "imera", "Κάθε ημέρα") }}
-                    {{ radio("erotisi1", "evdomada", "2-3 φορές την εβδομάδα") }}
-                    {{ radio("erotisi1", "mina", "2-3 φορές τον μήνα") }}
-                    {{ radio("erotisi1", "pote", "Ποτέ") }}
-                </div>
+            <div class="form-horizontal">
+                <h5>6. Θα θέλαμε να εκφράσετε το βαθμό συμφωνίας ή διαφωνίας σας με τις παρακάτω προτάσεις που αφορούν στους χώρους της λέσχης.
+                    <em>Επιλέξτε ένα αριθμό από το 1 εως το 5 (όπου 1 διαφωνάτε απόλυτα και 5 συμφωνάτε απόλυτα).</em>
+                </h5>
 
-                <div class="form-horizontal">
-                    <h5>2. Θα θέλαμε να μας πείτε για τα παρακάτω κριτήρια, το κάθε ένα πόσο σημαντικό είναι όταν επιλέγετε να αγοράζετε φαγητό από την Λέσχη.
-                        <em>Επιλέξτε ένα αριθμό από το 1 εως το 5 (όπου 1 ασήμαντο και 5 πολύ σημαντικό).</em>
-                    </h5>
+                {{ inlinerow("erotisi6a", "Η ατμόσφαιρα είναι ζεστή και φιλική")}}
+                {{ inlinerow("erotisi6b", "Οι χώροι των εστιατορίων είναι καθαροί")}}
+                {{ inlinerow("erotisi6c", "Το προσωπικό της ΛΑΕΦ είναι πρόθυμο και η συμπεριφορά του είναι ευγενική στην εξυπηρέτηση των πελατών")}}
+                {{ inlinerow("erotisi6d", "Οι πελάτες δεν περιμένουν πολύ ώρα να εξυπηρετηθούν")}}
+                {{ inlinerow("erotisi6e", "Η ποιότητα των εδεσμάτων είναι καλή")}}
+            </div>
 
-                    {{ inlinerow("erotisi2a", "Είμαι άγαμος/η και με βολεύει")}}
-                    {{ inlinerow("erotisi2b", "Κάποια εδέσματα δεν τα τρώω σπίτι μου")}}
-                    {{ inlinerow("erotisi2c", "Με εξυπηρετεί λόγω ωραρίου εργασίας συζύγου")}}
-                    {{ inlinerow("erotisi2d", "Οι τιμές είναι πολύ καλές")}}
-                    {{ inlinerow("erotisi2e", "Έχει άνετους χώρους")}}
-                    {{ inlinerow("erotisi2f", "Το προσωπικό είναι εξυπηρετικό")}}
-                    {{ inlinerow("erotisi2g", "Υπάρχει ποικιλία στα γεύματα που παρασκευάζονται καθημερινά")}}
-                    {{ inlinerow("erotisi2h", "Υπάρχει ποικιλία στα γεύματα της ώρας")}}
-                </div>
+            <div class="form-group">
+                <h5>7. Προτείνετε κάποια εδέσματα τα οποία θα θέλατε να σερβίρει η Λέσχη.</h5>
+                <textarea class="form-control" name="erotisi7" rows="3" maxlength="1024"></textarea>
+            </div>
 
-                <div class="form-group">
-                    <h5>3. Κατά την επίσκεψη σας στη Λέσχη συνοδεύεστε και από φίλους ή συγγενείς;</h5>
-                    {{ radio("erotisi3", "nai", "Ναι") }}
-                    {{ radio("erotisi3", "oxi", "Όχι") }}
-                </div>
+            <div class="form-group">
+                <h5>8. Γενικά πόσο ικανοποιημένος/η θα λέγατε ότι είστε από την Λέσχη;</h5>
+                {{ radio("erotisi8", "katholou", "Καθόλου ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "metria", "Μέτρια ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "poli", "Πολύ ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "apolita", "Απόλυτα ικανοποιημένος/η") }}
+            </div>
 
-                <div class="form-group">
-                    <h5>4. Έχετε πραγματοποιήσει κάποια εκδήλωση κοινωνικού χαρακτήρα στους χώρους της Λέσχης (εορτή, γενέθλια, κλπ);</h5>
-                    {{ radio("erotisi4", "nai", "Ναι") }}
-                    {{ radio("erotisi4", "oxi", "Όχι") }}
-                </div>
+            <div class="form-group">
+                <h5>9. Συμπληρώστε παρατηρήσεις ή προτάσεις οι οποίες θα μας έκαναν καλύτερους.
+                    <em>Σε περίπτωση που επιθυμείτε απάντηση δηλώστε τα στοιχεία σας για να επικοινωνήσουμε μαζί σας.</em>
+                </h5>
+                <textarea class="form-control" name="erotisi9" rows="3" maxlength="1024"></textarea>
+            </div>
 
-                <div class="form-group">
-                    <h5>5. Έχετε έρθει σε εκδήλωση;</h5>
-                    {{ radio("erotisi5", "nai", "Ναι") }}
-                    {{ radio("erotisi5", "oxi", "Όχι") }}
-                </div>
+            <div class="form-horizontal">
+                <h5>10. Τέλος θα μπορούσατε να μας πείτε μερικά στοιχεία γύρω από τον εαυτό σας;</h5>
 
-                <div class="form-horizontal">
-                    <h5>6. Θα θέλαμε να εκφράσετε το βαθμό συμφωνίας ή διαφωνίας σας με τις παρακάτω προτάσεις που αφορούν στους χώρους της λέσχης.
-                        <em>Επιλέξτε ένα αριθμό από το 1 εως το 5 (όπου 1 διαφωνάτε απόλυτα και 5 συμφωνάτε απόλυτα).</em>
-                    </h5>
-
-                    {{ inlinerow("erotisi6a", "Η ατμόσφαιρα είναι ζεστή και φιλική")}}
-                    {{ inlinerow("erotisi6b", "Οι χώροι των εστιατορίων είναι καθαροί")}}
-                    {{ inlinerow("erotisi6c", "Το προσωπικό της ΛΑΕΦ είναι πρόθυμο και η συμπεριφορά του είναι ευγενική στην εξυπηρέτηση των πελατών")}}
-                    {{ inlinerow("erotisi6d", "Οι πελάτες δεν περιμένουν πολύ ώρα να εξυπηρετηθούν")}}
-                    {{ inlinerow("erotisi6e", "Η ποιότητα των εδεσμάτων είναι καλή")}}
-                </div>
-
-                <div class="form-group">
-                    <h5>7. Προτείνετε κάποια εδέσματα τα οποία θα θέλατε να σερβίρει η Λέσχη.</h5>
-                    <textarea class="form-control" name="erotisi7" rows="3" maxlength="1024"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <h5>8. Γενικά πόσο ικανοποιημένος/η θα λέγατε ότι είστε από την Λέσχη;</h5>
-                    {{ radio("erotisi8", "katholou", "Καθόλου ικανοποιημένος/η") }}
-                    {{ radio("erotisi8", "metria", "Μέτρια ικανοποιημένος/η") }}
-                    {{ radio("erotisi8", "poli", "Πολύ ικανοποιημένος/η") }}
-                    {{ radio("erotisi8", "apolita", "Απόλυτα ικανοποιημένος/η") }}
-                </div>
-
-                <div class="form-group">
-                    <h5>9. Συμπληρώστε παρατηρήσεις ή προτάσεις οι οποίες θα μας έκαναν καλύτερους.
-                        <em>Σε περίπτωση που επιθυμείτε απάντηση δηλώστε τα στοιχεία σας για να επικοινωνήσουμε μαζί σας.</em>
-                    </h5>
-                    <textarea class="form-control" name="erotisi9" rows="3" maxlength="1024"></textarea>
-                </div>
-
-                <div class="form-horizontal">
-                    <h5>10. Τέλος θα μπορούσατε να μας πείτε μερικά στοιχεία γύρω από τον εαυτό σας;</h5>
-
-                    <div class="form-group form-row">
-                        <label class="col-form-label col-sm-4">Φύλο</label>
-                        <div class="col-sm-8">
-                            {{ radioin("erotisi10a", "andras", "Άνδρας") }}
-                            {{ radioin("erotisi10a", "ginaika", "Γυναίκα") }}
-                        </div>
+                <div class="form-group form-row">
+                    <label class="col-form-label col-sm-4">Φύλο</label>
+                    <div class="col-sm-8">
+                        {{ radioin("erotisi10a", "andras", "Άνδρας") }}
+                        {{ radioin("erotisi10a", "ginaika", "Γυναίκα") }}
                     </div>
-
-                    <div class="form-group form-row">
-                        <label class="col-form-label col-sm-4">Ηλικία</label>
-                        <div class="col-sm-8">
-                            {{ radioin("erotisi10b", "18-30", "18 - 30") }}
-                            {{ radioin("erotisi10b", "31-40", "31 - 40") }}
-                            {{ radioin("erotisi10b", "41-50", "41 - 50") }}
-                            {{ radioin("erotisi10b", "50+", "50 +") }}
-                        </div>
-                    </div>
-
-                    <div class="form-group form-row">
-                        <label class="col-form-label col-sm-4">Οικογενειακή Κατάσταση</label>
-                        <div class="col-sm-8">
-                            {{ radioin("erotisi10c", "eggamos", "Έγγαμος/η") }}
-                            {{ radioin("erotisi10c", "agamos", "Άγαμος/η") }}
-                            {{ radioin("erotisi10c", "allo", "Άλλο") }}
-                        </div>
-                    </div>
-
                 </div>
 
-                <input type="hidden" name="csrf" value="{{ csrf }}">
+                <div class="form-group form-row">
+                    <label class="col-form-label col-sm-4">Ηλικία</label>
+                    <div class="col-sm-8">
+                        {{ radioin("erotisi10b", "18-30", "18 - 30") }}
+                        {{ radioin("erotisi10b", "31-40", "31 - 40") }}
+                        {{ radioin("erotisi10b", "41-50", "41 - 50") }}
+                        {{ radioin("erotisi10b", "50+", "50 +") }}
+                    </div>
+                </div>
 
-                <button type="submit" class="btn btn-outline-primary">Submit</button>
+                <div class="form-group form-row">
+                    <label class="col-form-label col-sm-4">Οικογενειακή Κατάσταση</label>
+                    <div class="col-sm-8">
+                        {{ radioin("erotisi10c", "eggamos", "Έγγαμος/η") }}
+                        {{ radioin("erotisi10c", "agamos", "Άγαμος/η") }}
+                        {{ radioin("erotisi10c", "allo", "Άλλο") }}
+                    </div>
+                </div>
 
-            </form>
+            </div>
 
-        </main>
-    </body>
+            <input type="hidden" name="csrf" value="{{ csrf }}">
 
-</html>
+            <button type="submit" class="btn btn-outline-primary">Submit</button>
+
+        </form>
+
+    </main>
+{% endblock body %}

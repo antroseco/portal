@@ -1,112 +1,108 @@
-<!doctype html>
-<html lang="en">
+{% extends "templates/boilerplate.html" %}
 
-    <head>
-        {% include "head.html" %}
-
-        <link rel="stylesheet" href="/css/home.css">
-        <script defer="" src="/js/calendar.js"></script>
-
-        <script async="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
-
-        <style>
-            .card-body {
-                padding: 0;
-            }
-
-            table.table {
-                margin: 0;
-            }
-
-            td,
-            th {
-                width: calc(100% / 7);
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-            }
-
-            td.today {
-                outline: 1px solid var(--primary);
-                background-color: var(--light);
-            }
-
-            td:hover {
-                outline: 1px solid var(--primary);
-            }
-
-            thead {
-                border-bottom: 2px solid #dee2e6;
-            }
-        </style>
-    </head>
-
-    <body>
-
-        {% include "navbar.html" %}
-
-        {% macro item(title, icon = "logo.svg", url = "#") %}
-            <div class="col-3 mb-4">
-                <a class="card h-100" href="{{ url }}">
-                    <img class="card-img-top my-3" src="{{ icon }}" alt="{{ title }}" height="100px">
-                    <!--div class="card-body"> <p class="card-text">Short description.</p> </div-->
-                    <div class="card-footer h-100 align-items-center">
-                        <h5 class="text-center">{{ title }}</h5>
-                    </div>
-                </a>
+{% macro item(title, icon = "logo.svg", url = "#") %}
+    <div class="col-3 mb-4">
+        <a class="card h-100" href="{{ url }}">
+            <img class="card-img-top my-3" src="{{ icon }}" alt="{{ title }}" height="100px">
+            <!--div class="card-body"> <p class="card-text">Short description.</p> </div-->
+            <div class="card-footer h-100 align-items-center">
+                <h5 class="text-center">{{ title }}</h5>
             </div>
-        {% endmacro %}
+        </a>
+    </div>
+{% endmacro %}
 
-        <main role="main" class="container">
+{% block head %}
+    {{ super() }}
 
-            {% include "flash.html" %}
+    <link rel="stylesheet" href="/css/home.css">
+    <script defer="" src="/js/calendar.js"></script>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="row">
-                        {{ item("Αξιολόγηση ΛΑΕΦ", "/svg/laef.svg", "/laef") }}
-                        {{ item("Υποβολή Προτάσεων", "/svg/protasis.svg", "/protasis") }}
-                        {{ item("Αίτηση για ΚΑΑΥ", "/svg/kaay.svg", "/kaay") }}
-                        {{ item("Περιοδικά ΔΙΕΦ", "/svg/periodika.svg", "/periodika") }}
-                        {{ item("Ανακοινώσεις", "/svg/anakoinosis.svg", "/anakoinosis") }}
-                    </div>
+    <script async="" src="https://use.fontawesome.com/releases/v5.6.3/js/all.js" integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1" crossorigin="anonymous"></script>
+
+    <style>
+        .card-body {
+            padding: 0;
+        }
+
+        table.table {
+            margin: 0;
+        }
+
+        td,
+        th {
+            width: calc(100% / 7);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        td.today {
+            outline: 1px solid var(--primary);
+            background-color: var(--light);
+        }
+
+        td:hover {
+            outline: 1px solid var(--primary);
+        }
+
+        thead {
+            border-bottom: 2px solid #dee2e6;
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        {% include "flash.html" %}
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    {{ item("Αξιολόγηση ΛΑΕΦ", "/svg/laef.svg", "/laef") }}
+                    {{ item("Υποβολή Προτάσεων", "/svg/protasis.svg", "/protasis") }}
+                    {{ item("Αίτηση για ΚΑΑΥ", "/svg/kaay.svg", "/kaay") }}
+                    {{ item("Περιοδικά ΔΙΕΦ", "/svg/periodika.svg", "/periodika") }}
+                    {{ item("Ανακοινώσεις", "/svg/anakoinosis.svg", "/anakoinosis") }}
                 </div>
+            </div>
 
-                <div class="col-md-4 mb-4">
-                    <div class="row">
-                        <div class="card w-100 text-center">
-                            <div class="card-header d-flex justify-content-between">
-                                <a href="" id="cal-left">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                                <span></span>
-                                <a href="" id="cal-right">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </div>
-                            <div class="card-body">
-                                <table class="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>Δ</th>
-                                            <th>Τ</th>
-                                            <th>Τ</th>
-                                            <th>Π</th>
-                                            <th>Π</th>
-                                            <th>Σ</th>
-                                            <th>Κ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
+            <div class="col-md-4 mb-4">
+                <div class="row">
+                    <div class="card w-100 text-center">
+                        <div class="card-header d-flex justify-content-between">
+                            <a href="" id="cal-left">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                            <span></span>
+                            <a href="" id="cal-right">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th>Δ</th>
+                                        <th>Τ</th>
+                                        <th>Τ</th>
+                                        <th>Π</th>
+                                        <th>Π</th>
+                                        <th>Σ</th>
+                                        <th>Κ</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        </main>
-    </body>
-
-</html>
+    </main>
+{% endblock body %}
