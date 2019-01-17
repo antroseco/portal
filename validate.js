@@ -96,6 +96,26 @@ function ValidateCheckbox(x) {
     return typeof x === 'string' && x === 'on';
 }
 
+function ValidateEmail(Email) {
+    const Regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (typeof Email == 'string' && Email.length <= 320) {
+        Email = Email.trim().toLowerCase();
+
+        if (Regex.test(Email))
+            return Email;
+    }
+
+    throw Error('Malformed POST request: ValidateEmail');
+}
+
+function ValidatePassword(Password) {
+    if (typeof Password == 'string' && Password.length >= 8 && Password.length <= 72)
+        return Password;
+    else
+        throw Error('Malformed POST request: ValidatePassword');
+}
+
 module.exports = {
     Custom: ValidateCustom,
     Array: ValidateArray,
@@ -107,5 +127,7 @@ module.exports = {
     FileToken: ValidateFileToken,
     Filename: ValidateFilename,
     Checkbox: ValidateCheckbox,
+    Email: ValidateEmail,
+    Password: ValidatePassword,
     Common: { OS, Vathmos }
 }

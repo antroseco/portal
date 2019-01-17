@@ -28,6 +28,7 @@
                     <input name="email" type="email" id="signinEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
                     <label for="signinPassword" class="sr-only">Password</label>
                     <input name="password" type="password" id="signinPassword" class="form-control" placeholder="Password" required="required">
+
                     <div class="checkbox mb-3">
                         <label>
                             <input type="checkbox" name="remember_me">
@@ -38,6 +39,10 @@
                     <input type="hidden" name="csrf" value="{{ csrf }}">
 
                     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+                    <div class="text-right mt-3">
+                        <a id="reset" href="">Ξεχάσατε τον κωδικό σας;</a>
+                    </div>
                 </form>
 
                 <form class="form-register {{ 'd-none' if not register }}" action="/api/register" method="post">
@@ -68,6 +73,21 @@
                     <input type="hidden" name="csrf" value="{{ csrf }}">
 
                     <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+                </form>
+
+                <form class="form-reset d-none" action="/api/send_reset" method="post">
+                    <h1 class="h3 mb-3 font-weight-normal">Επαναφορά Κωδικού</h1>
+
+                    <label for="resetEmail" class="sr-only">Email address</label>
+                    <input name="email" type="email" id="resetEmail" class="form-control" placeholder="Email address" required="">
+
+                    <div class="text-justify my-3">
+                        Αν υπάρχει λογαριασμός με αυτή τη διεύθυνση email, τότε θα λάβετε μήνυμα με οδηγίες για να επαναφέρεται τον κωδικό σας.
+                    </div>
+
+                    <input type="hidden" name="csrf" value="{{ csrf }}">
+
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Επαναφορά</button>
                 </form>
             </div>
         </div>

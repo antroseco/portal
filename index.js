@@ -22,6 +22,8 @@ const Mongoose = require('mongoose');
 const UserModel = require('./models/user.js');
 const MailQueue = require('./mailqueue');
 const Token = require('./token');
+const ResetModel = require('./models/password_reset');
+const RenderResetPassword = require('./reset_password');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -48,8 +50,6 @@ const ParseMultipart = KoaBody({
     json: false
 });
 
-const EmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const PasswordRegex = /^[ -~]{8,72}$/;
 const NameRegex = /^[\wα-ωάέόώίύή ,.'-]{1,32}$/i;
 
 const Mq = new MailQueue({
@@ -151,23 +151,25 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
 Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     const body = ctx.request.body;
 
-    // Email must be string, maximum length 320 characters, validate using regex
-    if (typeof body.email !== 'string' || body.email.length > 320 || !EmailRegex.test(body.email)) {
+    try {
+        body.email = Validate.Email(body.email);
+    } catch (_) {
         ctx.flash('error', 'Invalid email address');
         ctx.session.register = true;
         return ctx.redirect('/');
     }
 
-    // Password must be a string, between 8 and 72 characters long,
-    // contain one lower case, one upper case, and one special character
-    if (typeof body.password !== 'string' || !PasswordRegex.test(body.password)) {
-        ctx.flash('error', 'Password must be at least 8 characters long and only contain numbers, latin, and special characters');
+    try {
+        body.password = Validate.Password(body.password);
+    } catch (_) {
+        ctx.flash('error', 'Your password must be at least 8 characters long');
         ctx.session.register = true;
         return ctx.redirect('/');
     }
 
     // Name and surname must be a string, between 1 and 32 characters,
     // and contain no special charactes
+    // TODO: Move checks to validate.js
     if (typeof body.onoma !== 'string' || !NameRegex.test(body.onoma)) {
         ctx.flash('error', 'Name must not contain any special characters');
         ctx.session.register = true;
@@ -242,6 +244,86 @@ Router.get('/', async ctx => {
         });
 
         delete ctx.session.register;
+    }
+});
+
+Router.post('/api/send_reset', ParseUrlEnc, Auth.CheckCsrf,
+    async ctx => {
+        console.log('SEND_RESET', ctx.request.body);
+
+        const Email = Validate.Email(ctx.request.body.email);
+        const User = await UserModel.findOne({ email: Email }).select('id');
+
+        if (User != null) {
+            const ResetToken = new Token();
+
+            ResetModel.create({
+                hash: await ResetToken.hash,
+                user: User._id
+            });
+
+            Mq.Push({
+                from: '"Fred Foo 👻" <foo@example.com>',
+                to: Email,
+                subject: 'Επαναφορά κωδικού πρόσβασης',
+                //text: 'Plaintext body', TODO: plain text body
+                html: await RenderResetPassword({
+                    email: Email,
+                    token: await ResetToken.hex
+                })
+            });
+        } else {
+            // TODO: Logging
+            console.log('SEND_RESET INVALID EMAIL', Email);
+        }
+
+        ctx.flash('success', 'Έχει σταλεί email για επαναφορά κωδικού')
+        ctx.redirect('/');
+    });
+
+Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf,
+    async ctx => {
+        console.log('/API/RESET_PASSWORD', ctx.request.body);
+        const body = ctx.request.body;
+        const ResetToken = new Token(body.token);
+
+        // Check password before consuming the reset token
+        const Password = Validate.Password(body.password);
+
+        const ResetEntry = await ResetModel.findOneAndDelete({
+            hash: await ResetToken.hash
+        }).select('user');
+
+        console.log('GOT FROM DB', ResetEntry);
+        if (ResetEntry != null) {
+            await UserModel.findByIdAndUpdate(ResetEntry.user, {
+                password: await bcrypt.hash(Password, 10)
+            });
+
+            ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
+        } else {
+            ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
+        }
+
+        ctx.redirect('/');
+    });
+
+Router.get('/reset_password', async ctx => {
+    const ResetToken = new Token(ctx.query.token);
+
+    const ResetEntry = await ResetModel.findOne({
+        hash: await ResetToken.hash
+    }).select('_id');
+
+    if (ResetEntry != null) {
+        await ctx.render('reset_password', {
+            'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Επαναφορά Κωδικού',
+            'token': await ResetToken.hex,
+            'csrf': await Auth.GetCsrf(ctx.state.user)
+        });
+    } else {
+        ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');
+        ctx.redirect('/');
     }
 });
 
