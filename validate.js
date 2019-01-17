@@ -116,6 +116,15 @@ function ValidatePassword(Password) {
         throw Error('Malformed POST request: ValidatePassword');
 }
 
+function ValidateName(Name) {
+    const Regex = /^[\wα-ωάέόώίύή ,.'-]{1,32}$/i;
+
+    if (Regex.test(Name))
+        return Name.trim();
+    else
+        throw Error('Malformed POST request: ValidateName');
+}
+
 module.exports = {
     Custom: ValidateCustom,
     Array: ValidateArray,
@@ -129,5 +138,6 @@ module.exports = {
     Checkbox: ValidateCheckbox,
     Email: ValidateEmail,
     Password: ValidatePassword,
+    Name: ValidateName,
     Common: { OS, Vathmos }
 }

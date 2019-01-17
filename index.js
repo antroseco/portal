@@ -50,8 +50,6 @@ const ParseMultipart = KoaBody({
     json: false
 });
 
-const NameRegex = /^[\wα-ωάέόώίύή ,.'-]{1,32}$/i;
-
 const Mq = new MailQueue({
     host: 'smtp.ethereal.email',
     port: 587,
@@ -167,17 +165,18 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
         return ctx.redirect('/');
     }
 
-    // Name and surname must be a string, between 1 and 32 characters,
-    // and contain no special charactes
-    // TODO: Move checks to validate.js
-    if (typeof body.onoma !== 'string' || !NameRegex.test(body.onoma)) {
+    try {
+        body.onoma = Validate.Name(body.onoma);
+    } catch (_) {
         ctx.flash('error', 'Name must not contain any special characters');
         ctx.session.register = true;
         return ctx.redirect('/');
     }
 
-    if (typeof body.epitheto !== 'string' || !NameRegex.test(body.epitheto)) {
-        ctx.flash('error', 'Surame must not contain any special characters');
+    try {
+        body.epitheto = Validate.Name(body.epitheto);
+    } catch (_) {
+        ctx.flash('error', 'Surname must not contain any special characters');
         ctx.session.register = true;
         return ctx.redirect('/');
     }
