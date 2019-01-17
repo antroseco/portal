@@ -13,7 +13,7 @@ function ValidateCustom(x, Constraints) {
 
 function ValidateArray(x, Constraints) {
     const Value = Constraints[x];
-    if (Value == undefined)
+    if (Value === undefined)
         throw Error('Malformed POST request: ValidateArray');
     return Value;
 }
@@ -79,27 +79,27 @@ function ValidatePhone(Phone) {
 function ValidateFileToken(x) {
     const Regex = /^(?:[0-9]|[a-z]){32}$/;
 
-    if (typeof x !== 'string' || !Regex.test(x))
-        throw Error('Malformed POST request: ValidateFileToken');
-    else
+    if (Regex.test(x))
         return x;
+    else
+        throw Error('Malformed POST request: ValidateFileToken');
 }
 
 function ValidateFilename(x) {
     if (typeof x !== 'string')
         throw Error('Malformed POST request: ValidateFilename');
 
-    return x.substring(0, 100);
+    return x.substring(0, 100).trim();
 }
 
 function ValidateCheckbox(x) {
-    return typeof x === 'string' && x === 'on';
+    return x === 'on';
 }
 
 function ValidateEmail(Email) {
-    const Regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const Regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
 
-    if (typeof Email == 'string' && Email.length <= 320) {
+    if (typeof Email === 'string' && Email.length <= 320) {
         Email = Email.trim().toLowerCase();
 
         if (Regex.test(Email))
@@ -110,7 +110,7 @@ function ValidateEmail(Email) {
 }
 
 function ValidatePassword(Password) {
-    if (typeof Password == 'string' && Password.length >= 8 && Password.length <= 72)
+    if (typeof Password === 'string' && Password.length >= 8 && Password.length <= 72)
         return Password;
     else
         throw Error('Malformed POST request: ValidatePassword');
