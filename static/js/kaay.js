@@ -180,7 +180,7 @@ async function Upload() {
         Svg().classList.remove('d-none');
 
         const Response = await fetch('/api/upload', {
-            method: 'PUT',
+            method: 'POST',
             body: Data,
             mode: 'same-origin',
             credentials: 'same-origin',

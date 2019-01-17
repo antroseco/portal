@@ -544,13 +544,13 @@ Router.get('/periodika', async ctx => {
     });
 });
 
-Router.put('/api/upload', async (ctx, next) => {
+Router.post('/api/upload', async (ctx, next) => {
     try {
         // Catch Formidable erorrs
         await next();
         // Save file and return a 'token'
         ctx.body = ctx.request.files.file.path.substr(-32);
-        ctx.status = 200;
+        ctx.status = 201;
     } catch (Err) {
         console.log(Err);
         ctx.status = Err.status ? Err.status : 400;
