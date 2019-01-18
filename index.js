@@ -5,6 +5,7 @@ const KoaRouter = require('koa-router');
 const KoaSession = require('koa-session');
 const KoaBody = require('koa-body');
 const KoaPassport = require('koa-passport');
+const KoaHelmet = require('koa-helmet');
 const LocalStrategy = require('passport-local').Strategy;
 const RememberMeStrategy = require('koa-passport-remember-me').Strategy;
 const KoaFlash = require('koa-better-flash');
@@ -62,6 +63,11 @@ const Mq = new MailQueue({
     disableUrlAccess: true
     // TODO: consider disableFileAccess 
 });
+
+App.use(KoaHelmet.frameguard({ action: 'deny' }));
+App.use(KoaHelmet.noSniff());
+App.use(KoaHelmet.xssFilter());
+App.use(KoaHelmet.referrerPolicy({ policy: 'same-origin' }));
 
 App.keys = ['session-secret :)']; //TODO: Session Secret
 App.use(KoaSession({
