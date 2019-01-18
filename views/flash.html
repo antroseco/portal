@@ -1,17 +1,17 @@
 {% if error or success %}
     <div class="d-flex justify-content-center">
 
-        {% for i in error %}
+        {%- for i in error %}
             <div class="alert alert-danger" role="alert">
                 {{ i }}
             </div>
-        {% endfor %}
+        {% endfor -%}
 
-        {% for i in success %}
+        {%- for i in success %}
             <div class="alert alert-success" role="alert">
                 {{ i }}
             </div>
-        {% endfor %}
+        {% endfor -%}
 
     </div>
 {% endif %}
