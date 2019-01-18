@@ -125,6 +125,15 @@ async function CheckCsrf(ctx, next) {
     await next();
 }
 
+async function VerifyPassword(Data, _id) {
+    const User = await UserModel.findById(_id).select('password');
+
+    if (User.password != null)
+        return bcrypt.compare(Data, User.password);
+
+    return false;
+}
+
 async function Remember(User, done) {
     try {
         const RememberToken = new Token();
@@ -167,4 +176,7 @@ async function ValidateRemember(RememberHex, done) {
     }
 }
 
-module.exports = { Serialize, Deserialize, DestroySession, DestoryCsrf, Strategy, GetCsrf, CheckCsrf, Remember, ValidateRemember };
+module.exports = {
+    Serialize, Deserialize, DestroySession, DestoryCsrf, Strategy,
+    GetCsrf, CheckCsrf, VerifyPassword, Remember, ValidateRemember
+};

@@ -425,9 +425,8 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
             const Old = Validate.Password(ctx.request.body.old_password);
             const New = Validate.Password(ctx.request.body.new_password);
 
-            const User = await UserModel.findById(ctx.state.user._id).select('password');
-            if (await bcrypt.compare(Old, User.password)) {
-                console.log('UPDATING PASSWORD FOR USER', User._id);
+            if (await Auth.VerifyPassword(Old, ctx.state.user._id)) {
+                console.log('UPDATING PASSWORD FOR USER', ctx.state.user._id);
 
                 await UserModel.updateOne({ _id: ctx.state.user._id },
                     { password: await bcrypt.hash(New, 10) });
@@ -451,9 +450,8 @@ Router.post('/api/change_am', ParseUrlEnc, Auth.CheckCsrf,
             const Password = Validate.Password(ctx.request.body.password);
             const AM = Validate.AM(ctx.request.body.new_am);
 
-            const User = await UserModel.findById(ctx.state.user._id).select('password');
-            if (await bcrypt.compare(Password, User.password)) {
-                console.log('UPDATING AM FOR USER', User._id);
+            if (await Auth.VerifyPassword(Password, ctx.state.user._id)) {
+                console.log('UPDATING AM FOR USER', ctx.state.user._id);
 
                 await UserModel.updateOne({ _id: ctx.state.user._id },
                     { am: AM });
