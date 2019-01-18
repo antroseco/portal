@@ -406,6 +406,71 @@ Router.get('/home', async ctx => {
     });
 });
 
+Router.get('/logariasmos', async ctx => {
+    await ctx.render('logariasmos', {
+        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Λογαριασμός',
+        'current': 'logariasmos',
+        'onomateponymo': ctx.state.user.onomateponymo,
+        'email': ctx.state.user.email,
+        'am': ctx.state.user.am,
+        'csrf': await Auth.GetCsrf(ctx.state.user),
+        'success': ctx.flash('success'),
+        'error': ctx.flash('error')
+    });
+});
+
+Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
+    async ctx => {
+        try {
+            const Old = Validate.Password(ctx.request.body.old_password);
+            const New = Validate.Password(ctx.request.body.new_password);
+
+            const User = await UserModel.findById(ctx.state.user._id).select('password');
+            if (await bcrypt.compare(Old, User.password)) {
+                console.log('UPDATING PASSWORD FOR USER', User._id);
+
+                await UserModel.updateOne({ _id: ctx.state.user._id },
+                    { password: await bcrypt.hash(New, 10) });
+
+                ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
+            } else {
+                ctx.flash('error', 'Ο κωδικός που εισάγατε είναι λανθασμένος');
+            }
+        } catch (Err) {
+            console.log('/API/CHANGE_PASSWORD ERROR', Err);
+
+            ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
+        } finally {
+            ctx.redirect('/logariasmos');
+        }
+    });
+
+Router.post('/api/change_am', ParseUrlEnc, Auth.CheckCsrf,
+    async ctx => {
+        try {
+            const Password = Validate.Password(ctx.request.body.password);
+            const AM = Validate.AM(ctx.request.body.new_am);
+
+            const User = await UserModel.findById(ctx.state.user._id).select('password');
+            if (await bcrypt.compare(Password, User.password)) {
+                console.log('UPDATING AM FOR USER', User._id);
+
+                await UserModel.updateOne({ _id: ctx.state.user._id },
+                    { am: AM });
+
+                ctx.flash('success', 'Ο ΑΜ σας έχει αλλαχτεί');
+            } else {
+                ctx.flash('error', 'Ο κωδικός που εισάγατε είναι λανθασμένος');
+            }
+        } catch (Err) {
+            console.log('/API/CHANGE_AM ERROR', Err);
+
+            ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
+        } finally {
+            ctx.redirect('/logariasmos');
+        }
+    });
+
 Router.get('/laef', async ctx => {
     await ctx.render('laef', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Αξιολόγηση ΛΑΕΦ',

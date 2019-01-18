@@ -1,0 +1,81 @@
+{% extends "templates/boilerplate.html" %}
+
+{% macro submit() %}
+    <div class="form-group row">
+        <div class="col-md-6 offset-md-4">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <button type="submit" class="btn btn-primary w-100">Αλλαγή</button>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="/css/home.css">
+    <script src="/js/logariasmos.js"></script>
+    <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        {% include "flash.html" %}
+
+        <h2>Λογαριασμός</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <form action="/api/change_password" method="post">
+                    <h3 class="my-4">Αλλαγή Κωδικού</h3>
+                    <div class="form-group row">
+                        <label for="password3" class="col-md-4 col-form-label">Παλιός Κωδικός</label>
+                        <div class="col-md-6">
+                            <input type="password" class="form-control" name="old_password" minlength="8" maxlength="72" id="password3" required="">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="password4" class="col-md-4 col-form-label">Νέος Κωδικός</label>
+                        <div class="col-md-6">
+                            <input type="password" class="form-control" name="new_password" minlength="8" maxlength="72" id="password4" required="" autocomplete="new-password">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="password5" class="col-md-4 col-form-label">Επαλήθευση Νέου</label>
+                        <div class="col-md-6">
+                            <input type="password" class="form-control" id="password5" minlength="8" maxlength="72" required="">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 offset-md-4">
+                            <div class="progress d-none">
+                                <div class="progress-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {{ submit() }}
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form action="/api/change_am" method="post">
+                    <h3 class="my-4">Αλλαγή ΑΜ</h3>
+                    <div class="form-group row">
+                        <label for="am" class="col-md-4 col-form-label">Νέο ΑΜ</label>
+                        <div class="col-md-6">
+                            <input type="number" class="form-control" name="new_am" id="am" placeholder="{{ am }}" min="1" max="9999" required="">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="password2" class="col-md-4 col-form-label">Κωδικός</label>
+                        <div class="col-md-6">
+                            <input type="password" class="form-control" name="password" minlength="8" maxlength="72" id="password2" required="">
+                        </div>
+                    </div>
+                    {{ submit() }}
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock body %}

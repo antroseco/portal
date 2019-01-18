@@ -35,6 +35,12 @@ const Schema = new Mongoose.Schema({
         required: true,
         trim: true
     },
+    am: {
+        type: Number,
+        required: false,
+        min: 1,
+        max: 99999
+    },
     anakoinosis: [Boolean]
 });
 

@@ -125,6 +125,19 @@ function ValidateName(Name) {
         throw Error('Malformed POST request: ValidateName');
 }
 
+function ValidateAM(AM) {
+    const Regex = /^[0-9]{3,5}$/;
+
+    if (Regex.test(AM)) {
+        const n = parseInt(AM);
+
+        if (n > 0 && n < 100000)
+            return n;
+    }
+
+    throw Error('Malformed POST request: ValidateAM');
+}
+
 module.exports = {
     Custom: ValidateCustom,
     Array: ValidateArray,
@@ -139,5 +152,6 @@ module.exports = {
     Email: ValidateEmail,
     Password: ValidatePassword,
     Name: ValidateName,
+    AM: ValidateAM,
     Common: { OS, Vathmos }
 }
