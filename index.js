@@ -506,6 +506,7 @@ Router.get('/protasis', async ctx => {
         'onomateponymo': ctx.state.user.onomateponymo,
         'onoma': ctx.state.user.onoma,
         'epitheto': ctx.state.user.epitheto,
+        'am': ctx.state.user.am,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'csrf': await Auth.GetCsrf(ctx.state.user),
@@ -526,6 +527,7 @@ Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf,
                     'date': new Date().toISOString().substring(0, 10),
                     'onomateponymo': ctx.state.user.onomateponymo,
                     'email': ctx.state.user.email,
+                    'am': ctx.state.user.am,
                     'kinito': ctx.state.user.kinito
                 })
             });
@@ -546,6 +548,7 @@ Router.get('/kaay', async ctx => {
         'onomateponymo': ctx.state.user.onomateponymo,
         'onoma': ctx.state.user.onoma,
         'epitheto': ctx.state.user.epitheto,
+        'am': ctx.state.user.am,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'csrf': await Auth.GetCsrf(ctx.state.user),
@@ -585,6 +588,7 @@ Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf,
                 html: await RenderKaay(body, {
                     'onoma': ctx.state.user.onoma,
                     'epitheto': ctx.state.user.epitheto,
+                    'am': ctx.state.user.am,
                     'kinito': ctx.state.user.kinito
                 }),
                 attachments: Attachments
