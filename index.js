@@ -11,7 +11,7 @@ const RememberMeStrategy = require('koa-passport-remember-me').Strategy;
 const KoaFlash = require('koa-better-flash');
 const Auth = require('./auth');
 const bcrypt = require('bcrypt');
-const RenderLaef = require('./laef');
+const Laef = require('./laef');
 const Protasis = require('./protasis');
 const RenderKaay = require('./kaay');
 const RenderEmailConfirmation = require('./email_confirmation');
@@ -465,36 +465,8 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
         }
     });
 
-Router.get('/laef', async ctx => {
-    await ctx.render('laef', {
-        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Αξιολόγηση ΛΑΕΦ',
-        'onomateponymo': ctx.state.user.onomateponymo,
-        'success': ctx.flash('success'),
-        'error': ctx.flash('error'),
-        'csrf': await Auth.GetCsrf(ctx.state.user)
-    });
-});
-
-Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf,
-    async ctx => {
-        try {
-            Mq.Push({
-                from: '"Fred Foo 👻" <foo@example.com>',
-                to: 'bar@example.com, baz@example.com',
-                subject: 'Αναφορά Αξιολόγησης ΛΑΕΦ',
-                //text: 'Plaintext body', TODO: plain text body
-                html: await RenderLaef(ctx.request.body)
-            });
-
-            ctx.flash('success', 'Ευχαριστούμε, η αξιολόγηση σας έχει σταλεί');
-        } catch (Err) {
-            console.log(Err);
-
-            ctx.flash('error', 'Η αποστολή της αξιολόγησής σας έχει αποτύχει');
-        } finally {
-            ctx.redirect('/laef');
-        }
-    });
+Router.get('/laef', Laef.RenderPage);
+Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf, Laef.Submit);
 
 Router.get('/protasis', Protasis.RenderPage);
 Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf, Protasis.Submit);
