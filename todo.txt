@@ -6,7 +6,7 @@ must:
 ✓ remember me
 ✓ home icons
 - trim whitepsace from input
-- mark fields as required
+✓ mark fields as required
 - cookie warning (EU)
 ✓ rename cookies (information leak)
 ✓ harden koa-body (limit attack surface)
