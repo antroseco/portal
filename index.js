@@ -188,6 +188,14 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     }
 
     try {
+        body.am = Validate.AM(body.am);
+    } catch (_) {
+        ctx.flash('error', 'Invalid AM');
+        ctx.session.register = true;
+        return ctx.redirect('/');
+    }
+
+    try {
         body.kinito = Validate.Phone(body.kinito);
     } catch (Err) {
         ctx.flash('error', 'Invalid phone number');
@@ -204,6 +212,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
             password: await bcrypt.hash(body.password, 10),
             onoma: body.onoma,
             epitheto: body.epitheto,
+            am: body.am,
             kinito: body.kinito
         });
 

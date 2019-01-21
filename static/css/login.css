@@ -54,6 +54,11 @@ form {
   border-top-right-radius: 0;
 }
 
+.form-register input[type="number"] {
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
 #btn-group button {
   width: 40%;
 }

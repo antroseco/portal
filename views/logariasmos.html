@@ -58,24 +58,6 @@
                     {{ submit() }}
                 </form>
             </div>
-            <div class="col-md-6">
-                <form action="/api/change_am" method="post">
-                    <h3 class="my-4">Αλλαγή ΑΜ</h3>
-                    <div class="form-group row">
-                        <label for="am" class="col-md-4 col-form-label">Νέο ΑΜ</label>
-                        <div class="col-md-6">
-                            <input type="number" class="form-control" name="new_am" id="am" placeholder="{{ am }}" min="1" max="9999" required="">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="password2" class="col-md-4 col-form-label">Κωδικός</label>
-                        <div class="col-md-6">
-                            <input type="password" class="form-control" name="password" minlength="8" maxlength="72" id="password2" required="">
-                        </div>
-                    </div>
-                    {{ submit() }}
-                </form>
-            </div>
         </div>
     </main>
 {% endblock body %}

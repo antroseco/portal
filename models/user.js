@@ -37,7 +37,7 @@ const Schema = new Mongoose.Schema({
     },
     am: {
         type: Number,
-        required: false,
+        required: true,
         min: 1,
         max: 99999
     },

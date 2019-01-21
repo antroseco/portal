@@ -131,7 +131,7 @@ function ValidateAM(AM) {
     if (Regex.test(AM)) {
         const n = parseInt(AM);
 
-        if (n > 0 && n < 100000)
+        if (n > 99 && n < 100000)
             return n;
     }
 
