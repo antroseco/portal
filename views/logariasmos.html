@@ -9,6 +9,15 @@
     </div>
 {% endmacro %}
 
+{% macro row(label, data) %}
+    <div class="form-group row">
+        <div class="col-md-4 col-form-label">{{ label }}</div>
+        <div class="col-md-6">
+            <span class="form-control">{{ data }}</span>
+        </div>
+    </div>
+{% endmacro %}
+
 {% block head %}
     {{ super() }}
 
@@ -24,7 +33,16 @@
 
         {% include "flash.html" %}
 
-        <h2>Λογαριασμός</h2>
+        <h2 class="mb-4">Λογαριασμός</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                {{ row("Ονοματεπώνυμο", onomateponymo) }}
+                {{ row("ΑΜ", am) }}
+                {{ row("Email", email) }}
+                {{ row("Κινητό", kinito ) }}
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-md-6">

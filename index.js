@@ -427,6 +427,7 @@ Router.get('/logariasmos', async ctx => {
         'current': 'logariasmos',
         'onomateponymo': ctx.state.user.onomateponymo,
         'email': ctx.state.user.email,
+        'kinito': ctx.state.user.kinito,
         'am': ctx.state.user.am,
         'csrf': await Auth.GetCsrf(ctx.state.user),
         'success': ctx.flash('success'),
