@@ -460,31 +460,6 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
         }
     });
 
-Router.post('/api/change_am', ParseUrlEnc, Auth.CheckCsrf,
-    async ctx => {
-        try {
-            const Password = Validate.Password(ctx.request.body.password);
-            const AM = Validate.AM(ctx.request.body.new_am);
-
-            if (await Auth.VerifyPassword(Password, ctx.state.user._id)) {
-                console.log('UPDATING AM FOR USER', ctx.state.user._id);
-
-                await UserModel.updateOne({ _id: ctx.state.user._id },
-                    { am: AM });
-
-                ctx.flash('success', 'Ο ΑΜ σας έχει αλλαχτεί');
-            } else {
-                ctx.flash('error', 'Ο κωδικός που εισάγατε είναι λανθασμένος');
-            }
-        } catch (Err) {
-            console.log('/API/CHANGE_AM ERROR', Err);
-
-            ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
-        } finally {
-            ctx.redirect('/logariasmos');
-        }
-    });
-
 Router.get('/laef', async ctx => {
     await ctx.render('laef', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Αξιολόγηση ΛΑΕΦ',
