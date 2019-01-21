@@ -12,7 +12,7 @@ const KoaFlash = require('koa-better-flash');
 const Auth = require('./auth');
 const bcrypt = require('bcrypt');
 const RenderLaef = require('./laef');
-const RenderProtasis = require('./protasis');
+const Protasis = require('./protasis');
 const RenderKaay = require('./kaay');
 const RenderEmailConfirmation = require('./email_confirmation');
 const Validate = require('./validate');
@@ -122,6 +122,11 @@ App.use(KoaStatic('static'));
 
 App.use(KoaPassport.initialize());
 App.use(KoaPassport.session());
+
+App.use(async (ctx, next) => {
+    ctx.state.Mq = Mq;
+    await next();
+});
 
 Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate('local', {
     failureRedirect: '/',
@@ -491,47 +496,8 @@ Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf,
         }
     });
 
-Router.get('/protasis', async ctx => {
-    await ctx.render('protasis', {
-        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Υποβολή Προτάσεων',
-        'onomateponymo': ctx.state.user.onomateponymo,
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto,
-        'am': ctx.state.user.am,
-        'success': ctx.flash('success'),
-        'error': ctx.flash('error'),
-        'csrf': await Auth.GetCsrf(ctx.state.user),
-        'date': new Date().toISOString().substring(0, 10),
-        'email': ctx.state.user.email,
-        'kinito': ctx.state.user.kinito
-    });
-});
-
-Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf,
-    async ctx => {
-        try {
-            Mq.Push({
-                from: '"Fred Foo 👻" <foo@example.com>',
-                to: 'bar@example.com, baz@example.com',
-                subject: 'Αναφορά Υποβολής Πρότασης',
-                html: await RenderProtasis(ctx.request.body, {
-                    'date': new Date().toISOString().substring(0, 10),
-                    'onomateponymo': ctx.state.user.onomateponymo,
-                    'email': ctx.state.user.email,
-                    'am': ctx.state.user.am,
-                    'kinito': ctx.state.user.kinito
-                })
-            });
-
-            ctx.flash('success', 'Ευχαριστούμε, η πρότασή σας έχει σταλεί');
-        } catch (Err) {
-            console.log(Err);
-
-            ctx.flash('error', 'Η αποστολή της πρότασής σας έχει αποτύχει');
-        } finally {
-            ctx.redirect('/protasis');
-        }
-    });
+Router.get('/protasis', Protasis.RenderPage);
+Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf, Protasis.Submit);
 
 Router.get('/kaay', async ctx => {
     await ctx.render('kaay', {
