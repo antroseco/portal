@@ -1,4 +1,4 @@
-const Validate = require("./validate.js");
+const Validate = require("./validate");
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 }).addFilter('Letter', n => String.fromCharCode('α'.charCodeAt() + n));
