@@ -13,10 +13,9 @@ const Auth = require('./auth');
 const bcrypt = require('bcrypt');
 const Laef = require('./laef');
 const Protasis = require('./protasis');
-const RenderKaay = require('./kaay');
+const Kaay = require('./kaay');
 const RenderEmailConfirmation = require('./email_confirmation');
 const Validate = require('./validate');
-const Os = require('os');
 const Path = require('path');
 const fs = require('fs').promises;
 const Mongoose = require('mongoose');
@@ -471,67 +470,8 @@ Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf, Laef.Submit);
 Router.get('/protasis', Protasis.RenderPage);
 Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf, Protasis.Submit);
 
-Router.get('/kaay', async ctx => {
-    await ctx.render('kaay', {
-        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Υποβολή Προτάσεων',
-        'onomateponymo': ctx.state.user.onomateponymo,
-        'onoma': ctx.state.user.onoma,
-        'epitheto': ctx.state.user.epitheto,
-        'am': ctx.state.user.am,
-        'success': ctx.flash('success'),
-        'error': ctx.flash('error'),
-        'csrf': await Auth.GetCsrf(ctx.state.user),
-        'date': new Date().toISOString().substring(0, 10),
-        'email': ctx.state.user.email,
-        'kinito': ctx.state.user.kinito
-    });
-});
-
-Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf,
-    async ctx => {
-        try {
-            let Attachments = [];
-
-            const body = ctx.request.body;
-
-            // TODO: Protect against XSS maybe
-            if (body.file1 != '' && body.filename1 != '') {
-                Attachments.push({
-                    filename: Validate.Filename(body.filename1),
-                    path: Path.join(Os.tmpdir(), 'upload_' + Validate.FileToken(body.file1))
-                });
-            }
-            if (body.file2 != '' && body.filename2 != '') {
-                Attachments.push({
-                    filename: Validate.Filename(body.filename2),
-                    path: Path.join(Os.tmpdir(), 'upload_' + Validate.FileToken(body.file2))
-                });
-            }
-
-            console.log(Attachments);
-
-            Mq.Push({
-                from: '"Fred Foo 👻" <foo@example.com>',
-                to: 'bar@example.com, baz@example.com',
-                subject: 'Αναφορά Αίτησης Παραθερισμού στο ΚΑΑΥ Κυτίου',
-                html: await RenderKaay(body, {
-                    'onoma': ctx.state.user.onoma,
-                    'epitheto': ctx.state.user.epitheto,
-                    'am': ctx.state.user.am,
-                    'kinito': ctx.state.user.kinito
-                }),
-                attachments: Attachments
-            });
-
-            ctx.flash('success', 'Ευχαριστούμε, η αίτησή σας έχει σταλεί');
-        } catch (Err) {
-            console.log(Err);
-            // TODO: Clean up already uploaded attachments, probably create a File API
-            ctx.flash('error', 'Η αποστολή της αίτησής σας έχει αποτύχει');
-        } finally {
-            ctx.redirect('/kaay');
-        }
-    });
+Router.get('/kaay', Kaay.RenderPage);
+Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf, Kaay.Submit);
 
 Router.get('/periodika', async ctx => {
     await ctx.render('periodika', {
