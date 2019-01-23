@@ -4,24 +4,12 @@ const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
 
-// TODO: Use Arrays instead of Maps
-const Erotisi1 = new Map([['imera', 'Κάθε ημέρα'],
-['evdomada', '2-3 φορές την εβδομάδα'], ['mina', '2-3 φορές τον μήνα'],
-['pote', 'Ποτέ']]);
-
-const Erotisi8 = new Map([['katholou', 'Καθόλου ικανοποιημένος/η'],
-['metria', 'Μέτρια ικανοποιημένος/η'], ['poli', 'Πολύ ικανοποιημένος/η'],
-['apolita', 'Απόλυτα ικανοποιημένος/η']]);
-
-const Erotisi10a = new Map([['andras', 'Άνδρας'],
-['ginaika', 'Γυναίκα']]);
-
-const Erotisi10b = new Map([['18-30', '18 - 30'],
-['31-40', '31 - 40'], ['41-50', '41 - 50'],
-['50+', '50 +']]);
-
-const Erotisi10c = new Map([['eggamos', 'Έγγαμος/η'],
-['agamos', 'Άγαμος/η'], ['allo', 'Άλλο']]);
+const Erotisi1 = ['Κάθε ημέρα', '2-3 φορές την εβδομάδα', '2-3 φορές τον μήνα', 'Ποτέ'];
+const Erotisi8 = ['Καθόλου ικανοποιημένος/η', 'Μέτρια ικανοποιημένος/η',
+    'Πολύ ικανοποιημένος/η', 'Απόλυτα ικανοποιημένος/η'];
+const Erotisi10a = ['Άνδρας', 'Γυναίκα'];
+const Erotisi10b = ['18 - 30', '31 - 40', '41 - 50', '50 +'];
+const Erotisi10c = ['Έγγαμος/η', 'Άγαμος/η', 'Άλλο'];
 
 async function RenderPage(ctx) {
     await ctx.render('laef', {
@@ -35,7 +23,7 @@ async function RenderPage(ctx) {
 
 function RenderEmail(Body) {
     const PostData = {
-        'One': Validate.Custom(Body.erotisi1, Erotisi1),
+        'One': Validate.Array(Body.erotisi1, Erotisi1),
         'TwoA': Validate.Number(Body.erotisi2a, 1, 5),
         'TwoB': Validate.Number(Body.erotisi2b, 1, 5),
         'TwoC': Validate.Number(Body.erotisi2c, 1, 5),
@@ -57,13 +45,13 @@ function RenderEmail(Body) {
 
         'Seven': Validate.Text(Body.erotisi7, 1024),
 
-        'Eight': Validate.Custom(Body.erotisi8, Erotisi8),
+        'Eight': Validate.Array(Body.erotisi8, Erotisi8),
 
         'Nine': Validate.Text(Body.erotisi9, 1024),
 
-        'TenA': Validate.Custom(Body.erotisi10a, Erotisi10a),
-        'TenB': Validate.Custom(Body.erotisi10b, Erotisi10b),
-        'TenC': Validate.Custom(Body.erotisi10c, Erotisi10c)
+        'TenA': Validate.Array(Body.erotisi10a, Erotisi10a),
+        'TenB': Validate.Array(Body.erotisi10b, Erotisi10b),
+        'TenC': Validate.Array(Body.erotisi10c, Erotisi10c)
     };
 
     return Nunjucks.render('laef.html', PostData);

@@ -4,13 +4,6 @@ const Vathmos = ['Αντγος', 'Υπγος', 'Ταξχος', 'Σχης', 'Αν
     'Υπλγός', 'Ανθλγός', 'Ανθστής Α', 'Ανθστής Β', 'Ανθστής Γ', 'Αλχίας',
     'Επχίας', 'Λχίας', 'Δνέας'];
 
-function ValidateCustom(x, Constraints) {
-    const Value = Constraints.get(x);
-    if (Value === undefined)
-        throw Error('Malformed POST request: ValidateCustom');
-    return Value;
-}
-
 function ValidateArray(x, Constraints) {
     const Value = Constraints[x];
     if (Value === undefined)
@@ -139,7 +132,6 @@ function ValidateAM(AM) {
 }
 
 module.exports = {
-    Custom: ValidateCustom,
     Array: ValidateArray,
     Number: ValidateNumber,
     Boolean: ValidateBoolean,

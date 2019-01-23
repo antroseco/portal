@@ -45,10 +45,10 @@
             <br>
             <div class="form-group">
                 <h5>1. Κάθε πότε παίρνετε συσσίτιο από την Λέσχη;</h5>
-                {{ radio("erotisi1", "imera", "Κάθε ημέρα") }}
-                {{ radio("erotisi1", "evdomada", "2-3 φορές την εβδομάδα") }}
-                {{ radio("erotisi1", "mina", "2-3 φορές τον μήνα") }}
-                {{ radio("erotisi1", "pote", "Ποτέ") }}
+                {{ radio("erotisi1", "0", "Κάθε ημέρα") }}
+                {{ radio("erotisi1", "1", "2-3 φορές την εβδομάδα") }}
+                {{ radio("erotisi1", "2", "2-3 φορές τον μήνα") }}
+                {{ radio("erotisi1", "3", "Ποτέ") }}
             </div>
 
             <div class="form-horizontal">
@@ -103,10 +103,10 @@
 
             <div class="form-group">
                 <h5>8. Γενικά πόσο ικανοποιημένος/η θα λέγατε ότι είστε από την Λέσχη;</h5>
-                {{ radio("erotisi8", "katholou", "Καθόλου ικανοποιημένος/η") }}
-                {{ radio("erotisi8", "metria", "Μέτρια ικανοποιημένος/η") }}
-                {{ radio("erotisi8", "poli", "Πολύ ικανοποιημένος/η") }}
-                {{ radio("erotisi8", "apolita", "Απόλυτα ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "0", "Καθόλου ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "1", "Μέτρια ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "2", "Πολύ ικανοποιημένος/η") }}
+                {{ radio("erotisi8", "3", "Απόλυτα ικανοποιημένος/η") }}
             </div>
 
             <div class="form-group">
@@ -122,27 +122,27 @@
                 <div class="form-group form-row">
                     <label class="col-form-label col-sm-4">Φύλο</label>
                     <div class="col-sm-8">
-                        {{ radioin("erotisi10a", "andras", "Άνδρας") }}
-                        {{ radioin("erotisi10a", "ginaika", "Γυναίκα") }}
+                        {{ radioin("erotisi10a", "0", "Άνδρας") }}
+                        {{ radioin("erotisi10a", "1", "Γυναίκα") }}
                     </div>
                 </div>
 
                 <div class="form-group form-row">
                     <label class="col-form-label col-sm-4">Ηλικία</label>
                     <div class="col-sm-8">
-                        {{ radioin("erotisi10b", "18-30", "18 - 30") }}
-                        {{ radioin("erotisi10b", "31-40", "31 - 40") }}
-                        {{ radioin("erotisi10b", "41-50", "41 - 50") }}
-                        {{ radioin("erotisi10b", "50+", "50 +") }}
+                        {{ radioin("erotisi10b", "0", "18 - 30") }}
+                        {{ radioin("erotisi10b", "1", "31 - 40") }}
+                        {{ radioin("erotisi10b", "2", "41 - 50") }}
+                        {{ radioin("erotisi10b", "3", "50 +") }}
                     </div>
                 </div>
 
                 <div class="form-group form-row">
                     <label class="col-form-label col-sm-4">Οικογενειακή Κατάσταση</label>
                     <div class="col-sm-8">
-                        {{ radioin("erotisi10c", "eggamos", "Έγγαμος/η") }}
-                        {{ radioin("erotisi10c", "agamos", "Άγαμος/η") }}
-                        {{ radioin("erotisi10c", "allo", "Άλλο") }}
+                        {{ radioin("erotisi10c", "0", "Έγγαμος/η") }}
+                        {{ radioin("erotisi10c", "1", "Άγαμος/η") }}
+                        {{ radioin("erotisi10c", "2", "Άλλο") }}
                     </div>
                 </div>
 
