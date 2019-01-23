@@ -3,30 +3,32 @@
 {% block head %}
     {{ super() }}
 
-    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/confirm_email.css">
 {% endblock head %}
 
 {% block body %}
-    {{ super() }}
-
-    <main role="main" class="container">
-
-        <div class="row align-items-center mt-4">
+    <main class="container text-center">
+        <div class="row justify-content-center">
             <div class="col-md-4">
-                <img src="/svg/logo.svg" class="img-fluid align-middle">
-            </div>
 
-            <div class="col-md-8">
-                <h4 class="display-4">
-                    Ψηφιακή Πλατφόρμα<br>
-                    <small class="text-muted font-weight-light">{{ onomateponymo }}</small>
-                </h4>
-                <p class="lead mt-5">
-                    Καλωσορίσατε!<br>
-                    Επιβεβαιώστε το email σας (<em>{{ email }}</em>) για να συνεχίσετε.
-                </p>
+                <img class="mb-4" src="/svg/logo.svg" alt="ΓΕΕΦ" width="128">
+
+                <form method="post">
+                    <h1 class="h3 mb-3 font-weight-normal">Επιβεβαίωση Εγγραφής</h1>
+
+                    <div class="form-group text-left">
+                        <div class="form-control">{{ onomateponymo }}</div>
+                        <div class="form-control">{{ email }}</div>
+                    </div>
+
+                    <input type="hidden" name="csrf" value="{{ csrf }}">
+
+                    <button class="btn btn-lg btn-primary btn-block mt-3" type="submit">Επιβεβαίωση</button>
+                </form>
+
             </div>
         </div>
-
     </main>
 {% endblock body %}
+
+{% block footer %}{% endblock footer %}

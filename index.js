@@ -233,7 +233,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
         });
 
         await ctx.login(User);
-        ctx.redirect('/confirm_email');
+        ctx.redirect('/welcome');
     } catch (Err) {
         if (Err.code == 11000) {
             ctx.flash('error', 'This email address is already in use');
@@ -366,7 +366,19 @@ Router.get('/api/logout', async ctx => {
     ctx.redirect('/');
 });
 
-Router.get('/confirm_email', async ctx => {
+Router.get('/welcome', async ctx => {
+    if (ctx.state.user.verified_email)
+        ctx.redirect('/home');
+    else
+        await ctx.render('welcome', {
+            'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Καλωσορίσατε',
+            'onomateponymo': ctx.state.user.onomateponymo,
+            'email': ctx.state.user.email,
+            'csrf': await Auth.GetCsrf(ctx.state.user)
+        });
+});
+
+Router.get('/confirm_email/:token', async ctx => {
     if (ctx.state.user.verified_email)
         ctx.redirect('/home');
     else
@@ -374,45 +386,44 @@ Router.get('/confirm_email', async ctx => {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Επιβεβαίωση Εγγραφής',
             'onomateponymo': ctx.state.user.onomateponymo,
             'email': ctx.state.user.email,
-            'error': ctx.flash('error'),
             'csrf': await Auth.GetCsrf(ctx.state.user)
         });
 });
 
-// TODO: GET is not a very good idea
-Router.get('/confirm_email/:token', async ctx => {
-    try {
-        const user = ctx.state.user;
-        const ConfirmationToken = new Token(ctx.params.token);
+Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
+    async ctx => {
+        try {
+            const user = ctx.state.user;
+            const ConfirmationToken = new Token(ctx.params.token);
 
-        if (user.email_token_hash.equals(await ConfirmationToken.hash)) {
-            console.log('CONFIRM_EMAIL/TOKEN SUCCESS')
-            await UserModel.updateOne({ _id: user._id }, {
-                $set: { verified_email: true },
-                $unset: { email_token_hash: null }
-            });
+            if (user.email_token_hash.equals(await ConfirmationToken.hash)) {
+                console.log('CONFIRM_EMAIL/TOKEN SUCCESS')
+                await UserModel.updateOne({ _id: user._id }, {
+                    $set: { verified_email: true },
+                    $unset: { email_token_hash: null }
+                });
 
-            ctx.flash('success', 'Το email σας έχει επαληθευτεί');
-        } else {
-            // TODO: LOG FAILURE DETAILS
-            console.log('CONFIRM_EMAIL/TOKEN FAILURE')
+                ctx.flash('success', 'Το email σας έχει επαληθευτεί');
+            } else {
+                // TODO: LOG FAILURE DETAILS
+                console.log('CONFIRM_EMAIL/TOKEN FAILURE')
+            }
+
+            // TODO: if we redirect to /home then won't we go to /confirm_token?
+            ctx.redirect('/home');
+        } catch (Err) {
+            console.log('CONFIRM_EMAIL/TOKEN ERROR', Err);
+
+            ctx.status = 400;
         }
-
-        // TODO: if we redirect to /home then won't we go to /confirm_token?
-        ctx.redirect('/home');
-    } catch (Err) {
-        console.log('CONFIRM_EMAIL/TOKEN ERROR', Err);
-
-        ctx.status = 400;
-    }
-});
+    });
 
 // Require email confirmation beyond this point
 Router.use(async (ctx, next) => {
     if (ctx.state.user.verified_email)
         await next();
     else
-        ctx.redirect('/confirm_email');
+        ctx.redirect('/welcome');
 });
 
 Router.get('/home', async ctx => {
