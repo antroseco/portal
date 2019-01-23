@@ -1,16 +1,20 @@
 {% extends "templates/boilerplate.html" %}
 
+{% macro id(name, value) -%}
+    {{ [name, value] | join }}
+{%- endmacro %}
+
 {% macro radio(name, value, label) %}
     <div class="form-check">
-        <input class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="">
-        <label class="form-check-label">{{ label }}</label>
+        <input id="{{ id(name, value) }}" class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="">
+        <label for="{{ id(name, value) }}" class="form-check-label">{{ label }}</label>
     </div>
 {% endmacro %}
 
 {% macro radioin(name, value, label) %}
     <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="">
-        <label class="form-check-label col-form-label">{{ label }}</label>
+        <input id="{{ id(name, value) }}" class="form-check-input" type="radio" name="{{ name }}" value="{{ value }}" required="">
+        <label for="{{ id(name, value) }}" class="form-check-label col-form-label">{{ label }}</label>
     </div>
 {% endmacro %}
 
