@@ -63,6 +63,27 @@ const Mq = new MailQueue({
     // TODO: consider disableFileAccess 
 });
 
+// TODO: Move function to a better place
+async function SendConfirmEmail(User) {
+    const ConfirmationToken = new Token();
+
+    await UserModel.updateOne({ _id: User._id }, {
+        email_token_hash: await ConfirmationToken.hash
+    });
+
+    Mq.Push({
+        from: '"Fred Foo 👻" <foo@example.com>',
+        to: User.email,
+        subject: 'Επιβεβαίωση εγγραφής στη Ψηφιακή Πλατφόρμα της ΕΦ',
+        html: await RenderEmailConfirmation({
+            'onoma': User.onoma,
+            'epitheto': User.epitheto,
+            'email': User.email,
+            'token': await ConfirmationToken.hex
+        })
+    });
+}
+
 App.use(KoaHelmet.frameguard({ action: 'deny' }));
 App.use(KoaHelmet.noSniff());
 App.use(KoaHelmet.xssFilter());
@@ -208,11 +229,8 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     }
 
     try {
-        const ConfirmationToken = new Token();
-
         const User = await UserModel.create({
             email: body.email,
-            email_token_hash: await ConfirmationToken.hash,
             password: await bcrypt.hash(body.password, 10),
             onoma: body.onoma,
             epitheto: body.epitheto,
@@ -220,17 +238,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
             kinito: body.kinito
         });
 
-        Mq.Push({
-            from: '"Fred Foo 👻" <foo@example.com>',
-            to: User.email,
-            subject: 'Επιβεβαίωση εγγραφής στη Ψηφιακή Πλατφόρμα της ΕΦ',
-            html: await RenderEmailConfirmation({
-                'onoma': User.onoma,
-                'epitheto': User.epitheto,
-                'email': User.email,
-                'token': await ConfirmationToken.hex
-            })
-        });
+        await SendConfirmEmail(User);
 
         await ctx.login(User);
         ctx.redirect('/welcome');
@@ -374,9 +382,24 @@ Router.get('/welcome', async ctx => {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Καλωσορίσατε',
             'onomateponymo': ctx.state.user.onomateponymo,
             'email': ctx.state.user.email,
+            'success': ctx.flash('success'),
+            'error': ctx.flash('error'),
             'csrf': await Auth.GetCsrf(ctx.state.user)
         });
 });
+
+Router.post('/api/resend_confirm_email', ParseUrlEnc, Auth.CheckCsrf,
+    async ctx => {
+        if (ctx.state.user.verified_email) {
+            ctx.status = 403;
+        }
+        else {
+            await SendConfirmEmail(ctx.state.user);
+
+            ctx.flash('success', 'Το email έχει σταλεί');
+            ctx.redirect('/welcome');
+        }
+    });
 
 Router.get('/confirm_email/:token', async ctx => {
     if (ctx.state.user.verified_email)
@@ -406,10 +429,11 @@ Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
                 ctx.flash('success', 'Το email σας έχει επαληθευτεί');
             } else {
                 // TODO: LOG FAILURE DETAILS
-                console.log('CONFIRM_EMAIL/TOKEN FAILURE')
+                console.log('CONFIRM_EMAIL/TOKEN FAILURE');
+                ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');
             }
 
-            // TODO: if we redirect to /home then won't we go to /confirm_token?
+            // TODO: if we redirect to /home then won't we go to /welcome?
             ctx.redirect('/home');
         } catch (Err) {
             console.log('CONFIRM_EMAIL/TOKEN ERROR', Err);
