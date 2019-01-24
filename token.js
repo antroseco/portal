@@ -7,7 +7,12 @@ const RandomBytes = Util.promisify(Crypto.randomBytes);
 class Token {
     constructor(HexString) {
         if (HexString !== undefined) {
-            this._hex = HexString;
+            const Regex = /^[\da-f]{32}$/;
+
+            if (Regex.test(HexString))
+                this._hex = HexString;
+            else
+                console.log('TOKEN: INVALID HEX STRING');
         }
     }
 
