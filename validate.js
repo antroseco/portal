@@ -39,7 +39,7 @@ function ValidateBoolean(x) {
 function ValidateText(x, Length) {
     if (typeof x !== 'string' || x.length > Length)
         throw Error('Malformed POST request: ValidateText');
-    return x;
+    return x.trim();
 }
 
 function ValidateDate(x) {
