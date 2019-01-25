@@ -35,6 +35,9 @@
     {{ super() }}
 
     <link rel="stylesheet" href="/css/home.css">
+
+    <script defer="" src="https://use.fontawesome.com/releases/v5.6.1/js/solid.js" integrity="sha384-8Lgyylu0vfTGCXDKe435hJgX8s96c19R+dvpH0NHKdX47GA7TmMj+BDiZZ76qqhT" crossorigin="anonymous"></script>
+    <script defer="" src="https://use.fontawesome.com/releases/v5.6.1/js/fontawesome.js" integrity="sha384-T6YzYwAGZAItTIkYlBzfwqa07o9R1AND3Lgt6Or6c5IdukY7tqShoryqwpKrpeIB" crossorigin="anonymous"></script>
 {% endblock head %}
 
 {% block body %}
@@ -45,8 +48,15 @@
         {% include "flash.html" %}
 
         <form action="/api/laef" method="post">
-            <h2>Ερωτηματολόγιο ικανοποίησης δικαιούχων της ΛΑΕΦ</h2>
-            <br>
+            <h2 class="mb-5">
+                <a href="/home">
+                    <i class="fas fa-chevron-circle-left align-middle"></i>
+                    <span class="align-middle">
+                        Ερωτηματολόγιο ικανοποίησης δικαιούχων της ΛΑΕΦ
+                    </span>
+                </a>
+            </h2>
+
             <div class="form-group">
                 <h5>1. Κάθε πότε παίρνετε συσσίτιο από την Λέσχη;</h5>
                 {{ radio("erotisi1", "0", "Κάθε ημέρα") }}
