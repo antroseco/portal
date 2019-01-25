@@ -7,6 +7,12 @@
     </div>
 {% endmacro %}
 
+{% macro perissotera(url) %}
+    <div class="text-right">
+        <a class="badge badge-primary" href="{{ url }}">Περισσότερα...</a>
+    </div>
+{% endmacro %}
+
 {% block head %}
     {{ super() }}
 
@@ -24,7 +30,7 @@
 
         <div class="row text-center">
             {{ heading("Ανακοινώσεις") }}
-            {{ heading("Προσφορές Πρατηρίων ΕΦ") }}
+            {{ heading("Πρόγραμμα Συσσυτίου ΛΑΕΦ") }}
             {{ heading("Προσφορές Τρίτων") }}
         </div>
 
@@ -34,9 +40,7 @@
                     {% include "./anakoinosis/anakoinosis/" + file %}
                 {% endfor %}
 
-                <div class="text-right">
-                    <a class="badge badge-primary" href="/anakoinosis/anakoinosis">Περισσότερα...</a>
-                </div>
+                {{ perissotera("/anakoinosis/anakoinosis/") }}
             </div>
 
             <div class="col-md-4">
@@ -44,9 +48,7 @@
                     {% include "./anakoinosis/prosfores-ef/" + file %}
                 {% endfor %}
 
-                <div class="text-right">
-                    <a class="badge badge-primary" href="/anakoinosis/prosfores-ef">Περισσότερα...</a>
-                </div>
+                {{ perissotera("/anakoinosis/prosfores-ef/") }}
             </div>
 
             <div class="col-md-4">
@@ -54,9 +56,7 @@
                     {% include "./anakoinosis/prosfores-triton/" + file %}
                 {% endfor %}
 
-                <div class="text-right">
-                    <a class="badge badge-primary" href="/anakoinosis/prosfores-triton">Περισσότερα...</a>
-                </div>
+                {{ perissotera("/anakoinosis/prosfores-triton/") }}
             </div>
         </div>
     </div>
