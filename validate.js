@@ -44,13 +44,21 @@ function ValidateText(x, Length) {
     return x.trim();
 }
 
-function ValidateDate(x) {
+function ValidateDate(x, Min, Max) {
     const Regex = /^((19)|(20))([0-9]{2})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])$/;
 
-    if (Regex.test(x))
-        return x;
-    else
-        throw Error('Malformed POST request: ValidateDate');
+    if (Regex.test(x)) {
+        if (Min && Max) {
+            const Time = new Date(x).getTime();
+
+            if (Time >= Min.getTime() && Time <= Max.getTime())
+                return x;
+        } else {
+            return x;
+        }
+    }
+
+    throw Error('Malformed POST request: ValidateDate');
 }
 
 function ValidatePhone(Phone) {

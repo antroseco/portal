@@ -6,11 +6,16 @@ const Nunjucks = require('nunjucks').configure('emails', {
 
 function GetDate(Offset = 0) {
     const D = new Date();
+    D.setHours(0, 0, 0, 0);
 
     if (Offset)
         D.setDate(D.getDate() + Offset);
 
-    return D.toISOString().substring(0, 10);
+    return D;
+}
+
+function GetDateString(Offset = 0) {
+    return GetDate(Offset).toISOString().substring(0, 10);
 }
 
 async function RenderPage(ctx) {
@@ -24,14 +29,14 @@ async function RenderPage(ctx) {
         'error': ctx.flash('error'),
         'csrf': await Auth.GetCsrf(ctx.state.user),
         'kinito': ctx.state.user.kinito,
-        'date_min': GetDate(),
-        'date_max': GetDate(7)
+        'date_min': GetDateString(),
+        'date_max': GetDateString(7)
     });
 }
 
 function RenderEmail(Body, Extra) {
     const PostData = {
-        'imerominia': Validate.Date(Body.imerominia), // TODO: validate bounds
+        'imerominia': Validate.Date(Body.imerominia, GetDate(), GetDate(7)),
         'epilogi': Validate.Array(Body.epilogi, Validate.Common.Epilogi),
         'paratirisis': Validate.Text(Body.paratirisis, 2000)
     };
