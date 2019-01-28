@@ -3,6 +3,7 @@ function PasswordStrength() {
 
     const Progress = document.querySelector('div.progress');
     const Bar = document.querySelector('div.progress-bar');
+    const Span = Progress.querySelector('span');
     const Password = document.getElementById('password4');
 
     if (Password.value)
@@ -14,10 +15,13 @@ function PasswordStrength() {
 
     const Widths = ['w-0', 'w-25', 'w-50', 'w-75', 'w-100'];
     const Colors = ['bg-danger', 'bg-danger', 'bg-warning', 'bg-info', 'bg-success'];
+    const Strength = ['Πολύ Αδύναμος', 'Αδύναμος', 'Μέτριος', 'Καλός', 'Πολύ Καλός'];
 
     Bar.classList.remove(...Widths);
     Bar.classList.remove(...Colors);
     Bar.classList.add(Colors[score], Widths[score]);
+
+    Span.textContent = Strength[score];
 
     if (score < 3) {
         if (feedback.warning)
