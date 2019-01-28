@@ -1,4 +1,4 @@
-{% macro post(id, unread, titlos, img, url) %}
+{% macro post(id, unread, titlos, img, url, order = false) %}
     <div id="{{ id }}" class="card my-4 {{ 'unread' if unread }}">
         <img class="card-img-custom mx-auto" src="{{ img }}">
         <div class="card-body text-justify">
@@ -11,6 +11,11 @@
                     <i class="fas fa-paperclip"></i>
                     Download
                 </a>
+                {% if order %}
+                    <a href="/order" class="btn btn-primary mr-2">
+                        <i class="fas fa-utensils"></i>
+                    </a>
+                {% endif %}
                 <div class="btn btn-outline-primary">
                     <i class="far {{ 'fa-envelope' if unread else 'fa-envelope-open' }}"></i>
                 </div>
