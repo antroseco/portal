@@ -1,4 +1,4 @@
-const Validate = require("./validate");
+const Validate = require('./validate');
 const Auth = require('./auth');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true

@@ -1,22 +1,9 @@
-const Validate = require("./validate");
+const Validate = require('./validate');
 const Auth = require('./auth');
+const DateCache = require('./date_cache');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
-
-function GetDate(Offset = 0) {
-    const D = new Date();
-    D.setHours(0, 0, 0, 0);
-
-    if (Offset)
-        D.setDate(D.getDate() + Offset);
-
-    return D;
-}
-
-function GetDateString(Offset = 0) {
-    return GetDate(Offset).toISOString().substring(0, 10);
-}
 
 async function RenderPage(ctx) {
     await ctx.render('order', {
@@ -29,14 +16,14 @@ async function RenderPage(ctx) {
         'error': ctx.flash('error'),
         'csrf': await Auth.GetCsrf(ctx.state.user),
         'kinito': ctx.state.user.kinito,
-        'date_min': GetDateString(),
-        'date_max': GetDateString(7)
+        'date_min': DateCache.LocalString(),
+        'date_max': DateCache.LocalString(7)
     });
 }
 
 function RenderEmail(Body, Extra) {
     const PostData = {
-        'imerominia': Validate.Date(Body.imerominia, GetDate(), GetDate(7)),
+        'imerominia': Validate.Date(Body.imerominia, DateCache.Date(), DateCache.Date(7)),
         'epilogi': Validate.Array(Body.epilogi, Validate.Common.Epilogi),
         'paratirisis': Validate.Text(Body.paratirisis, 2000)
     };

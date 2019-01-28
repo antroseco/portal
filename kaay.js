@@ -1,4 +1,4 @@
-const Validate = require("./validate");
+const Validate = require('./validate');
 const Auth = require('./auth');
 const Path = require('path');
 const Os = require('os');
@@ -22,7 +22,6 @@ async function RenderPage(ctx) {
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'csrf': await Auth.GetCsrf(ctx.state.user),
-        'date': new Date().toISOString().substring(0, 10),
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });

@@ -1,5 +1,6 @@
-const Validate = require("./validate");
+const Validate = require('./validate');
 const Auth = require('./auth');
+const DateCache = require('./date_cache');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
@@ -14,7 +15,7 @@ async function RenderPage(ctx) {
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'csrf': await Auth.GetCsrf(ctx.state.user),
-        'date': new Date().toISOString().substring(0, 10),
+        'date': DateCache.LocalString(),
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });
@@ -39,7 +40,7 @@ function Submit(ctx) {
             to: 'bar@example.com, baz@example.com',
             subject: 'Αναφορά Υποβολής Πρότασης',
             html: RenderEmail(ctx.request.body, {
-                'date': new Date().toISOString().substring(0, 10),
+                'date': DateCache.LocalString(),
                 'onomateponymo': ctx.state.user.onomateponymo,
                 'email': ctx.state.user.email,
                 'am': ctx.state.user.am,
