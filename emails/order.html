@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="el">
+
+    <head>
+        <title>Αναφορά Παραγγελίας Συσσιτίου</title>
+
+        <style>
+            body {
+                font-family: "Arial";
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>&emsp;1.&emsp;Αποστολέας:</p>
+        <p>&emsp;&emsp;&emsp;α.&emsp;Ονοματεπώνυμο:
+            <b>
+                {{ onomateponymo }}
+            </b>
+        </p>
+        <p>&emsp;&emsp;&emsp;β.&emsp;ΑΜ:
+            <b>{{ am }}</b>
+        </p>
+        <p>&emsp;&emsp;&emsp;γ.&emsp;Τηλέφωνο:
+            <b>{{ kinito }}</b>
+        </p>
+        <p>&emsp;2.&emsp;Ημερομηνία:
+            <b>{{ imerominia }}</b>
+        </p>
+        <p>&emsp;4.&emsp;Επιλογή:
+            <b>{{ epilogi }}</b>
+        </p>
+        <p>&emsp;5.&emsp;Τόπος Παραλαβής:
+            <b>ΛΑΕΦ</b>
+        </p>
+        <p>&emsp;6.&emsp;Παρατηρήσεις:</p>
+        <p>
+            <b>{{ paratirisis | striptags(true) | escape | nl2br }}</b>
+        </p>
+    </body>
+
+</html>

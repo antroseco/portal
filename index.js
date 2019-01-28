@@ -24,6 +24,7 @@ const MailQueue = require('./mailqueue');
 const Token = require('./token');
 const ResetModel = require('./models/password_reset');
 const RenderResetPassword = require('./reset_password');
+const Order = require('./order');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -507,6 +508,9 @@ Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf, Protasis.Submit);
 
 Router.get('/kaay', Kaay.RenderPage);
 Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf, Kaay.Submit);
+
+Router.get('/order', Order.RenderPage);
+Router.post('/api/order', ParseUrlEnc, Auth.CheckCsrf, Order.Submit);
 
 Router.get('/periodika', async ctx => {
     await ctx.render('periodika', {

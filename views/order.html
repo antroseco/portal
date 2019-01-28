@@ -1,0 +1,93 @@
+{% extends "templates/boilerplate.html" %}
+
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="/css/home.css">
+
+    <script defer="" src="https://use.fontawesome.com/releases/v5.6.1/js/solid.js" integrity="sha384-8Lgyylu0vfTGCXDKe435hJgX8s96c19R+dvpH0NHKdX47GA7TmMj+BDiZZ76qqhT" crossorigin="anonymous"></script>
+    <script defer="" src="https://use.fontawesome.com/releases/v5.6.1/js/fontawesome.js" integrity="sha384-T6YzYwAGZAItTIkYlBzfwqa07o9R1AND3Lgt6Or6c5IdukY7tqShoryqwpKrpeIB" crossorigin="anonymous"></script>
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        {% include "flash.html" %}
+
+        <form action="/api/order" method="post">
+            <h2 class="mb-5">
+                <a href="/home">
+                    <i class="fas fa-chevron-circle-left align-middle"></i>
+                    <span class="align-middle">
+                        Παραγγελία Συσσιτίου
+                    </span>
+                </a>
+            </h2>
+
+            <p>
+                Για καλύτερο προγραμματισμό και εξυπηρέτηση σας οι παραγγελίες για συσσίτιο να γίνονται το αργότερο μέχρι τις 9:00 της προηγούμενης μέρας.
+            </p>
+            <p>
+                Για περισσότερες πληροφορίες, καλέστε στο 22417912 - 22673723.
+            </p>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="epitheto">Επίθετο</label>
+                    <input type="text" class="form-control" id="epitheto" value="{{ epitheto }}" readonly="">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="onoma">Όνομα</label>
+                    <input type="text" class="form-control" id="onoma" value="{{ onoma }}" readonly="">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="am">ΑΜ</label>
+                    <input type="text" class="form-control" id="am" value="{{ am }}" readonly="">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="tilefono">Τηλέφωνο</label>
+                    <input type="text" class="form-control" id="tilefono" value="{{ kinito }}" readonly="">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="imerominia">Ημερομηνία</label>
+                    <input type="date" name="imerominia" class="form-control" id="imerominia" min="{{ date_min }}" max="{{ date_max }}" required="">
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Γεύμα</label>
+                    <div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="epilogi1" name="epilogi" value="0" class="custom-control-input" required="">
+                            <label class="custom-control-label" for="epilogi1">Επιλογή Α</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="epilogi2" name="epilogi" value="1" class="custom-control-input" required="">
+                            <label class="custom-control-label" for="epilogi2">Επιλογή Β</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="paralavi">Τόπος Παραλαβής</label>
+                    <select class="custom-select" required="">
+                        <option value="0">ΛΑΕΦ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="paratirisis">Παρατηρήσεις</label>
+                <textarea class="form-control" name="paratirisis" rows="5" maxlength="2000"></textarea>
+            </div>
+
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+
+            <button type="submit" class="btn btn-outline-primary">Submit</button>
+
+        </form>
+
+    </main>
+{% endblock body %}

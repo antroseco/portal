@@ -4,6 +4,8 @@ const Vathmos = ['Αντγος', 'Υπγος', 'Ταξχος', 'Σχης', 'Αν
     'Υπλγός', 'Ανθλγός', 'Ανθστής Α', 'Ανθστής Β', 'Ανθστής Γ', 'Αλχίας',
     'Επχίας', 'Λχίας', 'Δνέας'];
 
+const Epilogi = ['Α', 'Β'];
+
 function ValidateArray(x, Constraints) {
     const Value = Constraints[x];
     if (Value === undefined)
@@ -145,5 +147,5 @@ module.exports = {
     Password: ValidatePassword,
     Name: ValidateName,
     AM: ValidateAM,
-    Common: { OS, Vathmos }
+    Common: { OS, Vathmos, Epilogi }
 }
