@@ -48,7 +48,10 @@ const ParseMultipart = KoaBody({
     multipart: true,
     urlencoded: false,
     text: false,
-    json: false
+    json: false,
+    formidable: {
+        maxFileSize: 10 * 1024 * 1024
+    }
 });
 
 const Mq = new MailQueue({

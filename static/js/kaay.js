@@ -187,6 +187,9 @@ async function Upload() {
             redirect: 'error'
         });
 
+        if (!Response.ok)
+            throw Error(Response.statusText);
+
         FileInput.value = await Response.text();
         FilenameInput.value = File.name;
 
