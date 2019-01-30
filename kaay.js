@@ -2,6 +2,7 @@ const Validate = require('./validate');
 const Auth = require('./auth');
 const Path = require('path');
 const Os = require('os');
+const Files = require('./files');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 }).addFilter('Letter', n => String.fromCharCode('α'.charCodeAt() + n));
@@ -100,7 +101,7 @@ function RenderEmail(Body, Extra) {
     return Nunjucks.render('kaay.html', { ...PostData, ...Extra });
 }
 
-function Submit(ctx) {
+async function Submit(ctx) {
     try {
         let Attachments = [];
 
@@ -110,17 +111,15 @@ function Submit(ctx) {
         if (body.file1 != '' && body.filename1 != '') {
             Attachments.push({
                 filename: Validate.Filename(body.filename1),
-                path: Path.join(Os.tmpdir(), 'upload_' + Validate.FileToken(body.file1))
+                path: await Files.Path(body.file1)
             });
         }
         if (body.file2 != '' && body.filename2 != '') {
             Attachments.push({
                 filename: Validate.Filename(body.filename2),
-                path: Path.join(Os.tmpdir(), 'upload_' + Validate.FileToken(body.file2))
+                path: await Files.Path(body.file2)
             });
         }
-
-        console.log(Attachments);
 
         ctx.state.Mq.Push({
             from: '"Fred Foo 👻" <foo@example.com>',
@@ -138,7 +137,7 @@ function Submit(ctx) {
         ctx.flash('success', 'Ευχαριστούμε, η αίτησή σας έχει σταλεί');
     } catch (Err) {
         console.log(Err);
-        // TODO: Clean up already uploaded attachments, probably create a File API
+
         ctx.flash('error', 'Η αποστολή της αίτησής σας έχει αποτύχει');
     } finally {
         ctx.redirect('/kaay');

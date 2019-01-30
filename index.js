@@ -25,6 +25,7 @@ const Token = require('./token');
 const ResetModel = require('./models/password_reset');
 const RenderResetPassword = require('./reset_password');
 const Order = require('./order');
+const Files = require('./files');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -527,7 +528,7 @@ Router.post('/api/upload', async (ctx, next) => {
         // Catch Formidable erorrs
         await next();
         // Save file and return a 'token'
-        ctx.body = ctx.request.files.file.path.substr(-32);
+        ctx.body = await Files.Register(ctx.request.files.file);
         ctx.status = 201;
     } catch (Err) {
         console.log(Err);

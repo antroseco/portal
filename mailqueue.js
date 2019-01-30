@@ -1,7 +1,7 @@
 const NodeMailer = require('nodemailer');
 const Util = require('util');
-const fs = require('fs').promises;
 const EmailModel = require('./models/email');
+const Files = require('./files');
 
 class Queue {
     constructor(Options) {
@@ -48,7 +48,7 @@ class Queue {
         Mail.attachments = Mail.attachments || [];
         for (const Attachment of Mail.attachments) {
             console.log('SENDMAIL DELETING', Attachment.path);
-            fs.unlink(Attachment.path);
+            Files.Delete(Attachment.path);
         }
     }
 
