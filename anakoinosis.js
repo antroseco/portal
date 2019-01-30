@@ -1,4 +1,5 @@
 const Directory = require('./directory');
+const Validate = require('./validate');
 
 const Anakoinosis = new Directory('./views/anakoinosis/anakoinosis');
 const ProsforesEf = new Directory('./views/anakoinosis/prosfores-ef');
@@ -47,15 +48,17 @@ async function RenderCategory(ctx) {
 async function MarkRead(ctx, next) {
     try {
         await next();
-        const body = JSON.parse(ctx.request.body); // TODO: validate
-        console.log('PUT /api/anakoinosis/read', body);
+        const Id = Validate.Number(ctx.request.body);
+        console.log('PUT /api/anakoinosis/read', Id);
 
-        ctx.state.user.anakoinosis.set(body.read, true);
+        ctx.state.user.anakoinosis.set(Id, true);
         await ctx.state.user.save();
 
         ctx.status = 200;
     } catch (Err) {
-        console.log(Err);
+        console.log('MARK READ', Err);
+
+        ctx.status = 400;
     }
 }
 

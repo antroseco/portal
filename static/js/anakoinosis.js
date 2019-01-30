@@ -14,10 +14,9 @@ function Expand() {
     if (Card.classList.contains('unread')) {
         Card.classList.remove('unread');
 
-        // TODO: Better ID system
         fetch('/api/anakoinosis/read', {
             method: 'PUT',
-            body: JSON.stringify({ read: Card.id }),
+            body: Card.id,
             mode: 'same-origin',
             credentials: 'same-origin',
             redirect: 'error'
