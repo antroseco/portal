@@ -8,9 +8,9 @@ if (!global[Key])
     global[Key] = Cron.job('* 0 */1 * * *', Clean, null, true);
 
 /*
-    Records file to database and returns
-    a token that can be used to retrieve
-    its path later.
+* Records file to database and returns
+* a token that can be used to retrieve
+* its path later.
 */
 async function Register(FileObject) {
     const Filename = FileObject.path.substr(-32);
