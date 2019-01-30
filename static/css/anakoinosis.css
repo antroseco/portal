@@ -8,8 +8,8 @@
     border-width: 2px;
 }
 
-.btn-primary:link {
-    color: #fff;
+.btn-primary {
+    color: #fff !important;
 }
 
 .card-img-custom {
