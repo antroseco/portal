@@ -25,7 +25,7 @@ const ResetModel = require('./models/password_reset');
 const RenderResetPassword = require('./reset_password');
 const Order = require('./order');
 const Files = require('./files');
-const Directory = require('./directory');
+const Anakoinosis = require('./anakoinosis');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -536,64 +536,9 @@ Router.post('/api/upload', async (ctx, next) => {
     }
 }, ParseMultipart, Auth.CheckCsrf);
 
-const Anakoinosis = new Directory('./views/anakoinosis/anakoinosis');
-const ProsforesEf = new Directory('./views/anakoinosis/prosfores-ef');
-const ProsforesTriton = new Directory('./views/anakoinosis/prosfores-triton');
-
-Router.get('/anakoinosis', async ctx => {
-    await ctx.render('anakoinosis', {
-        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
-        'onomateponymo': ctx.state.user.onomateponymo,
-        'read': ctx.state.user.anakoinosis,
-        'anakoinosis': await Anakoinosis.Get(3),
-        'prosfores_ef': await ProsforesEf.Get(3),
-        'prosfores_triton': await ProsforesTriton.Get(3)
-    });
-});
-
-Router.get('/anakoinosis/:category', async ctx => {
-    const Options = {
-        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
-        'onomateponymo': ctx.state.user.onomateponymo,
-        'read': ctx.state.user.anakoinosis
-    };
-
-    // TODO: Consider using a Map
-    switch (ctx.params.category) {
-        case 'anakoinosis':
-            Options.directory = './anakoinosis/anakoinosis/';
-            Options.posts = await Anakoinosis.Get();
-            break;
-        case 'prosfores-ef':
-            Options.directory = './anakoinosis/prosfores-ef/';
-            Options.posts = await ProsforesEf.Get();
-            break;
-        case 'prosfores-triton':
-            Options.directory = './anakoinosis/prosfores-triton/';
-            Options.posts = await ProsforesTriton.Get();
-            break;
-        default:
-            return ctx.status = 404;
-    }
-
-    await ctx.render('anakoinosis_perissotera', Options);
-});
-
-// TODO: Auth.CheckCsrf here and regenerate tokens on each request
-Router.put('/api/anakoinosis/read', async (ctx, next) => {
-    try {
-        await next();
-        const body = JSON.parse(ctx.request.body); // TODO: validate
-        console.log('PUT /api/anakoinosis/read', body);
-
-        ctx.state.user.anakoinosis.set(body.read, true);
-        await ctx.state.user.save();
-
-        ctx.status = 200;
-    } catch (Err) {
-        console.log(Err);
-    }
-}, KoaBody()); // todo
+Router.get('/anakoinosis', Anakoinosis.RenderPage);
+Router.get('/anakoinosis/:category', Anakoinosis.RenderCategory);
+Router.put('/api/anakoinosis/read', Anakoinosis.MarkRead, KoaBody()); // todo
 
 App.use(Router.routes());
 App.use(Router.allowedMethods());
