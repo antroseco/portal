@@ -17,7 +17,6 @@ const Kaay = require('./kaay');
 const RenderEmailConfirmation = require('./email_confirmation');
 const Validate = require('./validate');
 const Path = require('path');
-const fs = require('fs').promises;
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user');
 const MailQueue = require('./mailqueue');
@@ -26,6 +25,7 @@ const ResetModel = require('./models/password_reset');
 const RenderResetPassword = require('./reset_password');
 const Order = require('./order');
 const Files = require('./files');
+const Directory = require('./directory');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -536,24 +536,18 @@ Router.post('/api/upload', async (ctx, next) => {
     }
 }, ParseMultipart, Auth.CheckCsrf);
 
-async function ResolveDirectory(Path, n = 0) {
-    const Result = await fs.readdir(Path, {
-        encoding: 'utf-8',
-        withFileTypes: true
-    });
-
-    return Result.filter(Dirent => Dirent.isFile())
-        .map(Dirent => Dirent.name).sort().splice(-n).reverse();
-}
+const Anakoinosis = new Directory('./views/anakoinosis/anakoinosis');
+const ProsforesEf = new Directory('./views/anakoinosis/prosfores-ef');
+const ProsforesTriton = new Directory('./views/anakoinosis/prosfores-triton');
 
 Router.get('/anakoinosis', async ctx => {
     await ctx.render('anakoinosis', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
         'onomateponymo': ctx.state.user.onomateponymo,
         'read': ctx.state.user.anakoinosis,
-        'anakoinosis': await ResolveDirectory('./views/anakoinosis/anakoinosis', 3),
-        'prosfores_ef': await ResolveDirectory('./views/anakoinosis/prosfores-ef', 3),
-        'prosfores_triton': await ResolveDirectory('./views/anakoinosis/prosfores-triton', 3)
+        'anakoinosis': await Anakoinosis.Get(3),
+        'prosfores_ef': await ProsforesEf.Get(3),
+        'prosfores_triton': await ProsforesTriton.Get(3)
     });
 });
 
@@ -564,21 +558,23 @@ Router.get('/anakoinosis/:category', async ctx => {
         'read': ctx.state.user.anakoinosis
     };
 
+    // TODO: Consider using a Map
     switch (ctx.params.category) {
         case 'anakoinosis':
             Options.directory = './anakoinosis/anakoinosis/';
+            Options.posts = await Anakoinosis.Get();
             break;
         case 'prosfores-ef':
             Options.directory = './anakoinosis/prosfores-ef/';
+            Options.posts = await ProsforesEf.Get();
             break;
         case 'prosfores-triton':
             Options.directory = './anakoinosis/prosfores-triton/';
+            Options.posts = await ProsforesTriton.Get();
             break;
         default:
             return ctx.status = 404;
     }
-
-    Options.posts = await ResolveDirectory(Path.join('./views', Options.directory));
 
     await ctx.render('anakoinosis_perissotera', Options);
 });
