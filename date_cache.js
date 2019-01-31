@@ -12,10 +12,10 @@ if (!global[Key]) {
 
 function Calculate(Offset) {
     const D = new Date();
-    D.setHours(0, 0, 0, 0);
+    D.setUTCHours(0, 0, 0, 0);
 
     if (Offset)
-        D.setDate(D.getDate() + Offset);
+        D.setUTCDate(D.getUTCDate() + Offset);
 
     return D;
 }
@@ -32,9 +32,7 @@ function GetDate(Offset = 0) {
 }
 
 function GetLocalString(Offset = 0) {
-    const D = new Date(GetDate(Offset).getTime() - TzOffset);
-
-    return D.toISOString().substring(0, 10);
+    return GetDate(Offset).toISOString().substring(0, 10);
 }
 
 module.exports = {
