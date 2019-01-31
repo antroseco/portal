@@ -20,7 +20,7 @@ must:
 - set cookies to Secure once HTTPS is enabled
 - request throttling
 - better logs
-- keep track of uploads and expire them
+✓ keep track of uploads and expire them
 
 nice to have:
 
