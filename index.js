@@ -25,6 +25,8 @@ const RenderResetPassword = require('./reset_password');
 const Order = require('./order');
 const Files = require('./files');
 const Anakoinosis = require('./anakoinosis');
+const Conditional = require('koa-conditional-get');
+const ETag = require('koa-etag');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -100,6 +102,9 @@ App.use(KoaHelmet.frameguard({ action: 'deny' }));
 App.use(KoaHelmet.noSniff());
 App.use(KoaHelmet.xssFilter());
 App.use(KoaHelmet.referrerPolicy({ policy: 'same-origin' }));
+
+App.use(Conditional());
+App.use(ETag());
 
 App.keys = ['session-secret :)']; //TODO: Session Secret
 App.use(KoaSession({
