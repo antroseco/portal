@@ -16,7 +16,11 @@ function Expand() {
 
         fetch('/api/anakoinosis/read', {
             method: 'PUT',
-            body: Card.id,
+            body: JSON.stringify({
+                csrf: CsrfToken,
+                id: Card.id
+            }),
+            headers: { 'Content-Type': 'application/json' },
             mode: 'same-origin',
             credentials: 'same-origin',
             redirect: 'error'

@@ -55,6 +55,14 @@ const ParseMultipart = KoaBody({
     }
 });
 
+const ParseJson = KoaBody({
+    multipart: false,
+    urlencoded: false,
+    text: false,
+    json: true,
+    jsonLimit: 128
+});
+
 const Mq = new MailQueue({
     host: 'smtp.ethereal.email',
     port: 587,
@@ -538,7 +546,7 @@ Router.post('/api/upload', async (ctx, next) => {
 
 Router.get('/anakoinosis', Anakoinosis.RenderPage);
 Router.get('/anakoinosis/:category', Anakoinosis.RenderCategory);
-Router.put('/api/anakoinosis/read', Anakoinosis.MarkRead, KoaBody()); // todo
+Router.put('/api/anakoinosis/read', ParseJson, Auth.CheckCsrf, Anakoinosis.MarkRead);
 
 App.use(Router.routes());
 App.use(Router.allowedMethods());
