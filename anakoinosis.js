@@ -47,11 +47,20 @@ async function RenderCategory(ctx) {
     await ctx.render('anakoinosis_perissotera', Options);
 }
 
+// TODO: If we use a Map, then provide the ...map directly to Math.max
+async function Max() {
+    return Math.max(await Anakoinosis.max, await ProsforesEf.max, await ProsforesTriton.max);
+}
+
+async function Min() {
+    return Math.min(await Anakoinosis.min, await ProsforesEf.min, await ProsforesTriton.min);
+}
+
 async function MarkRead(ctx) {
     try {
         console.log('MARK READ BODY', ctx.request.body);
 
-        const Id = Validate.Number(ctx.request.body.id);
+        const Id = Validate.Number(ctx.request.body.id, await Min(), await Max());
         console.log('PUT /api/anakoinosis/read', Id);
 
         ctx.state.user.anakoinosis.set(Id, true);

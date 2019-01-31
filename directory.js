@@ -13,8 +13,10 @@ class Directory {
 
             // Debounce events
             clearTimeout(this.timeout);
-            this.timeout = setTimeout(() =>
-                this.files = this.Resolve(Path), 64);
+            this.timeout = setTimeout(() => {
+                this.files = this.Resolve(Path)
+                this.filtered = undefined;
+            }, 64);
         });
     }
 
@@ -40,6 +42,29 @@ class Directory {
     async Get(n = 0) {
         const Files = await this.files;
         return Files.slice(-n).reverse();
+    }
+
+    // TODO: Refactor
+    get min() {
+        return (async () => {
+            const Regex = /\d+/;
+
+            if (!this.filtered)
+                this.filtered = (await this.files).filter(Value => Regex.test(Value));
+
+            return this.filtered[0].match(Regex)[0];
+        })();
+    }
+
+    get max() {
+        return (async () => {
+            const Regex = /\d+/;
+
+            if (!this.filtered)
+                this.filtered = (await this.files).filter(Value => Regex.test(Value));
+
+            return this.filtered[this.filtered.length - 1].match(Regex)[0];
+        })();
     }
 }
 
