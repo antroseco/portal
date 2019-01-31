@@ -6,8 +6,9 @@ function Expand() {
     Desc.classList.add('d-none');
     Full.classList.remove('d-none');
 
-    this.querySelector('svg').setAttribute('data-icon', 'chevron-up');
-    this.previousElementSibling.querySelector('svg').setAttribute('data-icon', 'envelope-open');
+    this.querySelector('i').classList.replace('fa-chevron-down', 'fa-chevron-up');
+    this.previousElementSibling.querySelector('i').classList.replace('fa-envelope', 'fa-envelope-open');
+
     this.addEventListener('click', Contract, { once: true });
 
     const Card = CardBody.parentElement;
@@ -36,7 +37,7 @@ function Contract() {
     Desc.classList.remove('d-none');
     Full.classList.add('d-none');
 
-    this.querySelector('svg').setAttribute('data-icon', 'chevron-down');
+    this.querySelector('i').classList.replace('fa-chevron-up', 'fa-chevron-down');
     this.addEventListener('click', Expand, { once: true });
 }
 
