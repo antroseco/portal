@@ -28,7 +28,7 @@ nice to have:
 - proper error screens (404, 500...)
 - colour scheme
 ✓ footer
-- async js loading
+✓ async js loading
 - maybe use main.container-fluid
 ✓ use nunjucks blocks
 ✓ zxcvbn
