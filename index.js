@@ -16,7 +16,6 @@ const Protasis = require('./protasis');
 const Kaay = require('./kaay');
 const RenderEmailConfirmation = require('./email_confirmation');
 const Validate = require('./validate');
-const Path = require('path');
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user');
 const MailQueue = require('./mailqueue');
