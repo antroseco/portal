@@ -11,7 +11,7 @@ must:
 ✓ rename cookies (information leak)
 ✓ harden koa-body (limit attack surface)
 ✓ fix email file name leak (temp directory)
-- cache static assets
+✓ cache static assets
 - Nunjucks enable caching
 ✓ CSRF
 ✓ Use one CDN for all

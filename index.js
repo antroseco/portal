@@ -151,7 +151,12 @@ App.use(Nunjucks({
 }));
 
 // Publicly available
-App.use(KoaStatic('static'));
+App.use(KoaStatic('static', {
+    maxAge: 4 * 60 * 60 * 1000, // 4 hours
+    defer: true,
+    gzip: false,
+    br: false
+}));
 
 App.use(KoaPassport.initialize());
 App.use(KoaPassport.session());
