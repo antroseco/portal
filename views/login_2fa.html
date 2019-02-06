@@ -1,0 +1,35 @@
+{% extends "templates/boilerplate.html" %}
+
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="/css/login_2fa.css">
+{% endblock head %}
+
+{% block body %}
+    <main class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+
+                <img class="mb-4" src="/svg/logo.svg" alt="ΓΕΕΦ" width="128">
+
+                {% include "flash.html" %}
+
+                <form action="/api/2fa/login" method="post">
+                    <h1 class="h3 mb-3 font-weight-normal">Two-factor Authentication</h1>
+
+                    <label for="token" class="sr-only">Κωδικός επαλήθευσης</label>
+                    <input name="token" type="text" pattern="[0-9]*" id="token" class="form-control" placeholder="Κωδικός επαλήθευσης" minlength="6" maxlength="6" required="">
+
+                    <input type="hidden" name="csrf" value="{{ csrf }}">
+
+                    <button class="btn btn-lg btn-primary btn-block mt-3" type="submit">Είσοδος</button>
+                    <a href="/api/logout" class="btn btn-lg btn-light btn-block mt-3">Άκυρο</a>
+                </form>
+
+            </div>
+        </div>
+    </main>
+{% endblock body %}
+
+{% block footer %}{% endblock footer %}

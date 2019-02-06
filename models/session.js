@@ -13,6 +13,11 @@ const Schema = new Mongoose.Schema({
     user: {
         type: Mongoose.Schema.Types.ObjectId
     },
+    two_fa: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     createdAt: {
         type: Date,
         required: true,

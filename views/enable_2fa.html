@@ -1,0 +1,46 @@
+{% extends "templates/boilerplate.html" %}
+
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="/css/home.css">
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        {% include "flash.html" %}
+
+        <div class="row align-items-center mt-4">
+            <div class="col-md-4">
+                <img src="/svg/logo.svg" class="img-fluid align-middle">
+            </div>
+
+            <div class="col-md-8">
+                <h4 class="display-4">Two-factor authentication</h4>
+                <p class="lead mt-5">Σας συνιστούμε να ενεργοποιήσετε το two-factor authentication.</p>
+                <p>Για να συνδεθείτε στον λογαριασμό σας, θα χρειαστείτε τον κωδικό σας και ένα εξαψήφιο κωδικό επαλήθευσης από το κινητό σας.</p>
+                <p>Όποτε ακόμα και αν κάποιος έχει τον κωδικό σας, δεν έχει πρόσβαση στον λογαριασμό σας.</p>
+
+                <div class="d-flex align-items-center">
+                    Συνιστούμε το Google Authenticator:
+
+                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img height="60px" alt="Αποκτήστε το στο Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/el_badge_web_generic.png"/></a>
+
+                    <a target="_blank" href="https://itunes.apple.com/cy/app/google-authenticator/id388497605?mt=8" style="display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2013-07-27&kind=iossoftware&bubble=ios_apps) no-repeat;width:135px;height:40px;"></a>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <form action="/api/2fa/enable" method="post">
+                        <input type="hidden" name="csrf" value="{{ csrf }}">
+                        <button type="submit" class="btn btn-primary">Συνέχεια</button>
+                    </form>
+                    <a href="/home" class="btn btn-light">Όχι τώρα</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+{% endblock body %}

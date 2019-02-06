@@ -27,6 +27,7 @@ const Files = require('./files');
 const Anakoinosis = require('./anakoinosis');
 const Conditional = require('koa-conditional-get');
 const ETag = require('koa-etag');
+const Two_fa = require('./two_fa');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -196,7 +197,10 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
         ctx.cookies.set('remember_me.sig', null);
     }
 
-    ctx.redirect('/home');
+    if (ctx.state.user.two_fa_enabled)
+        ctx.redirect('/2fa/login');
+    else
+        ctx.redirect('/home');
 });
 
 Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
@@ -385,9 +389,12 @@ Router.use(async (ctx, next) => {
     }
 });
 
+Router.get('/2fa/login', Two_fa.RenderLogin);
+Router.post('/api/2fa/login', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitLogin);
+
 // TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
-    await Auth.DestroySession(ctx.state.user.session_hash);
+    await Auth.DestroySession(ctx.state.user.session);
     ctx.cookies.set('remember_me', null);
     ctx.cookies.set('remember_me:sig', null);
 
@@ -395,6 +402,22 @@ Router.get('/api/logout', async ctx => {
     ctx.flash('success', 'You have been logged out successfully')
     ctx.redirect('/');
 });
+
+// Enforce 2fa beyond this point
+Router.use(async (ctx, next) => {
+    if (ctx.state.user.two_fa_enabled
+        && !ctx.state.user.session.two_fa)
+        ctx.redirect('/2fa/login');
+    else
+        await next();
+});
+
+Router.get('/2fa/enable', Two_fa.RenderEnable);
+Router.post('/api/2fa/enable', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitEnable);
+
+Router.get('/2fa/verify', Two_fa.RenderVerify);
+Router.post('/api/2fa/verify', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitVerify);
+Router.post('/api/2fa/cancel', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitCancel);
 
 Router.get('/welcome', async ctx => {
     if (ctx.state.user.verified_email)
@@ -449,14 +472,13 @@ Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
                 });
 
                 ctx.flash('success', 'Το email σας έχει επαληθευτεί');
+                ctx.redirect('/2fa/enable');
             } else {
                 // TODO: LOG FAILURE DETAILS
                 console.log('CONFIRM_EMAIL/TOKEN FAILURE');
                 ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');
+                ctx.redirect('/welcome');
             }
-
-            // TODO: if we redirect to /home then won't we go to /welcome?
-            ctx.redirect('/home');
         } catch (Err) {
             console.log('CONFIRM_EMAIL/TOKEN ERROR', Err);
 

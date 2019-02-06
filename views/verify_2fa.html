@@ -1,0 +1,62 @@
+{% extends "templates/boilerplate.html" %}
+
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="/css/home.css">
+
+    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js" integrity="sha256-25ncr0CpJhgbzkUiR3wu/Fkk9sSykRG2qX+upHfJUos=" crossorigin="anonymous"></script>
+    <script defer="" src="/js/verify_2fa.js"></script>
+    <script>
+        const two_fa_uri = "otpauth://totp/%CE%95%CE%B8%CE%BD%CE%B9%CE%BA%CE%AE%20%CE%A6%CF%81%CE%BF%CF%85%CF%81%CE%AC:{{ email }}?secret={{ secret }}&issuer=%CE%95%CE%B8%CE%BD%CE%B9%CE%BA%CE%AE%20%CE%A6%CF%81%CE%BF%CF%85%CF%81%CE%AC&algorithm=SHA1&digits=6&period=30";
+    </script>
+{% endblock head %}
+
+{% block body %}
+    {{ super() }}
+
+    <main role="main" class="container">
+
+        {% include "flash.html" %}
+
+        <div class="row align-items-center mt-4">
+            <div class="col-md-4">
+                <img src="/svg/logo.svg" class="img-fluid align-middle">
+            </div>
+
+            <div class="col-md-8">
+                <h4 class="display-4">Two-factor authentication</h4>
+                <p class="lead mt-5">Είστε έτοιμοι να ενεργοποιήσετε το two-factor authentication.</p>
+
+                <div class="d-flex justify-content-center">
+                    <canvas></canvas>
+                </div>
+
+                <p>Κάντε scan αυτό το QR code με το Google Authenticator app στο κινητό σας, για να προσθέσετε τον λογαριασμό σας.</p>
+                <p>Μετά εισάγετε τον εξαψήφιο κωδικό επαλήθευσης που δημιούργησε το app για να ολοκληρώσετε τη διαδικασία.</p>
+
+                <form action="/api/2fa/verify" method="post">
+                    <input type="hidden" name="csrf" value="{{ csrf }}">
+
+                    <div class="form-group row">
+                        <label for="code" class="col-sm-3 col-form-label">Εξαψήφιος Κωδικός</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="token" class="form-control" id="code" required="" minlength="6" maxlength="6">
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="submit" class="btn btn-primary btn-block">Ενεργοποίηση</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="d-flex justify-content-between">
+                    <form action="/api/2fa/cancel" method="post">
+                        <input type="hidden" name="csrf" value="{{ csrf }}">
+                        <button type="submit" class="btn btn-light">Ακύρωση</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+{% endblock body %}

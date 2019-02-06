@@ -31,7 +31,7 @@ async function Deserialize(SessionHex, done) {
         const SessionToken = new Token(SessionHex);
         const Session = await SessionModel.findOne({
             session_hash: await SessionToken.hash
-        }).select('user');
+        }).lean(false);
 
         if (!Session) {
             // TODO: Log
@@ -39,7 +39,7 @@ async function Deserialize(SessionHex, done) {
             done(null, false);
         } else {
             const User = await UserModel.findById(Session.user).lean(false);
-            User.session_hash = await SessionToken.hash;
+            User.session = Session;
 
             console.log('DESERIALIZE OK', User.toJSON({ virtuals: true }));
             done(null, User);
@@ -51,11 +51,11 @@ async function Deserialize(SessionHex, done) {
     }
 }
 
-async function DestroySession(SessionHash) {
-    console.log('CALLED DESTROYSESSION', SessionHash);
+async function DestroySession(Session) {
+    console.log('CALLED DESTROYSESSION', Session);
 
     return await SessionModel.deleteOne({
-        session_hash: SessionHash
+        _id: Session._id
     });
 }
 
@@ -71,7 +71,9 @@ async function Strategy(Username, Password, done) {
     try {
         console.log('CALLED STRATEGY', Username, Password, done);
 
-        const User = await UserModel.findOne({ email: Username }).select('password');
+        const User = await UserModel.findOne({
+            email: Username
+        }).select('password two_fa_enabled');
 
         if (User && await bcrypt.compare(Password, User.password))
             done(null, User);
@@ -88,13 +90,7 @@ async function GetCsrf(User) {
     console.log('CALLED GETCSRF', User);
 
     if (User) {
-        const Session = await SessionModel.findOne({
-            session_hash: User.session_hash
-        }).select('csrf');
-
-        console.log(Session.csrf);
-
-        return Session.csrf;
+        return User.session.csrf;
     } else {
         const CsrfToken = new Token();
 
@@ -109,6 +105,7 @@ async function GetCsrf(User) {
 async function CheckCsrf(ctx, next) {
     console.log('CALLED CHECKCSRF', ctx.request.body);
 
+    // TODO: Do not use Token here!
     const Csrf = new Token(ctx.request.body.csrf);
     const User = ctx.state.user;
 

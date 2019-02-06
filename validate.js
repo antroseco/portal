@@ -141,6 +141,15 @@ function ValidateAM(AM) {
     throw Error('Malformed POST request: ValidateAM');
 }
 
+function ValidateOTP(OTP) {
+    const Regex = /^[0-9]{6}$/;
+
+    if (Regex.test(OTP))
+        return OTP;
+    else
+        throw Error('Malformed POST request: ValidateOTP')
+}
+
 module.exports = {
     Array: ValidateArray,
     Number: ValidateNumber,
@@ -155,5 +164,6 @@ module.exports = {
     Password: ValidatePassword,
     Name: ValidateName,
     AM: ValidateAM,
+    OTP: ValidateOTP,
     Common: { OS, Vathmos, Epilogi }
 }

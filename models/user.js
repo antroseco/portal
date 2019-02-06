@@ -20,6 +20,16 @@ const Schema = new Mongoose.Schema({
         trim: true,
         select: false
     },
+    two_fa_secret: {
+        type: String,
+        minlength: 32,
+        maxlength: 32
+    },
+    two_fa_enabled: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     onoma: {
         type: String,
         required: true,
@@ -48,10 +58,10 @@ Schema.virtual('onomateponymo').get(function () {
     return `${this.onoma} ${this.epitheto}`;
 });
 
-Schema.virtual('session_hash').get(function () {
+Schema.virtual('session').get(function () {
     return this._session;
-}).set(function (Hash) {
-    this._session = Hash;
+}).set(function (Session) {
+    this._session = Session;
 });
 
 module.exports = Mongoose.model('User', Schema);
