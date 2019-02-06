@@ -29,7 +29,6 @@
     "nunjucks": "^3.1.7",
     "otplib": "^10.0.1",
     "passport-local": "^1.0.0",
-    "sha2": "^1.0.2",
     "zxcvbn": "^4.4.2"
   }
 }

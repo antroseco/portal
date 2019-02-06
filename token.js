@@ -1,4 +1,3 @@
-const { SHA256 } = require('sha2');
 const Util = require('util');
 const Crypto = require('crypto');
 
@@ -30,7 +29,10 @@ class Token {
     get hash() {
         return (async () => {
             if (this._hash === undefined) {
-                this._hash = SHA256(await this.hex);
+                const Sha256 = Crypto.createHash('sha256');
+
+                Sha256.update(await this.hex);
+                this._hash = Sha256.digest();
             }
 
             return this._hash;
