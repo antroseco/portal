@@ -28,6 +28,7 @@ const Anakoinosis = require('./anakoinosis');
 const Conditional = require('koa-conditional-get');
 const ETag = require('koa-etag');
 const Two_fa = require('./two_fa');
+const ms = require('ms');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -157,7 +158,7 @@ App.use(Nunjucks({
 
 // Publicly available
 App.use(KoaStatic('static', {
-    maxAge: 4 * 60 * 60 * 1000, // 4 hours
+    maxAge: ms('4 hours'),
     defer: true,
     gzip: false,
     br: false

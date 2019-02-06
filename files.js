@@ -1,11 +1,11 @@
 const fs = require('fs').promises;
-const Cron = require('cron');
 const FileModel = require('./models/file');
 const Token = require('./token');
+const ms = require('ms');
 
 const Key = Symbol.for('portal.files.js');
 if (!global[Key])
-    global[Key] = Cron.job('* 0 */1 * * *', Clean, null, true);
+    global[Key] = setInterval(Clean, ms('1 h'));
 
 /*
 * Records file to database and returns
@@ -60,7 +60,7 @@ async function Clean() {
 
     console.log('OLDEST FILE', Oldest.createdAt);
 
-    if (Date.now() - Oldest.createdAt.getTime() > 4 * 60 * 60 * 1000) {
+    if (Date.now() - Oldest.createdAt.getTime() > ms('4 hours')) {
         await FileModel.deleteOne({ _id: Oldest._id });
         await fs.unlink(Oldest.path);
 

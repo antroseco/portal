@@ -1,13 +1,13 @@
-const Cron = require('cron');
+const ms = require('ms');
 const Key = Symbol.for('portal.date_cache.js');
-const TzOffset = (new Date()).getTimezoneOffset() * 60000;
 
 if (!global[Key]) {
     global[Key] = new Map();
 
-    Cron.job('0 1 0 * * *', () => {
-        global[Key].forEach((_, Key, This) => This.set(Key, Calculate(Key)))
-    }, null, true);
+    setInterval(() => {
+        global[Key].forEach((_, Key, This) =>
+            This.set(Key, Calculate(Key)))
+    }, ms('1 m'));
 }
 
 function Calculate(Offset) {

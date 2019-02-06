@@ -2,6 +2,7 @@ const NodeMailer = require('nodemailer');
 const Util = require('util');
 const EmailModel = require('./models/email');
 const Files = require('./files');
+const ms = require('ms');
 
 class Queue {
     constructor(Options) {
@@ -84,7 +85,7 @@ class Queue {
             this._interval = setInterval(() => {
                 if (this.mx.isIdle())
                     this.Check();
-            }, 10000);
+            }, ms('10 s'));
         } else if (!Value) {
             console.log('STOPPING MQ INTERVAL');
 
