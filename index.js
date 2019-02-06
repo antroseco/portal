@@ -134,10 +134,12 @@ App.use(Nunjucks({
     noCache: true,
     filters: {
         TitlosPeriodikou: n => {
-            // #1 released June 2003,
-            // #2 a year later
-            // Up to #24 were issued every 3 months
-            // The rest were issued every 6 moths
+            /*
+            * #1 released June 2003,
+            * #2 a year later
+            * Up to #24 were issued every 3 months
+            * The rest were issued every 6 months
+            */
             if (n == 1) {
                 return 'Τεύχος 1<br>Ιούνιος 2003';
             } else if (n < 25) {
