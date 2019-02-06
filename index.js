@@ -517,7 +517,8 @@ Router.get('/logariasmos', async ctx => {
         'am': ctx.state.user.am,
         'csrf': await Auth.GetCsrf(ctx.state.user),
         'success': ctx.flash('success'),
-        'error': ctx.flash('error')
+        'error': ctx.flash('error'),
+        'two_fa_enabled': ctx.state.user.two_fa_enabled
     });
 });
 
