@@ -105,7 +105,6 @@ async function GetCsrf(User) {
 async function CheckCsrf(ctx, next) {
     console.log('CALLED CHECKCSRF', ctx.request.body);
 
-    // TODO: Do not use Token here!
     const Csrf = new Token(ctx.request.body.csrf);
     const User = ctx.state.user;
 
