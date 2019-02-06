@@ -16,6 +16,10 @@ a:link:not(.badge), a:hover:not(.badge) {
     text-decoration: inherit;
 }
 
+a.btn-primary {
+    color: #fff !important;
+}
+
 a span {
     color: #212529;
 }
