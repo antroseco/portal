@@ -52,7 +52,7 @@ async function Deserialize(SessionHex, done) {
 }
 
 async function DestroySession(Session) {
-    console.log('CALLED DESTROYSESSION', Session);
+    console.log('CALLED DESTROYSESSION', Session._id);
 
     return await SessionModel.deleteOne({
         _id: Session._id
