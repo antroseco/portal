@@ -3,6 +3,7 @@ const Util = require('util');
 const EmailModel = require('./models/email');
 const Files = require('./files');
 const ms = require('ms');
+const log = require('./log');
 
 class Queue {
     constructor(Options) {
@@ -30,7 +31,7 @@ class Queue {
 
             await EmailModel.deleteOne({ _id: Mail._id });
         } catch (Err) {
-            console.log('SENDMAIL ERROR', Err);
+            log.error('Push', Err);
 
             if (Mail) {
                 await Mail.updateOne({ sending: false });
@@ -42,15 +43,13 @@ class Queue {
     async Send(Mail) {
         const Info = await this._send(Mail);
 
-        console.log(`Message sent: ${Info.messageId}`);
-        console.log(`Preview URL: ${NodeMailer.getTestMessageUrl(Info)}`);
+        log.info('Send', 'Message sent:', Info.messageId);
+        log.info('Send', 'Preview URL:', NodeMailer.getTestMessageUrl(Info));
 
         // Delete attachments from disk
         Mail.attachments = Mail.attachments || [];
-        for (const Attachment of Mail.attachments) {
-            console.log('SENDMAIL DELETING', Attachment.path);
+        for (const Attachment of Mail.attachments)
             Files.Delete(Attachment.path);
-        }
     }
 
     async Check() {
@@ -67,11 +66,9 @@ class Queue {
                 this.Interval = false;
             }
         } catch (Err) {
-            console.log('CHECKMAIL ERROR', Err, Mail ? Mail : null);
+            log.error('Check', Err);
 
             if (Mail) {
-                console.log('CHECK MAIL FAILED, REVERTING');
-
                 await Mail.updateOne({ sending: false });
                 this.Interval = true;
             }
@@ -80,15 +77,11 @@ class Queue {
 
     set Interval(Value) {
         if (Value && !this.Interval) {
-            console.log('STARTING MQ INTERVAL');
-
             this._interval = setInterval(() => {
                 if (this.mx.isIdle())
                     this.Check();
             }, ms('10 s'));
         } else if (!Value) {
-            console.log('STOPPING MQ INTERVAL');
-
             clearInterval(this._interval);
             this._interval = undefined;
         }

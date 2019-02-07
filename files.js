@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const FileModel = require('./models/file');
 const Token = require('./token');
 const ms = require('ms');
+const log = require('./log');
 
 const Key = Symbol.for('portal.files.js');
 if (!global[Key])
@@ -45,6 +46,8 @@ async function Path(FileToken) {
 * it from the database
 */
 async function Delete(Filename) {
+    log.info('Delete', 'Deleted upload', Filename);
+
     const FileObject = await FileModel.findOneAndDelete({
         file: Filename.substr(-32)
     });
@@ -58,13 +61,11 @@ async function Clean() {
 
     if (!Oldest) return;
 
-    console.log('OLDEST FILE', Oldest.createdAt);
-
     if (Date.now() - Oldest.createdAt.getTime() > ms('4 hours')) {
         await FileModel.deleteOne({ _id: Oldest._id });
         await fs.unlink(Oldest.path);
 
-        console.log('EXPIRED UPLOADED FILE', Oldest.path);
+        log.info('Clean', 'Deleted expired upload', Oldest.path);
 
         /*
         * Call Clean() again to check if there are any

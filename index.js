@@ -29,13 +29,13 @@ const Conditional = require('koa-conditional-get');
 const ETag = require('koa-etag');
 const Two_fa = require('./two_fa');
 const ms = require('ms');
+const log = require('./log');
 
 const App = new Koa();
 const Router = new KoaRouter();
 
 const DbURI = 'mongodb://localhost:27017/testdb';
-Mongoose.set('debug', true);
-Mongoose.connection.on('connected', () => console.log(`Connected to ${DbURI}`));
+Mongoose.connection.on('connected', () => log.info('Mongoose', 'Connected to', DbURI));
 Mongoose.connect(DbURI, {
     useNewUrlParser: true,
     family: 4
@@ -98,6 +98,8 @@ async function SendConfirmEmail(User) {
             'token': await ConfirmationToken.hex
         })
     });
+
+    log.info('ConfirmEmail', 'Sent to', User.email);
 }
 
 App.use(KoaHelmet.frameguard({ action: 'deny' }));
@@ -206,6 +208,7 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
         ctx.redirect('/home');
 });
 
+// TODO: Refactor
 Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     const body = ctx.request.body;
 
@@ -267,6 +270,8 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
             kinito: body.kinito
         });
 
+        log.info('Register', 'User', User.email, 'registered');
+
         await SendConfirmEmail(User);
 
         await ctx.login(User);
@@ -277,9 +282,9 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
             ctx.session.register = true;
             return ctx.redirect('/');
         } else {
-            console.log('REGISTRATION ERROR', Err);
+            log.error('Register', Err);
 
-            throw Err;
+            ctx.status = 500;
         }
     }
 });
@@ -304,8 +309,6 @@ Router.get('/', async ctx => {
 
 Router.post('/api/send_reset', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
-        console.log('SEND_RESET', ctx.request.body);
-
         const Email = Validate.Email(ctx.request.body.email);
         const User = await UserModel.findOne({ email: Email }).select('id');
 
@@ -327,9 +330,10 @@ Router.post('/api/send_reset', ParseUrlEnc, Auth.CheckCsrf,
                     token: await ResetToken.hex
                 })
             });
+
+            log.info('Password Reset', 'A password reset has been requested for user', Email);
         } else {
-            // TODO: Logging
-            console.log('SEND_RESET INVALID EMAIL', Email);
+            log.warn('Password Reset', 'A password reset has been requested for unknown user', Email);
         }
 
         ctx.flash('success', 'Έχει σταλεί email για επαναφορά κωδικού')
@@ -338,7 +342,6 @@ Router.post('/api/send_reset', ParseUrlEnc, Auth.CheckCsrf,
 
 Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
-        console.log('/API/RESET_PASSWORD', ctx.request.body);
         const body = ctx.request.body;
         const ResetToken = new Token(body.token);
 
@@ -349,14 +352,16 @@ Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf,
             hash: await ResetToken.hash
         }).select('user');
 
-        console.log('GOT FROM DB', ResetEntry);
         if (ResetEntry != null) {
             await UserModel.findByIdAndUpdate(ResetEntry.user, {
                 password: await bcrypt.hash(Password, 10)
             });
 
+            log.info('Password Reset', 'A password reset has been completed for user', ctx.state.user.email);
             ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
         } else {
+            log.warn('Password Reset', 'A failed password reset was attempted for user', ctx.state.user.email,
+                'with token', await ResetToken.hex);
             ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
         }
 
@@ -401,6 +406,8 @@ Router.get('/api/logout', async ctx => {
     ctx.cookies.set('remember_me', null);
     ctx.cookies.set('remember_me:sig', null);
 
+    log.info('Logout', 'User', ctx.state.user.email, 'logged out');
+
     ctx.logout();
     ctx.flash('success', 'You have been logged out successfully')
     ctx.redirect('/');
@@ -440,6 +447,9 @@ Router.post('/api/resend_confirm_email', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         if (ctx.state.user.verified_email) {
             ctx.status = 403;
+
+            log.warn('Resend Confirm Email', 'Already verified user', ctx.state.user.email,
+                'requested a new confirmation email');
         }
         else {
             await SendConfirmEmail(ctx.state.user);
@@ -468,7 +478,6 @@ Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
             const ConfirmationToken = new Token(ctx.params.token);
 
             if (user.email_token_hash.equals(await ConfirmationToken.hash)) {
-                console.log('CONFIRM_EMAIL/TOKEN SUCCESS')
                 await UserModel.updateOne({ _id: user._id }, {
                     $set: { verified_email: true },
                     $unset: { email_token_hash: null }
@@ -476,14 +485,17 @@ Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
 
                 ctx.flash('success', 'Το email σας έχει επαληθευτεί');
                 ctx.redirect('/2fa/enable');
+
+                log.info('Confirm Email', 'User', ctx.state.user.email, 'confirmed his email');
             } else {
-                // TODO: LOG FAILURE DETAILS
-                console.log('CONFIRM_EMAIL/TOKEN FAILURE');
                 ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');
                 ctx.redirect('/welcome');
+
+                log.warn('Confirm Email', 'User', ctx.state.user.email,
+                    'failed to confirm his email using token', await ConfirmationToken.hex);
             }
         } catch (Err) {
-            console.log('CONFIRM_EMAIL/TOKEN ERROR', Err);
+            log.error('Confirm Email', 'User', ctx.state.user.email, Err);
 
             ctx.status = 400;
         }
@@ -529,17 +541,20 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
             const New = Validate.Password(ctx.request.body.new_password);
 
             if (await Auth.VerifyPassword(Old, ctx.state.user._id)) {
-                console.log('UPDATING PASSWORD FOR USER', ctx.state.user._id);
+                log.info('Change Password', 'User', ctx.state.user.email, 'updated his password');
 
                 await UserModel.updateOne({ _id: ctx.state.user._id },
                     { password: await bcrypt.hash(New, 10) });
 
                 ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
             } else {
+                log.warn('Change Password', 'User', ctx.state.user.email,
+                    'used an incorrect password while trying to update his password');
+
                 ctx.flash('error', 'Ο κωδικός που εισάγατε είναι λανθασμένος');
             }
         } catch (Err) {
-            console.log('/API/CHANGE_PASSWORD ERROR', Err);
+            log.error('Change Password', 'User', ctx.state.user.email, Err);
 
             ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
         } finally {
@@ -568,13 +583,16 @@ Router.get('/periodika', async ctx => {
 
 Router.post('/api/upload', async (ctx, next) => {
     try {
+        log.info('Upload', 'User', ctx.state.user.email,
+            'uploaded a file');
         // Catch Formidable erorrs
         await next();
         // Save file and return a 'token'
         ctx.body = await Files.Register(ctx.request.files.file);
         ctx.status = 201;
     } catch (Err) {
-        console.log(Err);
+        log.error('Upload', 'User', ctx.state.user.email, Err);
+
         ctx.status = Err.status ? Err.status : 400;
     }
 }, ParseMultipart, Auth.CheckCsrf);

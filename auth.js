@@ -3,10 +3,10 @@ const UserModel = require('./models/user');
 const SessionModel = require('./models/session');
 const RememberModel = require('./models/remember_me');
 const Token = require('./token');
+const log = require('./log');
 
 // Called once on user login
 async function Serialize(User, done) {
-    console.log('CALLED SERIALIZE', User, done);
     const CsrfToken = new Token();
     const SessionToken = new Token();
 
@@ -16,15 +16,12 @@ async function Serialize(User, done) {
         user: User._id
     });
 
-    console.log('SERIALIZE', await SessionToken.hex);
     done(null, await SessionToken.hex);
 }
 
 // Called on every authenticated request
 async function Deserialize(SessionHex, done) {
     try {
-        console.log('CALLED DESERIALIZE', SessionHex, done);
-
         if (typeof SessionHex !== 'string')
             return done(null, false);
 
@@ -34,34 +31,30 @@ async function Deserialize(SessionHex, done) {
         }).lean(false);
 
         if (!Session) {
-            // TODO: Log
-            console.log('DESERIALIZE NULL SESSION');
+            log.warn('Deserialize', 'Request used an expired session',
+                await SessionToken.hex);
+
             done(null, false);
         } else {
             const User = await UserModel.findById(Session.user).lean(false);
             User.session = Session;
 
-            console.log('DESERIALIZE OK', User.toJSON({ virtuals: true }));
             done(null, User);
         }
     } catch (Err) {
-        console.log(Err);
+        log.error('Deserialize', Err);
 
         done(Err);
     }
 }
 
 async function DestroySession(Session) {
-    console.log('CALLED DESTROYSESSION', Session._id);
-
     return await SessionModel.deleteOne({
         _id: Session._id
     });
 }
 
 async function DestoryCsrf(CsrfToken) {
-    console.log('CALLED DESTROYCSRF', CsrfToken);
-
     return await SessionModel.deleteOne({
         csrf: CsrfToken
     });
@@ -69,26 +62,25 @@ async function DestoryCsrf(CsrfToken) {
 
 async function Strategy(Username, Password, done) {
     try {
-        console.log('CALLED STRATEGY', Username, Password, done);
-
+        // TODO: Validate email
         const User = await UserModel.findOne({
             email: Username
         }).select('password two_fa_enabled');
 
-        if (User && await bcrypt.compare(Password, User.password))
+        if (User && await bcrypt.compare(Password, User.password)) {
+            log.info('Login', 'User', Username, 'logged in');
             done(null, User);
-        else
+        } else {
+            log.warn('Login', 'Failed login attempt for user', Username);
             done(null, false);
+        }
     } catch (Err) {
-        console.log('STRATEGY ERROR', Err);
-
+        log.error('Strategy', Err);
         done(Err);
     }
 }
 
 async function GetCsrf(User) {
-    console.log('CALLED GETCSRF', User);
-
     if (User) {
         return User.session.csrf;
     } else {
@@ -103,20 +95,22 @@ async function GetCsrf(User) {
 }
 
 async function CheckCsrf(ctx, next) {
-    console.log('CALLED CHECKCSRF', ctx.request.body);
+    try {
+        var Csrf = new Token(ctx.request.body.csrf);
+        var User = ctx.state.user;
 
-    const Csrf = new Token(ctx.request.body.csrf);
-    const User = ctx.state.user;
+        const Session = await SessionModel.findOne({
+            csrf: await Csrf.hex,
+            user: User ? User._id : undefined
+        }).select('_id');
 
-    const Session = await SessionModel.findOne({
-        csrf: await Csrf.hex,
-        user: User ? User._id : undefined
-    }).select('_id');
+        ctx.assert(Session);
+    } catch (Err) {
+        log.warn('Check Csrf', 'User', User ? User.email : undefined,
+            'used an invalid CSRF token', Csrf ? await Csrf.hex : undefined);
 
-    console.log('CHECKCSRF', Session);
-
-    // TODO: Log
-    ctx.assert(Session, 401);
+        ctx.throw(401);
+    }
 
     await next();
 }
@@ -133,7 +127,6 @@ async function VerifyPassword(Data, _id) {
 async function Remember(User, done) {
     try {
         const RememberToken = new Token();
-        console.log('CALLED REMEMBER', User);
 
         await RememberModel.create({
             hash: await RememberToken.hash,
@@ -145,7 +138,7 @@ async function Remember(User, done) {
         else
             return await RememberToken.hex;
     } catch (Err) {
-        console.log('REMEMBER ERROR', Err);
+        log.error('Remember', Err);
 
         if (done)
             done(Err);
@@ -156,17 +149,22 @@ async function Remember(User, done) {
 
 async function ValidateRemember(RememberHex, done) {
     try {
-        console.log('CALLED VALIDATEREMEMBER', RememberHex);
-
         const RememberToken = new Token(RememberHex);
 
         const Remember = await RememberModel.findOneAndDelete({
             hash: await RememberToken.hash
         }).select('user');
 
-        done(null, Remember ? await UserModel.findById(Remember.user) : false);
+        if (Remember) {
+            const User = await UserModel.findById(Remember.user);
+            log.info('Validate Remember', 'User', User.email, 'logged in using a remember token');
+            done(null, User);
+        } else {
+            log.warn('Validate Remember', 'Invalid remember token was used', await RememberToken.hex);
+            done(null, false);
+        }
     } catch (Err) {
-        console.log('VALIDATEREMEMBER ERROR', Err);
+        log.error('Validate Remember', Err);
 
         done(Err);
     }

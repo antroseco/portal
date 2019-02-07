@@ -1,5 +1,6 @@
 const Validate = require('./validate');
 const Auth = require('./auth');
+const log = require('./log');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
@@ -67,10 +68,10 @@ function Submit(ctx) {
             html: RenderEmail(ctx.request.body)
         });
 
+        log.info('LAEF', 'User', ctx.state.user.email, 'submited a form');
         ctx.flash('success', 'Ευχαριστούμε, η αξιολόγηση σας έχει σταλεί');
     } catch (Err) {
-        console.log(Err);
-
+        log.info('LAEF', 'User', ctx.state.user.email, Err);
         ctx.flash('error', 'Η αποστολή της αξιολόγησής σας έχει αποτύχει');
     } finally {
         ctx.redirect('/laef');

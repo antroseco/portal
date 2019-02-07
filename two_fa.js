@@ -1,6 +1,7 @@
 const OTP = require('otplib').authenticator;
 const Auth = require('./auth');
 const Validate = require('./validate');
+const log = require('./log');
 
 OTP.options.window = 1;
 
@@ -23,6 +24,8 @@ async function SubmitEnable(ctx) {
 
     ctx.state.user.two_fa_secret = OTP.generateSecret();
     await ctx.state.user.save();
+
+    log.info('Enable 2fa', 'Generated 2fa secret for user', ctx.state.user.email);
 
     ctx.redirect('/2fa/verify');
 }
@@ -54,6 +57,8 @@ async function SubmitVerify(ctx) {
         ctx.state.user.two_fa_enabled = true;
         await ctx.state.user.save();
 
+        log.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
+
         ctx.flash('success', 'Το two-factor authentication έχει ενεργοποιηθεί');
         ctx.redirect('/home');
     } else {
@@ -69,6 +74,8 @@ async function SubmitCancel(ctx) {
 
     ctx.state.user.two_fa_secret = null;
     await ctx.state.user.save();
+
+    log.info('Cancel 2fa', 'User', ctx.state.user.email, 'cancelled the 2fa setup process');
 
     ctx.redirect('/home');
 }
@@ -96,8 +103,10 @@ async function SubmitLogin(ctx) {
         ctx.state.user.session.two_fa = true;
         await ctx.state.user.session.save();
 
+        log.info('Login 2fa', 'User', ctx.state.user.email, 'authenticated using 2fa');
         ctx.redirect('/home')
     } else {
+        log.warn('Login 2fa', 'User', ctx.state.user.email, 'failed to authenticate using 2fa');
         ctx.flash('error', 'Ο κωδικός που έχετε εισάγει είναι λάθος');
         ctx.redirect('/2fa/login');
     }

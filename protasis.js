@@ -1,6 +1,7 @@
 const Validate = require('./validate');
 const Auth = require('./auth');
 const DateCache = require('./date_cache');
+const log = require('./log');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
@@ -48,10 +49,10 @@ function Submit(ctx) {
             })
         });
 
+        log.info('Protasis', 'User', ctx.state.user.email, 'submited a form');
         ctx.flash('success', 'Ευχαριστούμε, η πρότασή σας έχει σταλεί');
     } catch (Err) {
-        console.log(Err);
-
+        log.error('Protasis', 'User', ctx.state.user.email, Err);
         ctx.flash('error', 'Η αποστολή της πρότασής σας έχει αποτύχει');
     } finally {
         ctx.redirect('/protasis');

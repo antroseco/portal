@@ -1,6 +1,7 @@
 const Auth = require('./auth');
 const Directory = require('./directory');
 const Validate = require('./validate');
+const log = require('./log');
 
 const Anakoinosis = new Directory('./views/anakoinosis/anakoinosis');
 const ProsforesEf = new Directory('./views/anakoinosis/prosfores-ef');
@@ -58,17 +59,14 @@ async function Min() {
 
 async function MarkRead(ctx) {
     try {
-        console.log('MARK READ BODY', ctx.request.body);
-
         const Id = Validate.Number(ctx.request.body.id, await Min(), await Max());
-        console.log('PUT /api/anakoinosis/read', Id);
 
         ctx.state.user.anakoinosis.set(Id, true);
         await ctx.state.user.save();
 
         ctx.status = 200;
     } catch (Err) {
-        console.log('MARK READ', Err);
+        log.error('Mark Read', 'User', ctx.state.user.email, Err);
 
         ctx.status = 400;
     }

@@ -11,7 +11,7 @@ class Token {
             if (Regex.test(HexString))
                 this._hex = HexString;
             else
-                console.log('TOKEN: INVALID HEX STRING');
+                throw Error('Invalid token');
         }
     }
 

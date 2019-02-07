@@ -1,6 +1,7 @@
 const Validate = require('./validate');
 const Auth = require('./auth');
 const Files = require('./files');
+const log = require('./log');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 }).addFilter('Letter', n => String.fromCharCode('α'.charCodeAt() + n));
@@ -132,10 +133,10 @@ async function Submit(ctx) {
             attachments: Attachments
         });
 
+        log.info('KAAY', 'User', ctx.state.user.email, 'submited a form');
         ctx.flash('success', 'Ευχαριστούμε, η αίτησή σας έχει σταλεί');
     } catch (Err) {
-        console.log(Err);
-
+        log.error('KAAY', 'User', ctx.state.user.email, Err);
         ctx.flash('error', 'Η αποστολή της αίτησής σας έχει αποτύχει');
     } finally {
         ctx.redirect('/kaay');

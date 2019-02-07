@@ -1,5 +1,6 @@
 const fs = require('fs');
 const fsP = fs.promises;
+const log = require('./log');
 
 class Directory {
     constructor(Path) {
@@ -8,11 +9,10 @@ class Directory {
         fs.watch(Path, {
             persistent: false,
             recursive: true
-        }, (EventType, Filename) => {
-            console.log('GOT EVENT IN', Path, EventType, Filename);
-
+        }, () => {
             // Debounce events
             clearTimeout(this.timeout);
+
             this.timeout = setTimeout(() => {
                 this.files = this.Resolve(Path)
                 this.filtered = undefined;
@@ -25,7 +25,7 @@ class Directory {
     * directory, sorted by name.
     */
     async Resolve(Path) {
-        console.log('RESOLVING', Path);
+        log.info('Resolve', 'Reading directory', Path);
 
         const Dir = await fsP.readdir(Path, {
             withFileTypes: true
