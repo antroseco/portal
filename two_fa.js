@@ -55,7 +55,9 @@ async function SubmitVerify(ctx) {
 
     if (OTP.check(Token, ctx.state.user.two_fa_secret)) {
         ctx.state.user.two_fa_enabled = true;
-        await ctx.state.user.save();
+        ctx.state.user.session.two_fa = true;
+
+        await Promise.all([ctx.state.user.save(), ctx.state.user.session.save()]);
 
         log.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
 
