@@ -1,7 +1,5 @@
 const Validate = require('./validate');
 const Auth = require('./auth');
-const Path = require('path');
-const Os = require('os');
 const Files = require('./files');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
