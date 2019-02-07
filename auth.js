@@ -4,6 +4,7 @@ const SessionModel = require('./models/session');
 const RememberModel = require('./models/remember_me');
 const Token = require('./token');
 const log = require('./log');
+const Validate = require('./validate');
 
 // Called once on user login
 async function Serialize(User, done) {
@@ -62,21 +63,28 @@ async function DestoryCsrf(CsrfToken) {
 
 async function Strategy(Username, Password, done) {
     try {
-        // TODO: Validate email
+        Username = Validate.Email(Username);
+        Password = Validate.Password(Password);
+    } catch (Err) {
+        log.warn('Login', 'Invalid credentials supplied');
+        return done(null, false);
+    }
+
+    try {
         const User = await UserModel.findOne({
             email: Username
         }).select('password two_fa_enabled');
 
         if (User && await bcrypt.compare(Password, User.password)) {
             log.info('Login', 'User', Username, 'logged in');
-            done(null, User);
+            return done(null, User);
         } else {
             log.warn('Login', 'Failed login attempt for user', Username);
-            done(null, false);
+            return done(null, false);
         }
     } catch (Err) {
         log.error('Strategy', Err);
-        done(Err);
+        return done(Err);
     }
 }
 
