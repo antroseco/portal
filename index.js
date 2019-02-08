@@ -416,7 +416,8 @@ Router.get('/api/logout', async ctx => {
 // Enforce 2fa beyond this point
 Router.use(async (ctx, next) => {
     if (ctx.state.user.two_fa_enabled
-        && !ctx.state.user.session.two_fa)
+        && (ctx.state.user.session == null
+            || ctx.state.user.session.two_fa == false))
         ctx.redirect('/2fa/login');
     else
         await next();
