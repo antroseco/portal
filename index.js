@@ -38,6 +38,8 @@ const DbURI = 'mongodb://localhost:27017/testdb';
 Mongoose.connection.on('connected', () => log.info('Mongoose', 'Connected to', DbURI));
 Mongoose.connect(DbURI, {
     useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
     family: 4
 });
 
