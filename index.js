@@ -350,20 +350,35 @@ Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf,
         // Check password before consuming the reset token
         const Password = Validate.Password(body.password);
 
-        const ResetEntry = await ResetModel.findOneAndDelete({
+        const ResetEntry = await ResetModel.findOne({
             hash: await ResetToken.hash
         }).select('user');
 
         if (ResetEntry != null) {
-            await UserModel.findByIdAndUpdate(ResetEntry.user, {
-                password: await bcrypt.hash(Password, 10)
-            });
+            const User = await UserModel.findById(ResetEntry.user)
+                .select('two_fa_enabled two_fa_secret email');
 
-            log.info('Password Reset', 'A password reset has been completed for user', ctx.state.user.email);
+            if (User.two_fa_enabled) {
+                try {
+                    const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
+                    ctx.assert(Two_fa.Check(two_fa_token, User.two_fa_secret));
+                } catch (_) {
+                    log.warn('Password Reset', 'A failed password reset was attempted for user', User.email,
+                        'with an invalid OTP token');
+                    ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
+                    return ctx.redirect('back');
+                }
+            }
+
+            User.password = await bcrypt.hash(Password, 10);
+            await Promise.all([User.save(),
+            ResetModel.deleteOne({ _id: ResetEntry._id })]);
+
+            log.info('Password Reset', 'A password reset has been completed for user', User.email);
             ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
         } else {
-            log.warn('Password Reset', 'A failed password reset was attempted for user', ctx.state.user.email,
-                'with token', await ResetToken.hex);
+            log.warn('Password Reset', 'A failed password reset was attempted with token',
+                await ResetToken.hex);
             ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
         }
 
@@ -375,13 +390,19 @@ Router.get('/reset_password', async ctx => {
 
     const ResetEntry = await ResetModel.findOne({
         hash: await ResetToken.hash
-    }).select('_id');
+    }).select('user');
 
     if (ResetEntry != null) {
+        const User = await UserModel.findById(ResetEntry.user)
+            .select('two_fa_enabled');
+
         await ctx.render('reset_password', {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Επαναφορά Κωδικού',
+            'success': ctx.flash('success'),
+            'error': ctx.flash('error'),
             'token': await ResetToken.hex,
-            'csrf': await Auth.GetCsrf(ctx.state.user)
+            'csrf': await Auth.GetCsrf(ctx.state.user),
+            'two_fa_enabled': User.two_fa_enabled
         });
     } else {
         ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');

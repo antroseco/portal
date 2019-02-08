@@ -160,5 +160,6 @@ async function SubmitDisable(ctx) {
 module.exports = {
     RenderEnable, SubmitEnable, RenderVerify,
     SubmitVerify, RenderLogin, SubmitLogin,
-    SubmitCancel, RenderDisable, SubmitDisable
+    SubmitCancel, RenderDisable, SubmitDisable,
+    Check: (...Arguments) => OTP.check(...Arguments)
 };
