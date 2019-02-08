@@ -114,7 +114,51 @@ async function SubmitLogin(ctx) {
     }
 }
 
+async function RenderDisable(ctx) {
+    // Assert the user has enabled 2fa
+    if (ctx.state.user.two_fa_enabled == false)
+        ctx.redirect('/home');
+    else
+        await ctx.render('disable_2fa', {
+            'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Two-factor authentication',
+            'error': ctx.flash('error'),
+            'success': ctx.flash('success'),
+            'csrf': await Auth.GetCsrf(ctx.state.user)
+        });
+}
+
+async function SubmitDisable(ctx) {
+    // Assert the user has enabled 2fa and has already authenticated
+    ctx.assert(ctx.state.user.two_fa_enabled, 403);
+    ctx.assert(ctx.state.user.session.two_fa, 401);
+
+    try {
+        var Password = Validate.Password(ctx.request.body.password);
+        var Token = Validate.OTP(ctx.request.body.token);
+    } catch (_) {
+        return ctx.status = 400;
+    }
+
+    if (OTP.check(Token, ctx.state.user.two_fa_secret)
+        && Auth.VerifyPassword(Password, ctx.state.user._id)) {
+        ctx.state.user.two_fa_enabled = false;
+        ctx.state.user.two_fa_secret = null;
+        ctx.state.user.session.two_fa = false;
+
+        await Promise.all([ctx.state.user.save(), ctx.state.user.session.save()]);
+
+        log.warn('Disable 2fa', 'User', ctx.state.user.email, 'disabled 2fa authentication');
+        ctx.flash('success', 'Το two-factor authentication έχει απενεργοποιηθεί');
+        ctx.redirect('/logariasmos');
+    } else {
+        log.warn('Disable 2fa', 'User', ctx.state.user.email, 'failed to disable 2fa authentication');
+        ctx.flash('error', 'Τα στοιχεία που εισάγατε είναι λάθος');
+        ctx.redirect('/2fa/disable');
+    }
+}
+
 module.exports = {
     RenderEnable, SubmitEnable, RenderVerify,
-    SubmitVerify, SubmitCancel, RenderLogin, SubmitLogin
+    SubmitVerify, RenderLogin, SubmitLogin,
+    SubmitCancel, RenderDisable, SubmitDisable
 };

@@ -430,6 +430,9 @@ Router.get('/2fa/verify', Two_fa.RenderVerify);
 Router.post('/api/2fa/verify', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitVerify);
 Router.post('/api/2fa/cancel', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitCancel);
 
+Router.get('/2fa/disable', Two_fa.RenderDisable);
+Router.post('/api/2fa/disable', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitDisable);
+
 Router.get('/welcome', async ctx => {
     if (ctx.state.user.verified_email)
         ctx.redirect('/home');
