@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/password.css">
     <script defer="" src="/js/login.js"></script>
+    <script defer="" src="/js/password_strength.js"></script>
     <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
 {% endblock head %}
 
@@ -53,11 +54,11 @@
                     <label for="registerEmail" class="sr-only">Email address</label>
                     <input name="email" type="email" id="registerEmail" class="form-control first" placeholder="Email address" required="" autofocus="">
 
-                    <label for="registerPassword" class="sr-only">Password</label>
-                    <input name="password" type="password" id="registerPassword" class="form-control middle" minlength="8" maxlength="72" placeholder="Password" required="">
+                    <label for="newPassword1" class="sr-only">Password</label>
+                    <input name="password" type="password" id="newPassword1" class="form-control middle" minlength="8" maxlength="72" placeholder="Password" required="">
 
-                    <label for="registerPassword2" class="sr-only">Repeat your password</label>
-                    <input type="password" id="registerPassword2" class="form-control middle" minlength="8" maxlength="72" placeholder="Repeat Password" required="">
+                    <label for="newPassword2" class="sr-only">Repeat your password</label>
+                    <input type="password" id="newPassword2" class="form-control middle" minlength="8" maxlength="72" placeholder="Repeat Password" required="">
 
                     <div class="progress rounded-0 position-relative d-none">
                         <div class="progress-bar"></div>
