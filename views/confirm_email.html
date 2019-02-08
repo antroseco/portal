@@ -3,7 +3,7 @@
 {% block head %}
     {{ super() }}
 
-    <link rel="stylesheet" href="/css/confirm_email.css">
+    <link rel="stylesheet" href="/css/column.css">
 {% endblock head %}
 
 {% block body %}
@@ -17,8 +17,8 @@
                     <h1 class="h3 mb-3 font-weight-normal">Επιβεβαίωση Εγγραφής</h1>
 
                     <div class="form-group text-left">
-                        <div class="form-control">{{ onomateponymo }}</div>
-                        <div class="form-control">{{ email }}</div>
+                        <div class="form-control first">{{ onomateponymo }}</div>
+                        <div class="form-control last">{{ email }}</div>
                     </div>
 
                     <input type="hidden" name="csrf" value="{{ csrf }}">

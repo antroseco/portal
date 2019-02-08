@@ -3,7 +3,7 @@
 {% block head %}
     {{ super() }}
 
-    <link rel="stylesheet" href="/css/disable_2fa.css">
+    <link rel="stylesheet" href="/css/column.css">
 {% endblock head %}
 
 {% block body %}
@@ -21,10 +21,10 @@
                     <p class="text-justify">Αποδείξτε την ταυτότητά σας για να ολοκληρώσετε την απενεργοποίηση του two-factor authentication.</p>
 
                     <label for="password" class="sr-only">Κωδικός</label>
-                    <input name="password" type="password" id="password" class="form-control" placeholder="Password" required="" minlength="8" maxlength="72">
+                    <input name="password" type="password" id="password" class="form-control first" placeholder="Password" required="" minlength="8" maxlength="72">
 
                     <label for="token" class="sr-only">Κωδικός επαλήθευσης</label>
-                    <input name="token" type="text" pattern="[0-9]*" id="token" class="form-control" placeholder="Κωδικός επαλήθευσης" minlength="6" maxlength="6" required="">
+                    <input name="token" type="text" pattern="[0-9]*" id="token" class="form-control last" placeholder="Κωδικός επαλήθευσης" minlength="6" maxlength="6" required="">
 
                     <input type="hidden" name="csrf" value="{{ csrf }}">
 

@@ -3,6 +3,7 @@
 {% block head %}
     {{ super() }}
 
+    <link rel="stylesheet" href="/css/column.css">
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/password.css">
     <script defer="" src="/js/login.js"></script>
@@ -26,11 +27,11 @@
                     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
                     <label for="signinEmail" class="sr-only">Email address</label>
-                    <input name="email" type="email" id="signinEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+                    <input name="email" type="email" id="signinEmail" class="form-control first" placeholder="Email address" required="" autofocus="">
                     <label for="signinPassword" class="sr-only">Password</label>
-                    <input name="password" type="password" id="signinPassword" class="form-control" placeholder="Password" required="" minlength="8" maxlength="72">
+                    <input name="password" type="password" id="signinPassword" class="form-control last" placeholder="Password" required="" minlength="8" maxlength="72">
 
-                    <div class="checkbox mb-3">
+                    <div class="checkbox my-3">
                         <label>
                             <input type="checkbox" name="remember_me">
                             Remember me
@@ -50,30 +51,30 @@
                     <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
 
                     <label for="registerEmail" class="sr-only">Email address</label>
-                    <input name="email" type="email" id="registerEmail" class="form-control" placeholder="Email address" required="" autofocus="">
+                    <input name="email" type="email" id="registerEmail" class="form-control first" placeholder="Email address" required="" autofocus="">
 
                     <label for="registerPassword" class="sr-only">Password</label>
-                    <input name="password" type="password" id="registerPassword" class="form-control" minlength="8" maxlength="72" placeholder="Password" required="">
+                    <input name="password" type="password" id="registerPassword" class="form-control middle" minlength="8" maxlength="72" placeholder="Password" required="">
 
                     <label for="registerPassword2" class="sr-only">Repeat your password</label>
-                    <input type="password" id="registerPassword2" class="form-control" minlength="8" maxlength="72" placeholder="Repeat Password" required="">
+                    <input type="password" id="registerPassword2" class="form-control middle" minlength="8" maxlength="72" placeholder="Repeat Password" required="">
 
-                    <div class="progress d-none">
+                    <div class="progress rounded-0 position-relative d-none">
                         <div class="progress-bar"></div>
                         <span class="badge badge-pill badge-dark"></span>
                     </div>
 
                     <label for="registerOnoma" class="sr-only">Όνομα</label>
-                    <input name="onoma" type="text" id="registerOnoma" class="form-control" placeholder="Όνομα" required="">
+                    <input name="onoma" type="text" id="registerOnoma" class="form-control middle" placeholder="Όνομα" required="">
 
                     <label for="registerEpitheto" class="sr-only">Επίθετο</label>
-                    <input name="epitheto" type="text" id="registerEpitheto" class="form-control" placeholder="Επίθετο" required="">
+                    <input name="epitheto" type="text" id="registerEpitheto" class="form-control middle" placeholder="Επίθετο" required="">
 
                     <label for="registerAM" class="sr-only">ΑΜ</label>
-                    <input type="number" class="form-control" name="am" id="registerAM" placeholder="ΑΜ" min="100" max="99999" required="">
+                    <input type="number" class="form-control middle" name="am" id="registerAM" placeholder="ΑΜ" min="100" max="99999" required="">
 
                     <label for="registerKinito" class="sr-only">Κινητό Τηλέφωνο</label>
-                    <input name="kinito" type="tel" id="registerKinito" class="form-control mb-3" placeholder="Κινητό Τηλέφωνο" required="" minlength="8" maxlength="14">
+                    <input name="kinito" type="tel" id="registerKinito" class="form-control last mb-3" placeholder="Κινητό Τηλέφωνο" required="" minlength="8" maxlength="14">
 
                     <input type="hidden" name="csrf" value="{{ csrf }}">
 
