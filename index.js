@@ -30,6 +30,7 @@ const ETag = require('koa-etag');
 const Two_fa = require('./two_fa');
 const ms = require('ms');
 const log = require('./log');
+const Session = require('./session');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -115,9 +116,11 @@ App.use(ETag());
 App.keys = ['session-secret :)']; //TODO: Session Secret
 App.use(KoaSession({
     key: 'session',
-    maxAge: 'session',
+    maxAge: ms('20 m'),
     httpOnly: true,
-    signed: true
+    signed: true,
+    renew: true,
+    store: Session.Store
 }, App));
 
 App.use(KoaFlash());
@@ -175,6 +178,13 @@ App.use(KoaPassport.session());
 
 App.use(async (ctx, next) => {
     ctx.state.Mq = Mq;
+
+    // Initialize new sessions
+    if (ctx.session.isNew) {
+        const CsrfToken = new Token();
+        ctx.session.csrf = await CsrfToken.hex;
+    }
+
     await next();
 });
 
@@ -183,12 +193,11 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
     failureFlash: 'Invalid username or password combination'
 }), async ctx => {
     /*
-    * Destroy the CSRF token used since a new
-    * one has been generated with the new session.
-    * If the same token would be used, we would be
-    * vulnerable to session fixation attacks.
+    * Destroy the session to protect
+    * against session fixation attacks.
     */
-    Auth.DestoryCsrf(ctx.request.body.csrf);
+    delete ctx.session.two_fa;
+    await Session.RegenerateId(ctx);
 
     if (Validate.Checkbox(ctx.request.body.remember_me)) {
         // TODO: Look into unifying cookie settings
@@ -301,7 +310,7 @@ Router.get('/', async ctx => {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ',
             'error': ctx.flash('error'),
             'success': ctx.flash('success'),
-            'csrf': await Auth.GetCsrf(ctx.state.user),
+            'csrf': ctx.session.csrf,
             'register': ctx.session.register
         });
 
@@ -401,7 +410,7 @@ Router.get('/reset_password', async ctx => {
             'success': ctx.flash('success'),
             'error': ctx.flash('error'),
             'token': await ResetToken.hex,
-            'csrf': await Auth.GetCsrf(ctx.state.user),
+            'csrf': ctx.session.csrf,
             'two_fa_enabled': User.two_fa_enabled
         });
     } else {
@@ -425,7 +434,9 @@ Router.post('/api/2fa/login', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitLogin);
 
 // TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
-    await Auth.DestroySession(ctx.state.user.session);
+    delete ctx.session.two_fa;
+    await Session.RegenerateId(ctx);
+
     ctx.cookies.set('remember_me', null);
     ctx.cookies.set('remember_me:sig', null);
 
@@ -439,8 +450,7 @@ Router.get('/api/logout', async ctx => {
 // Enforce 2fa beyond this point
 Router.use(async (ctx, next) => {
     if (ctx.state.user.two_fa_enabled
-        && (ctx.state.user.session == null
-            || ctx.state.user.session.two_fa == false))
+        && ctx.session.two_fa !== true)
         ctx.redirect('/2fa/login');
     else
         await next();
@@ -466,7 +476,7 @@ Router.get('/welcome', async ctx => {
             'email': ctx.state.user.email,
             'success': ctx.flash('success'),
             'error': ctx.flash('error'),
-            'csrf': await Auth.GetCsrf(ctx.state.user)
+            'csrf': ctx.session.csrf
         });
 });
 
@@ -494,7 +504,7 @@ Router.get('/confirm_email/:token', async ctx => {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Επιβεβαίωση Εγγραφής',
             'onomateponymo': ctx.state.user.onomateponymo,
             'email': ctx.state.user.email,
-            'csrf': await Auth.GetCsrf(ctx.state.user)
+            'csrf': ctx.session.csrf
         });
 });
 
@@ -554,7 +564,7 @@ Router.get('/logariasmos', async ctx => {
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito,
         'am': ctx.state.user.am,
-        'csrf': await Auth.GetCsrf(ctx.state.user),
+        'csrf': ctx.session.csrf,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
         'two_fa_enabled': ctx.state.user.two_fa_enabled

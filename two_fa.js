@@ -15,7 +15,7 @@ async function RenderEnable(ctx) {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Two-factor authentication',
             'error': ctx.flash('error'),
             'success': ctx.flash('success'),
-            'csrf': await Auth.GetCsrf(ctx.state.user)
+            'csrf': ctx.session.csrf
         });
 }
 
@@ -40,7 +40,7 @@ async function RenderVerify(ctx) {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Two-factor authentication',
             'error': ctx.flash('error'),
             'success': ctx.flash('success'),
-            'csrf': await Auth.GetCsrf(ctx.state.user),
+            'csrf': ctx.session.csrf,
             'email': ctx.state.user.email,
             'secret': ctx.state.user.two_fa_secret
         });
@@ -55,9 +55,9 @@ async function SubmitVerify(ctx) {
 
     if (OTP.check(Token, ctx.state.user.two_fa_secret)) {
         ctx.state.user.two_fa_enabled = true;
-        ctx.state.user.session.two_fa = true;
+        await ctx.state.user.save();
 
-        await Promise.all([ctx.state.user.save(), ctx.state.user.session.save()]);
+        ctx.session.two_fa = true;
 
         log.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
 
@@ -84,26 +84,25 @@ async function SubmitCancel(ctx) {
 
 async function RenderLogin(ctx) {
     // Assert the user has enabled 2fa and he has not been already verified
-    if (!ctx.state.user.two_fa_enabled || ctx.state.user.session.two_fa)
+    if (!ctx.state.user.two_fa_enabled || ctx.session.two_fa)
         ctx.redirect('/home');
     else
         await ctx.render('login_2fa', {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ',
             'error': ctx.flash('error'),
             'success': ctx.flash('success'),
-            'csrf': await Auth.GetCsrf(ctx.state.user)
+            'csrf': ctx.session.csrf
         });
 }
 
 async function SubmitLogin(ctx) {
     // Assert the user has enabled 2fa and he has not been already verified
     ctx.assert(ctx.state.user.two_fa_enabled, 403);
-    ctx.assert(!ctx.state.user.session.two_fa, 403);
+    ctx.assert(!ctx.session.two_fa, 403);
 
     const Token = Validate.OTP(ctx.request.body.token);
     if (OTP.check(Token, ctx.state.user.two_fa_secret)) {
-        ctx.state.user.session.two_fa = true;
-        await ctx.state.user.session.save();
+        ctx.session.two_fa = true;
 
         log.info('Login 2fa', 'User', ctx.state.user.email, 'authenticated using 2fa');
         ctx.redirect('/home')
@@ -123,14 +122,14 @@ async function RenderDisable(ctx) {
             'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Two-factor authentication',
             'error': ctx.flash('error'),
             'success': ctx.flash('success'),
-            'csrf': await Auth.GetCsrf(ctx.state.user)
+            'csrf': ctx.session.csrf
         });
 }
 
 async function SubmitDisable(ctx) {
     // Assert the user has enabled 2fa and has already authenticated
     ctx.assert(ctx.state.user.two_fa_enabled, 403);
-    ctx.assert(ctx.state.user.session.two_fa, 401);
+    ctx.assert(ctx.session.two_fa, 401);
 
     try {
         var Password = Validate.Password(ctx.request.body.password);
@@ -143,9 +142,9 @@ async function SubmitDisable(ctx) {
         && Auth.VerifyPassword(Password, ctx.state.user._id)) {
         ctx.state.user.two_fa_enabled = false;
         ctx.state.user.two_fa_secret = null;
-        ctx.state.user.session.two_fa = false;
+        await ctx.state.user.save()
 
-        await Promise.all([ctx.state.user.save(), ctx.state.user.session.save()]);
+        ctx.session.two_fa = false;
 
         log.warn('Disable 2fa', 'User', ctx.state.user.email, 'disabled 2fa authentication');
         ctx.flash('success', 'Το two-factor authentication έχει απενεργοποιηθεί');

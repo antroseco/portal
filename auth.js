@@ -1,64 +1,34 @@
 const bcrypt = require('bcrypt');
 const UserModel = require('./models/user');
-const SessionModel = require('./models/session');
 const RememberModel = require('./models/remember_me');
 const Token = require('./token');
 const log = require('./log');
 const Validate = require('./validate');
 
 // Called once on user login
-async function Serialize(User, done) {
-    const CsrfToken = new Token();
-    const SessionToken = new Token();
-
-    await SessionModel.create({
-        csrf: await CsrfToken.hex,
-        session_hash: await SessionToken.hash,
-        user: User._id
-    });
-
-    done(null, await SessionToken.hex);
+function Serialize(User, done) {
+    done(null, User._id);
 }
 
 // Called on every authenticated request
-async function Deserialize(SessionHex, done) {
+async function Deserialize(id, done) {
     try {
-        if (typeof SessionHex !== 'string')
+        if (!id)
             return done(null, false);
 
-        const SessionToken = new Token(SessionHex);
-        const Session = await SessionModel.findOne({
-            session_hash: await SessionToken.hash
-        }).lean(false);
+        const User = await UserModel.findById(id).lean(false);
 
-        if (!Session) {
-            log.warn('Deserialize', 'Request used an expired session',
-                await SessionToken.hex);
-
-            done(null, false);
-        } else {
-            const User = await UserModel.findById(Session.user).lean(false);
-            User.session = Session;
-
+        if (User) {
             done(null, User);
+        } else {
+            log.warn('Deserialize', 'Request used an expired session');
+            done(null, false);
         }
     } catch (Err) {
         log.error('Deserialize', Err);
 
         done(Err);
     }
-}
-
-async function DestroySession(Session) {
-    return await SessionModel.deleteOne({
-        _id: Session._id
-    });
-}
-
-async function DestoryCsrf(CsrfToken) {
-    return await SessionModel.deleteOne({
-        csrf: CsrfToken
-    });
 }
 
 async function Strategy(Username, Password, done) {
@@ -88,31 +58,12 @@ async function Strategy(Username, Password, done) {
     }
 }
 
-async function GetCsrf(User) {
-    if (User) {
-        return User.session.csrf;
-    } else {
-        const CsrfToken = new Token();
-
-        await SessionModel.create({
-            csrf: await CsrfToken.hex
-        });
-
-        return await CsrfToken.hex;
-    }
-}
-
 async function CheckCsrf(ctx, next) {
     try {
         var Csrf = new Token(ctx.request.body.csrf);
         var User = ctx.state.user;
 
-        const Session = await SessionModel.findOne({
-            csrf: await Csrf.hex,
-            user: User ? User._id : undefined
-        }).select('_id');
-
-        ctx.assert(Session);
+        ctx.assert.strictEqual(ctx.session.csrf, await Csrf.hex);
     } catch (Err) {
         log.warn('Check Csrf', 'User', User ? User.email : undefined,
             'used an invalid CSRF token', Csrf ? await Csrf.hex : undefined);
@@ -126,6 +77,7 @@ async function CheckCsrf(ctx, next) {
 async function VerifyPassword(Data, _id) {
     const User = await UserModel.findById(_id).select('password');
 
+    // TODO: This throws if User is null
     if (User.password != null)
         return bcrypt.compare(Data, User.password);
 
@@ -179,6 +131,6 @@ async function ValidateRemember(RememberHex, done) {
 }
 
 module.exports = {
-    Serialize, Deserialize, DestroySession, DestoryCsrf, Strategy,
-    GetCsrf, CheckCsrf, VerifyPassword, Remember, ValidateRemember
+    Serialize, Deserialize, Strategy, CheckCsrf,
+    VerifyPassword, Remember, ValidateRemember
 };

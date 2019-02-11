@@ -21,7 +21,7 @@ async function RenderPage(ctx) {
         'am': ctx.state.user.am,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
-        'csrf': await Auth.GetCsrf(ctx.state.user),
+        'csrf': ctx.session.csrf,
         'email': ctx.state.user.email,
         'kinito': ctx.state.user.kinito
     });

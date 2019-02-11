@@ -18,7 +18,7 @@ async function RenderPage(ctx) {
         'onomateponymo': ctx.state.user.onomateponymo,
         'success': ctx.flash('success'),
         'error': ctx.flash('error'),
-        'csrf': await Auth.GetCsrf(ctx.state.user)
+        'csrf': ctx.session.csrf
     });
 }
 

@@ -1,30 +1,22 @@
 const Mongoose = require('mongoose');
 
 const Schema = new Mongoose.Schema({
-    session_hash: {
-        type: Buffer
-    },
-    csrf: {
+    key: {
         type: String,
-        required: true,
-        minlength: 32,
-        maxlength: 32
+        required: true
     },
-    user: {
-        type: Mongoose.Schema.Types.ObjectId
+    session: {
+        type: Object,
+        required: true
     },
-    two_fa: {
-        type: Boolean,
-        required: true,
-        default: false
-    },
-    createdAt: {
+    updatedAt: {
         type: Date,
         required: true,
         default: Mongoose.now
     }
 });
 
-Schema.index({ createdAt: 1 }, { expires: '2 hours' });
+Schema.index({ updatedAt: 1 }, { expires: '20 minutes' });
+Schema.index({ key: 'hashed' });
 
 module.exports = Mongoose.model('session', Schema);

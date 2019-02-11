@@ -11,7 +11,7 @@ async function RenderPage(ctx) {
     await ctx.render('anakoinosis', {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
         'onomateponymo': ctx.state.user.onomateponymo,
-        'csrf': await Auth.GetCsrf(ctx.state.user),
+        'csrf': ctx.session.csrf,
         'read': ctx.state.user.anakoinosis,
         'anakoinosis': await Anakoinosis.Get(3),
         'prosfores_ef': await ProsforesEf.Get(3),
@@ -23,7 +23,7 @@ async function RenderCategory(ctx) {
     const Options = {
         'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Ανακοινώσεις',
         'onomateponymo': ctx.state.user.onomateponymo,
-        'csrf': await Auth.GetCsrf(ctx.state.user),
+        'csrf': ctx.session.csrf,
         'read': ctx.state.user.anakoinosis
     };
 
