@@ -23,7 +23,7 @@ must:
 ✓ keep track of uploads and expire them
 - remember me and 2fa interaction
 ✓ mark session as 2fa authed when 2fa is enabled
-- log IP addresses
+✓ log IP addresses
 
 nice to have:
 
