@@ -1,7 +1,6 @@
 const Auth = require('./auth');
 const Directory = require('./directory');
 const Validate = require('./validate');
-const log = require('./log');
 
 const Anakoinosis = new Directory('./views/anakoinosis/anakoinosis');
 const ProsforesEf = new Directory('./views/anakoinosis/prosfores-ef');
@@ -66,7 +65,7 @@ async function MarkRead(ctx) {
 
         ctx.status = 200;
     } catch (Err) {
-        log.error('Mark Read', 'User', ctx.state.user.email, Err);
+        ctx.error('Mark Read', 'User', ctx.state.user.email, Err);
 
         ctx.status = 400;
     }

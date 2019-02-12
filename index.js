@@ -102,7 +102,7 @@ async function SendConfirmEmail(User) {
         })
     });
 
-    log.info('ConfirmEmail', 'Sent to', User.email);
+    ctx.info('ConfirmEmail', 'Sent to', User.email);
 }
 
 App.use(KoaHelmet.frameguard({ action: 'deny' }));
@@ -176,6 +176,7 @@ App.use(KoaStatic('static', {
 App.use(KoaPassport.initialize());
 App.use(KoaPassport.session());
 
+App.use(log.attach);
 App.use(async (ctx, next) => {
     ctx.state.Mq = Mq;
 
@@ -281,7 +282,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
             kinito: body.kinito
         });
 
-        log.info('Register', 'User', User.email, 'registered');
+        ctx.info('Register', 'User', User.email, 'registered');
 
         await SendConfirmEmail(User);
 
@@ -293,7 +294,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
             ctx.session.register = true;
             return ctx.redirect('/');
         } else {
-            log.error('Register', Err);
+            ctx.error('Register', Err);
 
             ctx.status = 500;
         }
@@ -342,9 +343,9 @@ Router.post('/api/send_reset', ParseUrlEnc, Auth.CheckCsrf,
                 })
             });
 
-            log.info('Password Reset', 'A password reset has been requested for user', Email);
+            ctx.info('Password Reset', 'A password reset has been requested for user', Email);
         } else {
-            log.warn('Password Reset', 'A password reset has been requested for unknown user', Email);
+            ctx.warn('Password Reset', 'A password reset has been requested for unknown user', Email);
         }
 
         ctx.flash('success', 'Έχει σταλεί email για επαναφορά κωδικού')
@@ -372,7 +373,7 @@ Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf,
                     const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
                     ctx.assert(Two_fa.Check(two_fa_token, User.two_fa_secret));
                 } catch (_) {
-                    log.warn('Password Reset', 'A failed password reset was attempted for user', User.email,
+                    ctx.warn('Password Reset', 'A failed password reset was attempted for user', User.email,
                         'with an invalid OTP token');
                     ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
                     return ctx.redirect('back');
@@ -383,10 +384,10 @@ Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf,
             await Promise.all([User.save(),
             ResetModel.deleteOne({ _id: ResetEntry._id })]);
 
-            log.info('Password Reset', 'A password reset has been completed for user', User.email);
+            ctx.info('Password Reset', 'A password reset has been completed for user', User.email);
             ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
         } else {
-            log.warn('Password Reset', 'A failed password reset was attempted with token',
+            ctx.warn('Password Reset', 'A failed password reset was attempted with token',
                 await ResetToken.hex);
             ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
         }
@@ -440,7 +441,7 @@ Router.get('/api/logout', async ctx => {
     ctx.cookies.set('remember_me', null);
     ctx.cookies.set('remember_me:sig', null);
 
-    log.info('Logout', 'User', ctx.state.user.email, 'logged out');
+    ctx.info('Logout', 'User', ctx.state.user.email, 'logged out');
 
     ctx.logout();
     ctx.flash('success', 'You have been logged out successfully')
@@ -485,7 +486,7 @@ Router.post('/api/resend_confirm_email', ParseUrlEnc, Auth.CheckCsrf,
         if (ctx.state.user.verified_email) {
             ctx.status = 403;
 
-            log.warn('Resend Confirm Email', 'Already verified user', ctx.state.user.email,
+            ctx.warn('Resend Confirm Email', 'Already verified user', ctx.state.user.email,
                 'requested a new confirmation email');
         }
         else {
@@ -523,16 +524,16 @@ Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
                 ctx.flash('success', 'Το email σας έχει επαληθευτεί');
                 ctx.redirect('/2fa/enable');
 
-                log.info('Confirm Email', 'User', ctx.state.user.email, 'confirmed his email');
+                ctx.info('Confirm Email', 'User', ctx.state.user.email, 'confirmed his email');
             } else {
                 ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');
                 ctx.redirect('/welcome');
 
-                log.warn('Confirm Email', 'User', ctx.state.user.email,
+                ctx.warn('Confirm Email', 'User', ctx.state.user.email,
                     'failed to confirm his email using token', await ConfirmationToken.hex);
             }
         } catch (Err) {
-            log.error('Confirm Email', 'User', ctx.state.user.email, Err);
+            ctx.error('Confirm Email', 'User', ctx.state.user.email, Err);
 
             ctx.status = 400;
         }
@@ -593,14 +594,14 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
                         const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
                         ctx.assert(Two_fa.Check(two_fa_token, ctx.state.user.two_fa_secret));
                     } catch (_) {
-                        log.warn('Password Reset', 'A failed password change was attempted for user', ctx.state.user.email,
+                        ctx.warn('Password Reset', 'A failed password change was attempted for user', ctx.state.user.email,
                             'with an invalid OTP token');
                         ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
                         return ctx.redirect('/change_password');
                     }
                 }
 
-                log.info('Change Password', 'User', ctx.state.user.email, 'updated his password');
+                ctx.info('Change Password', 'User', ctx.state.user.email, 'updated his password');
 
                 await UserModel.updateOne({ _id: ctx.state.user._id },
                     { password: await bcrypt.hash(New, 10) });
@@ -608,14 +609,14 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
                 ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
                 ctx.redirect('/logariasmos');
             } else {
-                log.warn('Change Password', 'User', ctx.state.user.email,
+                ctx.warn('Change Password', 'User', ctx.state.user.email,
                     'used an incorrect password while trying to update his password');
 
                 ctx.flash('error', 'Ο κωδικός που εισάγατε είναι λανθασμένος');
                 ctx.redirect('/change_password');
             }
         } catch (Err) {
-            log.error('Change Password', 'User', ctx.state.user.email, Err);
+            ctx.error('Change Password', 'User', ctx.state.user.email, Err);
 
             ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
             ctx.redirect('/change_password');
@@ -643,7 +644,7 @@ Router.get('/periodika', async ctx => {
 
 Router.post('/api/upload', async (ctx, next) => {
     try {
-        log.info('Upload', 'User', ctx.state.user.email,
+        ctx.info('Upload', 'User', ctx.state.user.email,
             'uploaded a file');
         // Catch Formidable erorrs
         await next();
@@ -651,7 +652,7 @@ Router.post('/api/upload', async (ctx, next) => {
         ctx.body = await Files.Register(ctx.request.files.file);
         ctx.status = 201;
     } catch (Err) {
-        log.error('Upload', 'User', ctx.state.user.email, Err);
+        ctx.error('Upload', 'User', ctx.state.user.email, Err);
 
         ctx.status = Err.status ? Err.status : 400;
     }

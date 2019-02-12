@@ -1,7 +1,6 @@
 const Validate = require('./validate');
 const Auth = require('./auth');
 const DateCache = require('./date_cache');
-const log = require('./log');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
@@ -45,10 +44,10 @@ function Submit(ctx) {
             })
         });
 
-        log.info('Order', 'User', ctx.state.user.email, 'submited an order');
+        ctx.info('Order', 'User', ctx.state.user.email, 'submited an order');
         ctx.flash('success', 'Ευχαριστούμε, η παραγγελία σας έχει σταλεί');
     } catch (Err) {
-        log.error('Order', 'User', ctx.state.user.email, Err);
+        ctx.error('Order', 'User', ctx.state.user.email, Err);
         ctx.flash('error', 'Η αποστολή της παραγγελίας σας έχει αποτύχει');
     } finally {
         ctx.redirect('/order');

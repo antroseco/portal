@@ -1,7 +1,6 @@
 const OTP = require('otplib').authenticator;
 const Auth = require('./auth');
 const Validate = require('./validate');
-const log = require('./log');
 
 OTP.options.window = 1;
 
@@ -25,7 +24,7 @@ async function SubmitEnable(ctx) {
     ctx.state.user.two_fa_secret = OTP.generateSecret();
     await ctx.state.user.save();
 
-    log.info('Enable 2fa', 'Generated 2fa secret for user', ctx.state.user.email);
+    ctx.info('Enable 2fa', 'Generated 2fa secret for user', ctx.state.user.email);
 
     ctx.redirect('/2fa/verify');
 }
@@ -59,7 +58,7 @@ async function SubmitVerify(ctx) {
 
         ctx.session.two_fa = true;
 
-        log.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
+        ctx.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
 
         ctx.flash('success', 'Το two-factor authentication έχει ενεργοποιηθεί');
         ctx.redirect('/home');
@@ -77,7 +76,7 @@ async function SubmitCancel(ctx) {
     ctx.state.user.two_fa_secret = null;
     await ctx.state.user.save();
 
-    log.info('Cancel 2fa', 'User', ctx.state.user.email, 'cancelled the 2fa setup process');
+    ctx.info('Cancel 2fa', 'User', ctx.state.user.email, 'cancelled the 2fa setup process');
 
     ctx.redirect('/home');
 }
@@ -104,10 +103,10 @@ async function SubmitLogin(ctx) {
     if (OTP.check(Token, ctx.state.user.two_fa_secret)) {
         ctx.session.two_fa = true;
 
-        log.info('Login 2fa', 'User', ctx.state.user.email, 'authenticated using 2fa');
+        ctx.info('Login 2fa', 'User', ctx.state.user.email, 'authenticated using 2fa');
         ctx.redirect('/home')
     } else {
-        log.warn('Login 2fa', 'User', ctx.state.user.email, 'failed to authenticate using 2fa');
+        ctx.warn('Login 2fa', 'User', ctx.state.user.email, 'failed to authenticate using 2fa');
         ctx.flash('error', 'Ο κωδικός που έχετε εισάγει είναι λάθος');
         ctx.redirect('/2fa/login');
     }
@@ -146,11 +145,11 @@ async function SubmitDisable(ctx) {
 
         ctx.session.two_fa = false;
 
-        log.warn('Disable 2fa', 'User', ctx.state.user.email, 'disabled 2fa authentication');
+        ctx.warn('Disable 2fa', 'User', ctx.state.user.email, 'disabled 2fa authentication');
         ctx.flash('success', 'Το two-factor authentication έχει απενεργοποιηθεί');
         ctx.redirect('/logariasmos');
     } else {
-        log.warn('Disable 2fa', 'User', ctx.state.user.email, 'failed to disable 2fa authentication');
+        ctx.warn('Disable 2fa', 'User', ctx.state.user.email, 'failed to disable 2fa authentication');
         ctx.flash('error', 'Τα στοιχεία που εισάγατε είναι λάθος');
         ctx.redirect('/2fa/disable');
     }

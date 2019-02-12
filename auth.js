@@ -65,7 +65,7 @@ async function CheckCsrf(ctx, next) {
 
         ctx.assert.strictEqual(ctx.session.csrf, await Csrf.hex);
     } catch (Err) {
-        log.warn('Check Csrf', 'User', User ? User.email : undefined,
+        ctx.warn('Check Csrf', 'User', User ? User.email : undefined,
             'used an invalid CSRF token', Csrf ? await Csrf.hex : undefined);
 
         ctx.throw(401);
