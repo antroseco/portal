@@ -22,10 +22,6 @@
     {{ super() }}
 
     <link rel="stylesheet" href="/css/home.css">
-    <link rel="stylesheet" href="/css/password.css">
-    <script defer="" src="/js/password_strength.js"></script>
-    <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
-
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 {% endblock head %}
 
@@ -56,36 +52,12 @@
 
         <div class="row">
             <div class="col-md-6">
-                <form action="/api/change_password" method="post">
-                    <h3 class="my-4">Αλλαγή Κωδικού</h3>
-                    <div class="form-group row">
-                        <label for="password3" class="col-md-4 col-form-label">Παλιός Κωδικός</label>
-                        <div class="col-md-6">
-                            <input type="password" class="form-control" name="old_password" minlength="8" maxlength="72" id="password3" required="">
-                        </div>
+                <h3 class="my-4">Αλλαγή Κωδικού</h3>
+                <div class="form-group row">
+                    <div class="col-md-6 offset-md-4">
+                        <a href="/change_password" class="btn btn-primary w-100">Αλλαγή</a>
                     </div>
-                    <div class="form-group row">
-                        <label for="newPassword1" class="col-md-4 col-form-label">Νέος Κωδικός</label>
-                        <div class="col-md-6">
-                            <input type="password" class="form-control" id="newPassword1" name="new_password" minlength="8" maxlength="72" required="" autocomplete="new-password">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="newPassword2" class="col-md-4 col-form-label">Επαλήθευση Νέου</label>
-                        <div class="col-md-6">
-                            <input type="password" class="form-control" id="newPassword2" minlength="8" maxlength="72" required="">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-md-6 offset-md-4">
-                            <div class="progress position-relative d-none">
-                                <div class="progress-bar"></div>
-                                <span class="badge badge-pill badge-dark"></span>
-                            </div>
-                        </div>
-                    </div>
-                    {{ submit() }}
-                </form>
+                </div>
             </div>
 
             <div class="col-md-6">

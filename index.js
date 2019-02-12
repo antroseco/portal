@@ -571,6 +571,16 @@ Router.get('/logariasmos', async ctx => {
     });
 });
 
+Router.get('/change_password', async ctx => {
+    await ctx.render('change_password', {
+        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Αλλαγή Κωδικού',
+        'csrf': ctx.session.csrf,
+        'success': ctx.flash('success'),
+        'error': ctx.flash('error'),
+        'two_fa_enabled': ctx.state.user.two_fa_enabled
+    });
+});
+
 Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
@@ -578,24 +588,37 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
             const New = Validate.Password(ctx.request.body.new_password);
 
             if (await Auth.VerifyPassword(Old, ctx.state.user._id)) {
+                if (ctx.state.user.two_fa_enabled) {
+                    try {
+                        const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
+                        ctx.assert(Two_fa.Check(two_fa_token, ctx.state.user.two_fa_secret));
+                    } catch (_) {
+                        log.warn('Password Reset', 'A failed password change was attempted for user', ctx.state.user.email,
+                            'with an invalid OTP token');
+                        ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
+                        return ctx.redirect('/change_password');
+                    }
+                }
+
                 log.info('Change Password', 'User', ctx.state.user.email, 'updated his password');
 
                 await UserModel.updateOne({ _id: ctx.state.user._id },
                     { password: await bcrypt.hash(New, 10) });
 
                 ctx.flash('success', 'Ο κωδικός σας έχει αλλαχτεί');
+                ctx.redirect('/logariasmos');
             } else {
                 log.warn('Change Password', 'User', ctx.state.user.email,
                     'used an incorrect password while trying to update his password');
 
                 ctx.flash('error', 'Ο κωδικός που εισάγατε είναι λανθασμένος');
+                ctx.redirect('/change_password');
             }
         } catch (Err) {
             log.error('Change Password', 'User', ctx.state.user.email, Err);
 
             ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
-        } finally {
-            ctx.redirect('/logariasmos');
+            ctx.redirect('/change_password');
         }
     });
 
