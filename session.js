@@ -8,16 +8,14 @@ const Store = {
 
         return session;
     },
-    set: async (Key, Session, _, Options) => {
+    set: async (Key, session, _, Options) => {
         /*
         * Because we have set renew to true,
         * the set function will be periodically
         * called to update the expiry date,
         * even if the session hasn't been updated.
         */
-        const Doc = { updateAt: Date.now() };
-        if (Options.changed)
-            Doc.session = Session;
+        const Doc = Options.changed ? { session } : {};
 
         await SessionModel.updateOne({ key: Key }, Doc, {
             upsert: true,

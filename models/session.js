@@ -8,15 +8,11 @@ const Schema = new Mongoose.Schema({
     session: {
         type: Object,
         required: true
-    },
-    updatedAt: {
-        type: Date,
-        required: true,
-        default: Mongoose.now
     }
-});
+}, { timestamps: true });
 
 Schema.index({ updatedAt: 1 }, { expires: '20 minutes' });
+Schema.index({ createdAt: 1 }, { expires: '4 hours' });
 Schema.index({ key: 'hashed' });
 
 module.exports = Mongoose.model('session', Schema);
