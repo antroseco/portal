@@ -77,8 +77,7 @@ async function CheckCsrf(ctx, next) {
 async function VerifyPassword(Data, _id) {
     const User = await UserModel.findById(_id).select('password');
 
-    // TODO: This throws if User is null
-    if (User.password != null)
+    if (User)
         return bcrypt.compare(Data, User.password);
 
     return false;
