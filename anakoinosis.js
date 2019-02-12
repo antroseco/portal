@@ -1,4 +1,3 @@
-const Auth = require('./auth');
 const Directory = require('./directory');
 const Validate = require('./validate');
 
