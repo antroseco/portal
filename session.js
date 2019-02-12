@@ -19,8 +19,7 @@ const Store = {
 
         await SessionModel.updateOne({ key: Key }, Doc, {
             upsert: true,
-            setDefaultsOnInsert: true,
-            new: true
+            setDefaultsOnInsert: true
         });
     },
     destroy: async Key => {
