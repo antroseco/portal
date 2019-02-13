@@ -31,6 +31,8 @@ const Two_fa = require('./two_fa');
 const ms = require('ms');
 const log = require('./log');
 const Session = require('./session');
+const http2 = require('http2');
+const fs = require('fs');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -665,4 +667,12 @@ Router.put('/api/anakoinosis/read', ParseJson, Auth.CheckCsrf, Anakoinosis.MarkR
 App.use(Router.routes());
 App.use(Router.allowedMethods());
 
-App.listen(8000, () => console.log('Listening on localhost:8000'));
+require('./enforce_tls').listen(8000);
+
+http2.createSecureServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.crt'),
+    minVersion: 'TLSv1.2',
+    allowHTTP1: true
+}, App.callback()).listen(8443, () =>
+    log.info('HTTPS', 'Listening on localhost:8443'));
