@@ -34,6 +34,8 @@ a.card {
 
 div.card-footer {
     padding: 0.75rem;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
 }
 
