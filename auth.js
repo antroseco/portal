@@ -68,7 +68,8 @@ async function CheckCsrf(ctx, next) {
         ctx.warn('Check Csrf', 'User', User ? User.email : undefined,
             'used an invalid CSRF token', Csrf ? await Csrf.hex : undefined);
 
-        ctx.throw(401);
+        ctx.flash('error', 'Your session has expired');
+        return ctx.redirect('/');
     }
 
     await next();
