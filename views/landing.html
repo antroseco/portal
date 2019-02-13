@@ -9,6 +9,16 @@
     <script defer="" src="/js/login.js"></script>
     <script defer="" src="/js/password_strength.js"></script>
     <script async="" src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js" integrity="sha256-Znf8FdJF85f1LV0JmPOob5qudSrns8pLPZ6qkd/+F0o=" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (/MSIE|Trident/.test(window.navigator.userAgent)) 
+                document
+                    .getElementById('ie-warning')
+                    .className = 'row justify-content-center';
+            }
+        );
+    </script>
 {% endblock head %}
 
 {% block body %}
@@ -18,6 +28,12 @@
                 <img class="mb-4" src="/svg/logo.svg" alt="ΓΕΕΦ" width="128">
 
                 {% include "flash.html" %}
+
+                <div id="ie-warning" class="d-none">
+                    <div class="alert alert-danger" role="alert">
+                        Το Internet Explorer δεν υποστηρίζεται
+                    </div>
+                </div>
 
                 <div id="btn-group">
                     <button type="button" class="btn btn-secondary" id="login">Log in</button>
