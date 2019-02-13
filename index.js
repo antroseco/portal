@@ -104,7 +104,7 @@ async function SendConfirmEmail(User) {
         })
     });
 
-    ctx.info('ConfirmEmail', 'Sent to', User.email);
+    log.info('ConfirmEmail', 'Sent to', User.email);
 }
 
 App.use(KoaHelmet.frameguard({ action: 'deny' }));
