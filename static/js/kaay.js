@@ -92,51 +92,51 @@ function FilterRanks(event) {
 
     if (Value == 0) {
         // Αξκός
-        for (let i = 0; i < 9; ++i) {
+        for (let i = 1; i < 10; ++i) {
             Nodes[i].disabled = false;
             Nodes[i].style.removeProperty('display');
         }
 
-        for (let i = 9; i < 16; ++i) {
+        for (let i = 10; i < 17; ++i) {
             Nodes[i].disabled = true;
             Nodes[i].style.display = 'none';
         }
 
-        if (Select.selectedIndex >= 9)
+        if (Select.selectedIndex >= 10)
             Select.selectedIndex = -1;
     }
     else if (Value == 1) {
         // Ανθστής
-        for (let i = 0; i < 9; ++i) {
+        for (let i = 1; i < 10; ++i) {
             Nodes[i].disabled = true;
             Nodes[i].style.display = 'none';
         }
 
-        for (let i = 9; i < 12; ++i) {
+        for (let i = 10; i < 13; ++i) {
             Nodes[i].disabled = false;
             Nodes[i].style.removeProperty('display');
         }
 
-        for (let i = 12; i < 16; ++i) {
+        for (let i = 13; i < 17; ++i) {
             Nodes[i].disabled = true;
             Nodes[i].style.display = 'none';
         }
 
-        if (Select.selectedIndex < 9 || Select.selectedIndex > 11)
+        if (Select.selectedIndex < 10 || Select.selectedIndex > 12)
             Select.selectedIndex = -1;
     } else if (Value == 2) {
         // Υπξκός
-        for (let i = 0; i < 12; ++i) {
+        for (let i = 1; i < 13; ++i) {
             Nodes[i].disabled = true;
             Nodes[i].style.display = 'none';
         }
 
-        for (let i = 12; i < 16; ++i) {
+        for (let i = 13; i < 17; ++i) {
             Nodes[i].disabled = false;
             Nodes[i].style.removeProperty('display');
         }
 
-        if (Select.selectedIndex <= 11)
+        if (Select.selectedIndex <= 12)
             Select.selectedIndex = -1;
     } else {
         // Απόστρατος
@@ -225,9 +225,6 @@ function Expand() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    for (const Select of document.getElementsByTagName('select'))
-        Select.selectedIndex = -1;
-
     document.getElementById('oikogeniaki').addEventListener('change', (event) => {
         if (event.target.value === '0') {
             Enable('sizigos');

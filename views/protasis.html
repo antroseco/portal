@@ -4,8 +4,6 @@
     {{ super() }}
 
     <link rel="stylesheet" href="/css/home.css">
-    <script defer="" src="/js/protasis.js"></script>
-
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 {% endblock head %}
 
@@ -68,6 +66,7 @@
                 <div class="form-group col-md-4">
                     <label for="vathmos">Βαθμός</label>
                     <select class="custom-select" id="vathmos" name="vathmos" required="">
+                        <option disabled="" selected="" hidden=""></option>
                         <option value="0">Αντγος</option>
                         <option value="1">Υπγος</option>
                         <option value="2">Ταξχος</option>
@@ -89,6 +88,7 @@
                 <div class="form-group col-md-4">
                     <label for="os">Όπλο - Σώμα</label>
                     <select class="custom-select" id="os" name="os" required="">
+                        <option disabled="" selected="" hidden=""></option>
                         <option value="0">ΠΖ</option>
                         <option value="1">ΤΘ</option>
                         <option value="2">ΠΒ</option>
