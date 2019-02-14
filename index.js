@@ -14,7 +14,7 @@ const bcrypt = require('bcrypt');
 const Laef = require('./laef');
 const Protasis = require('./protasis');
 const Kaay = require('./kaay');
-const RenderEmailConfirmation = require('./email_confirmation');
+const ConfirmEmail = require('./confirm_email');
 const Validate = require('./validate');
 const Mongoose = require('mongoose');
 const UserModel = require('./models/user');
@@ -89,29 +89,6 @@ const CookieSettings = {
     secure: true,
     sameSite: 'lax'
 };
-
-// TODO: Move function to a better place
-async function SendConfirmEmail(User) {
-    const ConfirmationToken = new Token();
-
-    await UserModel.updateOne({ _id: User._id }, {
-        email_token_hash: await ConfirmationToken.hash
-    });
-
-    Mq.Push({
-        from: '"Fred Foo 👻" <foo@example.com>',
-        to: User.email,
-        subject: 'Επιβεβαίωση εγγραφής στη Ψηφιακή Πλατφόρμα της ΕΦ',
-        html: await RenderEmailConfirmation({
-            'onoma': User.onoma,
-            'epitheto': User.epitheto,
-            'email': User.email,
-            'token': await ConfirmationToken.hex
-        })
-    });
-
-    log.info('ConfirmEmail', 'Sent to', User.email);
-}
 
 App.use(KoaHelmet.frameguard({ action: 'deny' }));
 App.use(KoaHelmet.noSniff());
@@ -289,7 +266,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
 
         ctx.info('Register', 'User', User.email, 'registered');
 
-        await SendConfirmEmail(User);
+        await ConfirmEmail.SendEmail(ctx, User);
 
         await ctx.login(User);
         ctx.redirect('/welcome');
@@ -389,63 +366,9 @@ Router.get('/welcome', async ctx => {
         });
 });
 
-Router.post('/api/resend_confirm_email', ParseUrlEnc, Auth.CheckCsrf,
-    async ctx => {
-        if (ctx.state.user.verified_email) {
-            ctx.status = 403;
-
-            ctx.warn('Resend Confirm Email', 'Already verified user', ctx.state.user.email,
-                'requested a new confirmation email');
-        }
-        else {
-            await SendConfirmEmail(ctx.state.user);
-
-            ctx.flash('success', 'Το email έχει σταλεί');
-            ctx.redirect('/welcome');
-        }
-    });
-
-Router.get('/confirm_email/:token', async ctx => {
-    if (ctx.state.user.verified_email)
-        ctx.redirect('/home');
-    else
-        await ctx.render('confirm_email', {
-            'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Επιβεβαίωση Εγγραφής',
-            'onomateponymo': ctx.state.user.onomateponymo,
-            'email': ctx.state.user.email,
-            'csrf': ctx.session.csrf
-        });
-});
-
-Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf,
-    async ctx => {
-        try {
-            const user = ctx.state.user;
-            const ConfirmationToken = new Token(ctx.params.token);
-
-            if (user.email_token_hash.equals(await ConfirmationToken.hash)) {
-                await UserModel.updateOne({ _id: user._id }, {
-                    $set: { verified_email: true },
-                    $unset: { email_token_hash: null }
-                });
-
-                ctx.flash('success', 'Το email σας έχει επαληθευτεί');
-                ctx.redirect('/2fa/enable');
-
-                ctx.info('Confirm Email', 'User', ctx.state.user.email, 'confirmed his email');
-            } else {
-                ctx.flash('error', 'Ο σύνδεσμος έχει λήξει');
-                ctx.redirect('/welcome');
-
-                ctx.warn('Confirm Email', 'User', ctx.state.user.email,
-                    'failed to confirm his email using token', await ConfirmationToken.hex);
-            }
-        } catch (Err) {
-            ctx.error('Confirm Email', 'User', ctx.state.user.email, Err);
-
-            ctx.status = 400;
-        }
-    });
+Router.get('/confirm_email/:token', ConfirmEmail.RenderPage);
+Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf, ConfirmEmail.SubmitConfirm);
+Router.post('/api/resend_confirm_email', ParseUrlEnc, Auth.CheckCsrf, ConfirmEmail.SubmitResend);
 
 // Require email confirmation beyond this point
 Router.use(async (ctx, next) => {
