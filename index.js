@@ -84,6 +84,13 @@ const Mq = new MailQueue({
     // TODO: consider disableFileAccess 
 });
 
+const CookieSettings = {
+    httpOnly: true,
+    signed: true,
+    secure: true,
+    sameSite: 'lax'
+};
+
 // TODO: Move function to a better place
 async function SendConfirmEmail(User) {
     const ConfirmationToken = new Token();
@@ -119,10 +126,7 @@ App.keys = ['session-secret :)']; //TODO: Session Secret
 App.use(KoaSession({
     key: 'session',
     maxAge: ms('20 m'),
-    httpOnly: true,
-    signed: true,
-    secure: true,
-    sameSite: 'lax',
+    ...CookieSettings,
     renew: true,
     store: Session.Store
 }, App));
@@ -138,7 +142,7 @@ KoaPassport.use('local', new LocalStrategy({
 }, Auth.Strategy));
 
 KoaPassport.use('rememberme', new RememberMeStrategy({
-    cookie: { signed: true }
+    cookie: CookieSettings
 }, Auth.ValidateRemember, Auth.Remember));
 
 App.use(Nunjucks({
@@ -205,14 +209,10 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
     await Session.RegenerateId(ctx);
 
     if (Validate.Checkbox(ctx.request.body.remember_me)) {
-        // TODO: Look into unifying cookie settings
         ctx.cookies.set('remember_me',
             await Auth.Remember(ctx.state.user), {
                 maxAge: 604800000,
-                signed: true,
-                httpOnly: true,
-                secure: true,
-                sameSite: 'lax'
+                ...CookieSettings
             });
     } else {
         // Clear any existing cookies
