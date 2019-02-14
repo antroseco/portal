@@ -267,7 +267,7 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     }
 
     try {
-        body.kinito = Validate.Phone(body.kinito);
+        body.kinito = Validate.Kinito(body.kinito);
     } catch (Err) {
         ctx.flash('error', 'Invalid phone number');
         ctx.session.register = true;

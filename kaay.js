@@ -33,8 +33,6 @@ function ValidatePost(Body) {
         os: Validate.Array(Body.os, Validate.Common.OS),
         vathmos: Validate.Array(Body.vathmos, Validate.Common.Vathmos),
         monada: Validate.Text(Body.monada, 32),
-        oikias: Validate.Phone(Body.oikias),
-        ipiresias: Validate.Phone(Body.ipiresias),
         oikogeniaki: Validate.Array(Body.oikogeniaki, Oikogeniaki),
         arithmosmelon: Validate.Number(Body.arithmosmelon, 1, 20),
         arithmosteknon: Validate.Number(Body.arithmosteknon, 0, 6),
@@ -55,6 +53,12 @@ function ValidatePost(Body) {
         Output.sizigos = Validate.Text(Body.sizigos, 100);
         Output.monadasizigou = Validate.Text(Body.monadasizigou, 32);
     }
+
+    if (Output.oikias)
+        Output.oikias = Validate.Stathero(Body.oikias);
+
+    if (Output.ipiresias)
+        Output.ipiresias = Validate.Stathero(Body.ipiresias);
 
     for (let i = 1; i < 7; ++i) {
         const Value = Body[`ilikia${i}`];

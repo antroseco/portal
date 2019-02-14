@@ -61,7 +61,7 @@ function ValidateDate(x, Min, Max) {
     throw Error('Malformed POST request: ValidateDate');
 }
 
-function ValidatePhone(Phone) {
+function PhoneCommon(Phone) {
     if (typeof Phone !== 'string')
         throw Error('Malformed POST request: ValidatePhone');
 
@@ -70,8 +70,26 @@ function ValidatePhone(Phone) {
     // Normalise the international call prefix
     Phone = Phone.replace(/^\+/, '00');
 
-    const CyRegex = /^(?:00357)?[2|9]\d{7}$/;
-    const GrRegex = /^(?:0030)?[1-9]\d{9}$/;
+    return Phone;
+}
+
+function ValidateKinito(Phone) {
+    Phone = PhoneCommon(Phone);
+
+    const CyRegex = /^(?:00357)?9\d{7}$/;
+    const GrRegex = /^(?:0030)?6\d{9}$/;
+
+    if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
+        throw Error('Malformed POST request: ValidatePhone')
+
+    return Phone;
+}
+
+function ValidateStathero(Phone) {
+    Phone = PhoneCommon(Phone);
+
+    const CyRegex = /^(?:00357)?2\d{7}$/;
+    const GrRegex = /^(?:0030)?2\d{9}$/;
 
     if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
         throw Error('Malformed POST request: ValidatePhone')
@@ -156,7 +174,8 @@ module.exports = {
     Boolean: ValidateBoolean,
     Text: ValidateText,
     Date: ValidateDate,
-    Phone: ValidatePhone,
+    Kinito: ValidateKinito,
+    Stathero: ValidateStathero,
     FileToken: ValidateFileToken,
     Filename: ValidateFilename,
     Checkbox: ValidateCheckbox,
