@@ -32,7 +32,7 @@ function GenerateCalendar(Now) {
     const Month = Now.getMonth();
     const Day = SameMonth(Now, Today) ? Today.getDate() : undefined;
 
-    const Header = document.querySelector('div.card div.card-header span');
+    const Header = document.getElementById('calendar-month');
     const Body = document.querySelector('tbody');
 
     Header.textContent = `${Months[Month]} ${Year}`;
