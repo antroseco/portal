@@ -44,6 +44,14 @@ button.badge {
     cursor: pointer;
 }
 
+a.nav-link:not(.active), span.navbar-text {
+    color: #ccc !important;
+}
+
+a.nav-link:not(.active):hover {
+    color: #eee !important;
+}
+
 /* Required for Firefox */
 
 div.card-footer h5 {
