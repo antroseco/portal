@@ -121,6 +121,8 @@ App.use(KoaSession({
     maxAge: ms('20 m'),
     httpOnly: true,
     signed: true,
+    secure: true,
+    sameSite: 'lax',
     renew: true,
     store: Session.Store
 }, App));
@@ -208,7 +210,9 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
             await Auth.Remember(ctx.state.user), {
                 maxAge: 604800000,
                 signed: true,
-                httpOnly: true
+                httpOnly: true,
+                secure: true,
+                sameSite: 'lax'
             });
     } else {
         // Clear any existing cookies

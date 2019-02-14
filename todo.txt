@@ -17,7 +17,7 @@ must:
 ✓ Use one CDN for all
 ✓ Add max upload size warning
 ✓ properly use relative paths
-- set cookies to Secure once HTTPS is enabled
+✓ set cookies to Secure once HTTPS is enabled
 - request throttling
 ✓ better logs
 ✓ keep track of uploads and expire them
