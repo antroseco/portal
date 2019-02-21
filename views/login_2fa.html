@@ -19,7 +19,7 @@
                     <h1 class="h3 mb-3 font-weight-normal">Two-factor Authentication</h1>
 
                     <label for="token" class="sr-only">Κωδικός επαλήθευσης</label>
-                    <input name="token" type="text" pattern="[0-9]*" id="token" class="form-control" placeholder="Κωδικός επαλήθευσης" minlength="6" maxlength="6" required="">
+                    <input name="token" type="text" pattern="^([0-9]{6}|[0-9a-f]{32})$" id="token" class="form-control" placeholder="Κωδικός επαλήθευσης" minlength="6" maxlength="32" required="">
 
                     <input type="hidden" name="csrf" value="{{ csrf }}">
 

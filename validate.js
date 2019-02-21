@@ -160,9 +160,10 @@ function ValidateAM(AM) {
 }
 
 function ValidateOTP(OTP) {
-    const Regex = /^[0-9]{6}$/;
+    const OTPRegex = /^[0-9]{6}$/;
+    const RecRegex = /^[\da-f]{32}$/;
 
-    if (Regex.test(OTP))
+    if (OTPRegex.test(OTP) || RecRegex.test(OTP))
         return OTP;
     else
         throw Error('Malformed POST request: ValidateOTP')

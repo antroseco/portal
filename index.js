@@ -343,7 +343,7 @@ Router.use(async (ctx, next) => {
 });
 
 Router.get('/2fa/enable', Two_fa.RenderEnable);
-Router.post('/api/2fa/enable', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitEnable);
+Router.post('/2fa/recovery_codes', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitEnable);
 
 Router.get('/2fa/verify', Two_fa.RenderVerify);
 Router.post('/api/2fa/verify', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitVerify);
@@ -423,7 +423,7 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
                 if (ctx.state.user.two_fa_enabled) {
                     try {
                         const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
-                        ctx.assert(Two_fa.Check(two_fa_token, ctx.state.user.two_fa_secret));
+                        ctx.assert(await Two_fa.Check(ctx.state.user, two_fa_token));
                     } catch (_) {
                         ctx.warn('Password Reset', 'A failed password change was attempted for user', ctx.state.user.email,
                             'with an invalid OTP token');

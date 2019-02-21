@@ -1,6 +1,7 @@
 const OTP = require('otplib').authenticator;
 const Auth = require('./auth');
 const Validate = require('./validate');
+const Token = require('./token');
 
 OTP.options.window = 1;
 
@@ -21,12 +22,20 @@ async function RenderEnable(ctx) {
 async function SubmitEnable(ctx) {
     ctx.assert(!ctx.state.user.two_fa_secret, 403);
 
+    // ctx.state.user.save() is called in GenerateRecoveyCodes()
     ctx.state.user.two_fa_secret = OTP.generateSecret();
-    await ctx.state.user.save();
+    const recovery_codes = await GenerateRecoveryCodes(ctx.state.user);
 
-    ctx.info('Enable 2fa', 'Generated 2fa secret for user', ctx.state.user.email);
+    ctx.info('Enable 2fa', 'Generated 2fa secret and recovery codes for user', ctx.state.user.email);
 
-    ctx.redirect('/2fa/verify');
+    ctx.status = 201;
+    await ctx.render('2fa_recovery_codes', {
+        'title': 'Ψηφιακή Πλατφόρμα ΓΕΕΦ - Two-factor authentication',
+        'error': ctx.flash('error'),
+        'success': ctx.flash('success'),
+        'csrf': ctx.session.csrf,
+        'codes': recovery_codes
+    });
 }
 
 async function RenderVerify(ctx) {
@@ -50,9 +59,10 @@ async function SubmitVerify(ctx) {
     ctx.assert(!ctx.state.user.two_fa_enabled, 403);
     ctx.assert(ctx.state.user.two_fa_secret, 403);
 
-    const Token = Validate.OTP(ctx.request.body.token);
+    const token = Validate.OTP(ctx.request.body.token);
 
-    if (OTP.check(Token, ctx.state.user.two_fa_secret)) {
+    // Do not use Check, we shouldn't accept recovery codes here
+    if (OTP.check(token, ctx.state.user.two_fa_secret)) {
         ctx.state.user.two_fa_enabled = true;
         await ctx.state.user.save();
 
@@ -73,7 +83,9 @@ async function SubmitCancel(ctx) {
     ctx.assert(!ctx.state.user.two_fa_enabled, 403);
     ctx.assert(ctx.state.user.two_fa_secret, 403);
 
+    // TODO: Use $unset
     ctx.state.user.two_fa_secret = null;
+    ctx.state.user.two_fa_recovery_codes = null;
     await ctx.state.user.save();
 
     ctx.info('Cancel 2fa', 'User', ctx.state.user.email, 'cancelled the 2fa setup process');
@@ -99,8 +111,8 @@ async function SubmitLogin(ctx) {
     ctx.assert(ctx.state.user.two_fa_enabled, 403);
     ctx.assert(!ctx.session.two_fa, 403);
 
-    const Token = Validate.OTP(ctx.request.body.token);
-    if (OTP.check(Token, ctx.state.user.two_fa_secret)) {
+    const token = Validate.OTP(ctx.request.body.token);
+    if (await Check(ctx.state.user, token)) {
         ctx.session.two_fa = true;
 
         ctx.info('Login 2fa', 'User', ctx.state.user.email, 'authenticated using 2fa');
@@ -132,12 +144,12 @@ async function SubmitDisable(ctx) {
 
     try {
         var Password = Validate.Password(ctx.request.body.password);
-        var Token = Validate.OTP(ctx.request.body.token);
+        var token = Validate.OTP(ctx.request.body.token);
     } catch (_) {
         return ctx.status = 400;
     }
 
-    if (OTP.check(Token, ctx.state.user.two_fa_secret)
+    if (await Check(ctx.state.user, token)
         && Auth.VerifyPassword(Password, ctx.state.user._id)) {
         ctx.state.user.two_fa_enabled = false;
         ctx.state.user.two_fa_secret = null;
@@ -155,9 +167,45 @@ async function SubmitDisable(ctx) {
     }
 }
 
+async function GenerateRecoveryCodes(User) {
+    let Plain = [];
+    let Hashed = [];
+
+    for (let i = 0; i < 10; ++i) {
+        const token = new Token();
+        Plain.push(await token.hex);
+        Hashed.push(await token.hash);
+    }
+
+    User.two_fa_recovery_codes = Hashed;
+    await User.save();
+
+    return Plain;
+}
+
+async function ConsumeRecoveryCode(User, otp) {
+    // Object equality in JavaScript is annoying
+    const Code = new Token(otp);
+    const Plain = User.two_fa_recovery_codes.map(JSON.stringify);
+    const Hash = await Code.hash;
+
+    if (Plain.includes(JSON.stringify(Hash))) {
+        User.two_fa_recovery_codes.pull(Hash.toJSON());
+        await User.save();
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// TODO: refactor to stop throwing on validation errors
+async function Check(User, otp) {
+    return OTP.check(otp, User.two_fa_secret) || await ConsumeRecoveryCode(User, otp);
+}
+
 module.exports = {
     RenderEnable, SubmitEnable, RenderVerify,
     SubmitVerify, RenderLogin, SubmitLogin,
-    SubmitCancel, RenderDisable, SubmitDisable,
-    Check: (...Arguments) => OTP.check(...Arguments)
+    SubmitCancel, RenderDisable, SubmitDisable, Check
 };

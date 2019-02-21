@@ -30,6 +30,7 @@ const Schema = new Mongoose.Schema({
         required: true,
         default: false
     },
+    two_fa_recovery_codes: [Buffer],
     onoma: {
         type: String,
         required: true,

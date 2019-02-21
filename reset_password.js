@@ -3,6 +3,7 @@ const UserModel = require('./models/user');
 const Token = require('./token');
 const Validate = require('./validate');
 const bcrypt = require('bcrypt');
+const Two_fa = require('./two_fa');
 const Nunjucks = require('nunjucks').configure('emails', {
     noCache: true
 });
@@ -80,13 +81,14 @@ async function SubmitReset(ctx) {
     }).select('user');
 
     if (ResetEntry != null) {
-        const User = await UserModel.findById(ResetEntry.user)
-            .select('two_fa_enabled two_fa_secret email');
+        // lean(false) because Two_fa.Check() calls User.save()
+        const User = await UserModel.findById(ResetEntry.user).lean(false)
+            .select('two_fa_enabled two_fa_secret two_fa_recovery_codes email');
 
         if (User.two_fa_enabled) {
             try {
                 const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
-                ctx.assert(Two_fa.Check(two_fa_token, User.two_fa_secret));
+                ctx.assert(await Two_fa.Check(User, two_fa_token));
             } catch (_) {
                 ctx.warn('Password Reset', 'A failed password reset was attempted for user', User.email,
                     'with an invalid OTP token');
