@@ -85,16 +85,11 @@ async function SubmitReset(ctx) {
         const User = await UserModel.findById(ResetEntry.user).lean(false)
             .select('two_fa_enabled two_fa_secret two_fa_recovery_codes email');
 
-        if (User.two_fa_enabled) {
-            try {
-                const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
-                ctx.assert(await Two_fa.Check(User, two_fa_token));
-            } catch (_) {
-                ctx.warn('Password Reset', 'A failed password reset was attempted for user', User.email,
-                    'with an invalid OTP token');
-                ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
-                return ctx.redirect('back');
-            }
+        if (User.two_fa_enabled && await Two_fa.Check(User, ctx.request.body.two_fa_token) == false) {
+            ctx.warn('Password Reset', 'A failed password reset was attempted for user', User.email,
+                'with an invalid OTP token');
+            ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
+            return ctx.redirect('back');
         }
 
         User.password = await bcrypt.hash(Password, 10);

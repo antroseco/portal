@@ -111,8 +111,7 @@ async function SubmitLogin(ctx) {
     ctx.assert(ctx.state.user.two_fa_enabled, 403);
     ctx.assert(!ctx.session.two_fa, 403);
 
-    const token = Validate.OTP(ctx.request.body.token);
-    if (await Check(ctx.state.user, token)) {
+    if (await Check(ctx.state.user, ctx.request.body.token)) {
         ctx.session.two_fa = true;
 
         ctx.info('Login 2fa', 'User', ctx.state.user.email, 'authenticated using 2fa');
@@ -199,9 +198,21 @@ async function ConsumeRecoveryCode(User, otp) {
     }
 }
 
-// TODO: refactor to stop throwing on validation errors
 async function Check(User, otp) {
-    return OTP.check(otp, User.two_fa_secret) || await ConsumeRecoveryCode(User, otp);
+    try {
+        otp = Validate.OTP(otp);
+
+        if (OTP.check(otp, User.two_fa_secret))
+            return true;
+    } catch (_) { }
+
+    try {
+        otp = Validate.RecoveryCode(otp);
+
+        return await ConsumeRecoveryCode(User, otp);
+    } catch (_) {
+        return false;
+    }
 }
 
 module.exports = {

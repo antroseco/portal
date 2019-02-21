@@ -160,13 +160,21 @@ function ValidateAM(AM) {
 }
 
 function ValidateOTP(OTP) {
-    const OTPRegex = /^[0-9]{6}$/;
-    const RecRegex = /^[\da-f]{32}$/;
+    const Regex = /^[0-9]{6}$/;
 
-    if (OTPRegex.test(OTP) || RecRegex.test(OTP))
+    if (Regex.test(OTP))
         return OTP;
     else
-        throw Error('Malformed POST request: ValidateOTP')
+        throw Error('Malformed POST request: ValidateOTP');
+}
+
+function ValidateRecoveryCode(RecCode) {
+    const Regex = /^[\da-f]{32}$/;
+
+    if (Regex.test(RecCode))
+        return RecCode;
+    else
+        throw Error('Malformed POST request: ValidateOTP');
 }
 
 module.exports = {
@@ -185,5 +193,6 @@ module.exports = {
     Name: ValidateName,
     AM: ValidateAM,
     OTP: ValidateOTP,
+    RecoveryCode: ValidateRecoveryCode,
     Common: { OS, Vathmos, Epilogi }
 }

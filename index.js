@@ -420,16 +420,12 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
             const New = Validate.Password(ctx.request.body.new_password);
 
             if (await Auth.VerifyPassword(Old, ctx.state.user._id)) {
-                if (ctx.state.user.two_fa_enabled) {
-                    try {
-                        const two_fa_token = Validate.OTP(ctx.request.body.two_fa_token);
-                        ctx.assert(await Two_fa.Check(ctx.state.user, two_fa_token));
-                    } catch (_) {
-                        ctx.warn('Password Reset', 'A failed password change was attempted for user', ctx.state.user.email,
-                            'with an invalid OTP token');
-                        ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
-                        return ctx.redirect('/change_password');
-                    }
+                if (ctx.state.user.two_fa_enabled
+                    && await Two_fa.Check(ctx.state.user, ctx.request.body.two_fa_token) == false) {
+                    ctx.warn('Password Reset', 'A failed password change was attempted for user',
+                        ctx.state.user.email, 'with an invalid OTP token');
+                    ctx.flash('error', 'Ο κωδικός επαλήθευσης που εισάγατε είναι λάθος');
+                    return ctx.redirect('/change_password');
                 }
 
                 ctx.info('Change Password', 'User', ctx.state.user.email, 'updated his password');
