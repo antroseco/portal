@@ -49,7 +49,8 @@ function ValidateBoolean(x) {
 
 function ValidateText(x, Length) {
     if (typeof x !== 'string' || x.length > Length)
-        throw Error('Malformed POST request: ValidateText');
+        throw new ValidationError('Το κείμενο που εισάγατε είναι πολύ μακρύ');
+
     return x.trim();
 }
 
@@ -89,7 +90,7 @@ function ValidateKinito(Phone) {
     const GrRegex = /^(?:0030)?6\d{9}$/;
 
     if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
-        throw new ValdationError('Invalid phone number');
+        throw new ValidationError('Το κινητό που εισάγατε έχει λάθος μορφή');
 
     return Phone;
 }
@@ -101,7 +102,7 @@ function ValidateStathero(Phone) {
     const GrRegex = /^(?:0030)?2\d{9}$/;
 
     if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
-        throw new ValdationError('Invalid phone number');
+        throw new ValidationError('Το σταθερό που εισάγατε έχει λάθος μορφή');
 
     return Phone;
 }
@@ -136,14 +137,14 @@ function ValidateEmail(Email) {
             return Email;
     }
 
-    throw new ValidationError('Invalid email address');
+    throw new ValidationError('Το email που εισάγατε έχει λάθος μορφή');
 }
 
 function ValidatePassword(Password) {
     if (typeof Password === 'string' && Password.length >= 8 && Password.length <= 72)
         return Password;
-    else
-        throw new ValidationError('Your password must be at least 8 characters long');
+
+    throw new ValidationError('Ο κωδικός σας πρέπει να έχει τουλάχιστον 8 χαρακτήρες');
 }
 
 function ValidateName(Name) {
@@ -151,8 +152,8 @@ function ValidateName(Name) {
 
     if (Regex.test(Name))
         return Name.trim();
-    else
-        throw new ValidationError('Name and Surname must not contain any special characters');
+
+    throw new ValidationError('Το ονοματεπώνυμο δεν πρέπει να περιέχει ειδικούς χαρακτήρες');
 }
 
 function ValidateAM(AM) {
@@ -165,7 +166,7 @@ function ValidateAM(AM) {
             return n;
     }
 
-    throw new ValidationError('Invalid AM');
+    throw new ValidationError('Άκυρο ΑΜ');
 }
 
 function ValidateOTP(OTP) {
@@ -173,8 +174,8 @@ function ValidateOTP(OTP) {
 
     if (Regex.test(OTP))
         return OTP;
-    else
-        throw Error('Malformed POST request: ValidateOTP');
+
+    throw new ValidationError('Άκυρο OTP');
 }
 
 function ValidateRecoveryCode(RecCode) {
@@ -182,8 +183,8 @@ function ValidateRecoveryCode(RecCode) {
 
     if (Regex.test(RecCode))
         return RecCode;
-    else
-        throw Error('Malformed POST request: ValidateOTP');
+
+    throw new ValidationError('Άκυρο OTP');
 }
 
 module.exports = {

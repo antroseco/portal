@@ -46,8 +46,12 @@ function Submit(ctx) {
         ctx.info('Order', 'User', ctx.state.user.email, 'submited an order');
         ctx.flash('success', 'Ευχαριστούμε, η παραγγελία σας έχει σταλεί');
     } catch (Err) {
-        ctx.error('Order', 'User', ctx.state.user.email, Err);
-        ctx.flash('error', 'Η αποστολή της παραγγελίας σας έχει αποτύχει');
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+        } else {
+            ctx.error('Order', 'User', ctx.state.user.email, Err);
+            ctx.flash('error', 'Η αποστολή της παραγγελίας σας έχει αποτύχει');
+        }
     } finally {
         ctx.redirect('/order');
     }

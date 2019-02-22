@@ -69,8 +69,12 @@ function Submit(ctx) {
         ctx.info('LAEF', 'User', ctx.state.user.email, 'submited a form');
         ctx.flash('success', 'Ευχαριστούμε, η αξιολόγηση σας έχει σταλεί');
     } catch (Err) {
-        ctx.info('LAEF', 'User', ctx.state.user.email, Err);
-        ctx.flash('error', 'Η αποστολή της αξιολόγησής σας έχει αποτύχει');
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+        } else {
+            ctx.error('LAEF', 'User', ctx.state.user.email, Err);
+            ctx.flash('error', 'Η αποστολή της αξιολόγησής σας έχει αποτύχει');
+        }
     } finally {
         ctx.redirect('/laef');
     }

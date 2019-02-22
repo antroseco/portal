@@ -138,8 +138,12 @@ async function Submit(ctx) {
         ctx.info('KAAY', 'User', ctx.state.user.email, 'submited a form');
         ctx.flash('success', 'Ευχαριστούμε, η αίτησή σας έχει σταλεί');
     } catch (Err) {
-        ctx.error('KAAY', 'User', ctx.state.user.email, Err);
-        ctx.flash('error', 'Η αποστολή της αίτησής σας έχει αποτύχει');
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+        } else {
+            ctx.error('KAAY', 'User', ctx.state.user.email, Err);
+            ctx.flash('error', 'Η αποστολή της αίτησής σας έχει αποτύχει');
+        }
     } finally {
         ctx.redirect('/kaay');
     }

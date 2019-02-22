@@ -50,8 +50,12 @@ function Submit(ctx) {
         ctx.info('Protasis', 'User', ctx.state.user.email, 'submited a form');
         ctx.flash('success', 'Ευχαριστούμε, η πρότασή σας έχει σταλεί');
     } catch (Err) {
-        ctx.error('Protasis', 'User', ctx.state.user.email, Err);
-        ctx.flash('error', 'Η αποστολή της πρότασής σας έχει αποτύχει');
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+        } else {
+            ctx.error('Protasis', 'User', ctx.state.user.email, Err);
+            ctx.flash('error', 'Η αποστολή της πρότασής σας έχει αποτύχει');
+        }
     } finally {
         ctx.redirect('/protasis');
     }

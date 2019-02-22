@@ -59,22 +59,31 @@ async function SubmitVerify(ctx) {
     ctx.assert(!ctx.state.user.two_fa_enabled, 403);
     ctx.assert(ctx.state.user.two_fa_secret, 403);
 
-    const token = Validate.OTP(ctx.request.body.token);
+    try {
+        const token = Validate.OTP(ctx.request.body.token);
 
-    // Do not use Check, we shouldn't accept recovery codes here
-    if (OTP.check(token, ctx.state.user.two_fa_secret)) {
-        ctx.state.user.two_fa_enabled = true;
-        await ctx.state.user.save();
+        // Do not use Check, we shouldn't accept recovery codes here
+        if (OTP.check(token, ctx.state.user.two_fa_secret)) {
+            ctx.state.user.two_fa_enabled = true;
+            await ctx.state.user.save();
 
-        ctx.session.two_fa = true;
+            ctx.session.two_fa = true;
 
-        ctx.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
+            ctx.info('Verify 2fa', 'User', ctx.state.user.email, 'succesfully enabled 2fa');
 
-        ctx.flash('success', 'Το two-factor authentication έχει ενεργοποιηθεί');
-        ctx.redirect('/home');
-    } else {
-        ctx.flash('error', 'Ο κωδικός που έχετε εισάγει είναι λάθος');
-        ctx.redirect('/2fa/verify');
+            ctx.flash('success', 'Το two-factor authentication έχει ενεργοποιηθεί');
+            ctx.redirect('/home');
+        } else {
+            ctx.flash('error', 'Ο κωδικός που έχετε εισάγει είναι λάθος');
+            ctx.redirect('/2fa/verify');
+        }
+    } catch (Err) {
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+            ctx.redirect('/2fa/verify');
+        } else {
+            throw Err;
+        }
     }
 }
 
@@ -146,8 +155,9 @@ async function SubmitDisable(ctx) {
     try {
         var Password = Validate.Password(ctx.request.body.password);
         var token = Validate.OTP(ctx.request.body.token);
-    } catch (_) {
-        return ctx.status = 400;
+    } catch (Err) {
+        ctx.flash('error', Err.message);
+        return ctx.redirect('/2fa/disable');
     }
 
     if (await Check(ctx.state.user, token)

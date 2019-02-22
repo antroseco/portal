@@ -35,12 +35,7 @@ async function Strategy(Username, Password, done) {
     try {
         Username = Validate.Email(Username);
         Password = Validate.Password(Password);
-    } catch (Err) {
-        log.warn('Login', 'Invalid credentials supplied');
-        return done(null, false);
-    }
 
-    try {
         const User = await UserModel.findOne({
             email: Username
         }).select('password two_fa_enabled');
@@ -53,8 +48,13 @@ async function Strategy(Username, Password, done) {
             return done(null, false);
         }
     } catch (Err) {
-        log.error('Strategy', Err);
-        return done(Err);
+        if (Err instanceof Validate.Error) {
+            log.warn('Login', 'Invalid credentials supplied');
+            return done(null, false);
+        } else {
+            log.error('Strategy', Err);
+            return done(Err);
+        }
     }
 }
 

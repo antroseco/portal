@@ -398,9 +398,13 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
                 ctx.redirect('/change_password');
             }
         } catch (Err) {
-            ctx.error('Change Password', 'User', ctx.state.user.email, Err);
+            if (Err instanceof Validate.Error) {
+                ctx.flash('error', Err.message);
+            } else {
+                ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
+                ctx.error('Change Password', 'User', ctx.state.user.email, Err);
+            }
 
-            ctx.flash('error', 'Το αίτημά σας έχει αποτύχει');
             ctx.redirect('/change_password');
         }
     });

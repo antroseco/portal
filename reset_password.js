@@ -71,10 +71,22 @@ async function SubmitSend(ctx) {
 
 async function SubmitReset(ctx) {
     const body = ctx.request.body;
-    const ResetToken = new Token(body.token);
 
-    // Check password before consuming the reset token
-    const Password = Validate.Password(body.password);
+    try {
+        var ResetToken = new Token(body.token);
+
+        // Check password before consuming the reset token
+        var Password = Validate.Password(body.password);
+    } catch (Err) {
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+            ctx.redirect('/');
+        } else {
+            ctx.throw(400);
+        }
+
+        return;
+    }
 
     const ResetEntry = await ResetModel.findOne({
         hash: await ResetToken.hash
