@@ -3,7 +3,6 @@ const Nunjucks = require('koa-nunjucks-next');
 const KoaStatic = require('koa-static');
 const KoaRouter = require('koa-router');
 const KoaSession = require('koa-session');
-const KoaBody = require('koa-body');
 const KoaPassport = require('koa-passport');
 const KoaHelmet = require('koa-helmet');
 const LocalStrategy = require('passport-local').Strategy;
@@ -32,6 +31,7 @@ const log = require('./log');
 const Session = require('./session');
 const http2 = require('http2');
 const fs = require('fs');
+const Parse = require('./parse');
 
 const App = new Koa();
 const Router = new KoaRouter();
@@ -43,31 +43,6 @@ Mongoose.connect(DbURI, {
     useFindAndModify: false,
     useCreateIndex: true,
     family: 4
-});
-
-const ParseUrlEnc = KoaBody({
-    multipart: false,
-    urlencoded: true,
-    text: false,
-    json: false
-});
-
-const ParseMultipart = KoaBody({
-    multipart: true,
-    urlencoded: false,
-    text: false,
-    json: false,
-    formidable: {
-        maxFileSize: 10 * 1024 * 1024
-    }
-});
-
-const ParseJson = KoaBody({
-    multipart: false,
-    urlencoded: false,
-    text: false,
-    json: true,
-    jsonLimit: 128
 });
 
 const Mq = new MailQueue({
@@ -173,7 +148,7 @@ App.use(async (ctx, next) => {
     await next();
 });
 
-Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate('local', {
+Router.post('/api/login', Parse.UrlEnc, Auth.CheckCsrf, KoaPassport.authenticate('local', {
     failureRedirect: '/',
     failureFlash: 'Invalid username or password combination'
 }), async ctx => {
@@ -202,7 +177,7 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
         ctx.redirect('/home');
 });
 
-Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
+Router.post('/api/register', Parse.UrlEnc, Auth.CheckCsrf, async ctx => {
     const body = ctx.request.body;
 
     try {
@@ -257,8 +232,8 @@ Router.get('/', async ctx => {
 });
 
 Router.get('/reset_password', ResetPassword.RenderPage);
-Router.post('/api/send_reset', ParseUrlEnc, Auth.CheckCsrf, ResetPassword.SubmitSend);
-Router.post('/api/reset_password', ParseUrlEnc, Auth.CheckCsrf, ResetPassword.SubmitReset);
+Router.post('/api/send_reset', Parse.UrlEnc, Auth.CheckCsrf, ResetPassword.SubmitSend);
+Router.post('/api/reset_password', Parse.UrlEnc, Auth.CheckCsrf, ResetPassword.SubmitReset);
 
 // Require Authentication beyond this point
 Router.use(async (ctx, next) => {
@@ -271,7 +246,7 @@ Router.use(async (ctx, next) => {
 });
 
 Router.get('/2fa/login', Two_fa.RenderLogin);
-Router.post('/api/2fa/login', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitLogin);
+Router.post('/api/2fa/login', Parse.UrlEnc, Auth.CheckCsrf, Two_fa.SubmitLogin);
 
 // TODO: We shouldn't use GET here
 Router.get('/api/logout', async ctx => {
@@ -298,14 +273,14 @@ Router.use(async (ctx, next) => {
 });
 
 Router.get('/2fa/enable', Two_fa.RenderEnable);
-Router.post('/2fa/recovery_codes', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitEnable);
+Router.post('/2fa/recovery_codes', Parse.UrlEnc, Auth.CheckCsrf, Two_fa.SubmitEnable);
 
 Router.get('/2fa/verify', Two_fa.RenderVerify);
-Router.post('/api/2fa/verify', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitVerify);
-Router.post('/api/2fa/cancel', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitCancel);
+Router.post('/api/2fa/verify', Parse.UrlEnc, Auth.CheckCsrf, Two_fa.SubmitVerify);
+Router.post('/api/2fa/cancel', Parse.UrlEnc, Auth.CheckCsrf, Two_fa.SubmitCancel);
 
 Router.get('/2fa/disable', Two_fa.RenderDisable);
-Router.post('/api/2fa/disable', ParseUrlEnc, Auth.CheckCsrf, Two_fa.SubmitDisable);
+Router.post('/api/2fa/disable', Parse.UrlEnc, Auth.CheckCsrf, Two_fa.SubmitDisable);
 
 Router.get('/welcome', async ctx => {
     if (ctx.state.user.verified_email)
@@ -322,8 +297,8 @@ Router.get('/welcome', async ctx => {
 });
 
 Router.get('/confirm_email/:token', ConfirmEmail.RenderPage);
-Router.post('/confirm_email/:token', ParseUrlEnc, Auth.CheckCsrf, ConfirmEmail.SubmitConfirm);
-Router.post('/api/resend_confirm_email', ParseUrlEnc, Auth.CheckCsrf, ConfirmEmail.SubmitResend);
+Router.post('/confirm_email/:token', Parse.UrlEnc, Auth.CheckCsrf, ConfirmEmail.SubmitConfirm);
+Router.post('/api/resend_confirm_email', Parse.UrlEnc, Auth.CheckCsrf, ConfirmEmail.SubmitResend);
 
 // Require email confirmation beyond this point
 Router.use(async (ctx, next) => {
@@ -368,7 +343,7 @@ Router.get('/change_password', async ctx => {
     });
 });
 
-Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
+Router.post('/api/change_password', Parse.UrlEnc, Auth.CheckCsrf,
     async ctx => {
         try {
             const Old = Validate.Password(ctx.request.body.old_password);
@@ -410,16 +385,16 @@ Router.post('/api/change_password', ParseUrlEnc, Auth.CheckCsrf,
     });
 
 Router.get('/laef', Laef.RenderPage);
-Router.post('/api/laef', ParseUrlEnc, Auth.CheckCsrf, Laef.Submit);
+Router.post('/api/laef', Parse.UrlEnc, Auth.CheckCsrf, Laef.Submit);
 
 Router.get('/protasis', Protasis.RenderPage);
-Router.post('/api/protasis', ParseUrlEnc, Auth.CheckCsrf, Protasis.Submit);
+Router.post('/api/protasis', Parse.UrlEnc, Auth.CheckCsrf, Protasis.Submit);
 
 Router.get('/kaay', Kaay.RenderPage);
-Router.post('/api/kaay', ParseUrlEnc, Auth.CheckCsrf, Kaay.Submit);
+Router.post('/api/kaay', Parse.UrlEnc, Auth.CheckCsrf, Kaay.Submit);
 
 Router.get('/order', Order.RenderPage);
-Router.post('/api/order', ParseUrlEnc, Auth.CheckCsrf, Order.Submit);
+Router.post('/api/order', Parse.UrlEnc, Auth.CheckCsrf, Order.Submit);
 
 Router.get('/periodika', async ctx => {
     await ctx.render('periodika', {
@@ -442,11 +417,11 @@ Router.post('/api/upload', async (ctx, next) => {
 
         ctx.status = Err.status ? Err.status : 400;
     }
-}, ParseMultipart, Auth.CheckCsrf);
+}, Parse.Multipart, Auth.CheckCsrf);
 
 Router.get('/anakoinosis', Anakoinosis.RenderPage);
 Router.get('/anakoinosis/:category', Anakoinosis.RenderCategory);
-Router.put('/api/anakoinosis/read', ParseJson, Auth.CheckCsrf, Anakoinosis.MarkRead);
+Router.put('/api/anakoinosis/read', Parse.Json, Auth.CheckCsrf, Anakoinosis.MarkRead);
 
 App.use(Router.routes());
 App.use(Router.allowedMethods());
