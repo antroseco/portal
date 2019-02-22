@@ -83,10 +83,12 @@ async function SubmitCancel(ctx) {
     ctx.assert(!ctx.state.user.two_fa_enabled, 403);
     ctx.assert(ctx.state.user.two_fa_secret, 403);
 
-    // TODO: Use $unset
-    ctx.state.user.two_fa_secret = null;
-    ctx.state.user.two_fa_recovery_codes = null;
-    await ctx.state.user.save();
+    await ctx.state.user.updateOne({
+        $unset: {
+            two_fa_secret: null,
+            two_fa_recovery_codes: null
+        }
+    });
 
     ctx.info('Cancel 2fa', 'User', ctx.state.user.email, 'cancelled the 2fa setup process');
 
@@ -150,11 +152,14 @@ async function SubmitDisable(ctx) {
 
     if (await Check(ctx.state.user, token)
         && Auth.VerifyPassword(Password, ctx.state.user._id)) {
-        ctx.state.user.two_fa_enabled = false;
-        ctx.state.user.two_fa_secret = null;
-        await ctx.state.user.save()
-
         ctx.session.two_fa = false;
+        await ctx.state.user.updateOne({
+            $set: { two_fa_enabled: false },
+            $unset: {
+                two_fa_secret: null,
+                two_fa_recovery_codes: null
+            }
+        });
 
         ctx.warn('Disable 2fa', 'User', ctx.state.user.email, 'disabled 2fa authentication');
         ctx.flash('success', 'Το two-factor authentication έχει απενεργοποιηθεί');
