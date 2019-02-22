@@ -202,66 +202,17 @@ Router.post('/api/login', ParseUrlEnc, Auth.CheckCsrf, KoaPassport.authenticate(
         ctx.redirect('/home');
 });
 
-// TODO: Refactor
 Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
     const body = ctx.request.body;
 
     try {
-        body.email = Validate.Email(body.email);
-    } catch (_) {
-        ctx.flash('error', 'Invalid email address');
-        ctx.session.register = true;
-        return ctx.redirect('/');
-    }
-
-    try {
-        body.password = Validate.Password(body.password);
-    } catch (_) {
-        ctx.flash('error', 'Your password must be at least 8 characters long');
-        ctx.session.register = true;
-        return ctx.redirect('/');
-    }
-
-    try {
-        body.onoma = Validate.Name(body.onoma);
-    } catch (_) {
-        ctx.flash('error', 'Name must not contain any special characters');
-        ctx.session.register = true;
-        return ctx.redirect('/');
-    }
-
-    try {
-        body.epitheto = Validate.Name(body.epitheto);
-    } catch (_) {
-        ctx.flash('error', 'Surname must not contain any special characters');
-        ctx.session.register = true;
-        return ctx.redirect('/');
-    }
-
-    try {
-        body.am = Validate.AM(body.am);
-    } catch (_) {
-        ctx.flash('error', 'Invalid AM');
-        ctx.session.register = true;
-        return ctx.redirect('/');
-    }
-
-    try {
-        body.kinito = Validate.Kinito(body.kinito);
-    } catch (Err) {
-        ctx.flash('error', 'Invalid phone number');
-        ctx.session.register = true;
-        return ctx.redirect('/');
-    }
-
-    try {
         const User = await UserModel.create({
-            email: body.email,
-            password: await bcrypt.hash(body.password, 10),
-            onoma: body.onoma,
-            epitheto: body.epitheto,
-            am: body.am,
-            kinito: body.kinito
+            email: Validate.Email(body.email),
+            password: await bcrypt.hash(Validate.Password(body.password), 10),
+            onoma: Validate.Name(body.onoma),
+            epitheto: Validate.Name(body.epitheto),
+            am: Validate.AM(body.am),
+            kinito: Validate.Kinito(body.kinito)
         });
 
         ctx.info('Register', 'User', User.email, 'registered');
@@ -271,10 +222,14 @@ Router.post('/api/register', ParseUrlEnc, Auth.CheckCsrf, async ctx => {
         await ctx.login(User);
         ctx.redirect('/welcome');
     } catch (Err) {
-        if (Err.code == 11000) {
+        if (Err instanceof Validate.Error) {
+            ctx.flash('error', Err.message);
+            ctx.session.register = true;
+            ctx.redirect('/');
+        } else if (Err.code == 11000) {
             ctx.flash('error', 'This email address is already in use');
             ctx.session.register = true;
-            return ctx.redirect('/');
+            ctx.redirect('/');
         } else {
             ctx.error('Register', Err);
 

@@ -1,3 +1,12 @@
+class ValidationError extends Error {
+    constructor(...Parameters) {
+        super(...Parameters);
+
+        if (Error.captureStackTrace)
+            Error.captureStackTrace(this, ValidationError);
+    }
+}
+
 const OS = ['ΠΖ', 'ΤΘ', 'ΠΒ', 'ΜΧ', 'ΔΒ', 'ΤΧ', 'ΥΠ', 'ΕΜ', 'ΥΓ', 'ΝΟΜ', 'ΠΑ', 'ΠΝ'];
 
 const Vathmos = ['Αντγος', 'Υπγος', 'Ταξχος', 'Σχης', 'Ανχης', 'Τχης', 'Λγός',
@@ -80,7 +89,7 @@ function ValidateKinito(Phone) {
     const GrRegex = /^(?:0030)?6\d{9}$/;
 
     if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
-        throw Error('Malformed POST request: ValidatePhone')
+        throw new ValdationError('Invalid phone number');
 
     return Phone;
 }
@@ -92,7 +101,7 @@ function ValidateStathero(Phone) {
     const GrRegex = /^(?:0030)?2\d{9}$/;
 
     if (!CyRegex.test(Phone) && !GrRegex.test(Phone))
-        throw Error('Malformed POST request: ValidatePhone')
+        throw new ValdationError('Invalid phone number');
 
     return Phone;
 }
@@ -127,14 +136,14 @@ function ValidateEmail(Email) {
             return Email;
     }
 
-    throw Error('Malformed POST request: ValidateEmail');
+    throw new ValidationError('Invalid email address');
 }
 
 function ValidatePassword(Password) {
     if (typeof Password === 'string' && Password.length >= 8 && Password.length <= 72)
         return Password;
     else
-        throw Error('Malformed POST request: ValidatePassword');
+        throw new ValidationError('Your password must be at least 8 characters long');
 }
 
 function ValidateName(Name) {
@@ -143,7 +152,7 @@ function ValidateName(Name) {
     if (Regex.test(Name))
         return Name.trim();
     else
-        throw Error('Malformed POST request: ValidateName');
+        throw new ValidationError('Name and Surname must not contain any special characters');
 }
 
 function ValidateAM(AM) {
@@ -156,7 +165,7 @@ function ValidateAM(AM) {
             return n;
     }
 
-    throw Error('Malformed POST request: ValidateAM');
+    throw new ValidationError('Invalid AM');
 }
 
 function ValidateOTP(OTP) {
@@ -194,5 +203,6 @@ module.exports = {
     AM: ValidateAM,
     OTP: ValidateOTP,
     RecoveryCode: ValidateRecoveryCode,
+    Error: ValidationError,
     Common: { OS, Vathmos, Epilogi }
 }
