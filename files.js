@@ -59,9 +59,8 @@ async function Delete(Filename) {
 async function Clean() {
     const Oldest = await FileModel.findOne().sort('createdAt').select('-token_hash');
 
-    if (!Oldest) return;
-
-    if (Date.now() - Oldest.createdAt.getTime() > ms('4 hours')) {
+    if (Oldest &&
+        Date.now() - Oldest.createdAt.getTime() > ms('4 hours')) {
         await FileModel.deleteOne({ _id: Oldest._id });
         await fs.unlink(Oldest.path);
 

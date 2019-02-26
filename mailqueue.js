@@ -47,8 +47,7 @@ class Queue {
         log.info('Send', 'Preview URL:', NodeMailer.getTestMessageUrl(Info));
 
         // Delete attachments from disk
-        Mail.attachments = Mail.attachments || [];
-        for (const Attachment of Mail.attachments)
+        for (const Attachment of Mail.attachments || [])
             Files.Delete(Attachment.path);
     }
 
