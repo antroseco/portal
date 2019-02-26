@@ -44,27 +44,22 @@ class Directory {
         return Files.slice(-n).reverse();
     }
 
-    // TODO: Refactor
+    async _internal_min_max(Index) {
+        const Regex = /\d+/;
+
+        if (!this.filtered)
+            this.filtered = (await this.files).filter(Value => Regex.test(Value));
+
+        const [Filename] = this.filtered.slice(Index);
+        return Filename.match(Regex)[0];
+    }
+
     get min() {
-        return (async () => {
-            const Regex = /\d+/;
-
-            if (!this.filtered)
-                this.filtered = (await this.files).filter(Value => Regex.test(Value));
-
-            return this.filtered[0].match(Regex)[0];
-        })();
+        return this._internal_min_max(0);
     }
 
     get max() {
-        return (async () => {
-            const Regex = /\d+/;
-
-            if (!this.filtered)
-                this.filtered = (await this.files).filter(Value => Regex.test(Value));
-
-            return this.filtered[this.filtered.length - 1].match(Regex)[0];
-        })();
+        return this._internal_min_max(-1);
     }
 }
 
