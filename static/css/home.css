@@ -16,7 +16,7 @@ a:link:not(.badge), a:hover:not(.badge) {
     text-decoration: inherit;
 }
 
-a.btn-primary {
+.btn-primary {
     color: #fff !important;
 }
 
@@ -39,12 +39,12 @@ div.card-footer {
     display: flex;
 }
 
-button.badge {
+.badge {
     border: none;
     cursor: pointer;
 }
 
-a.nav-link:not(.active), span.navbar-text {
+a.nav-link:not(.active), .navbar-text {
     color: #ccc !important;
 }
 
