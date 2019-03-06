@@ -11,7 +11,7 @@ function Serialize(User, done) {
 }
 
 // Called on every authenticated request
-async function Deserialize(id, done) {
+async function Deserialize(req, id, done) {
     try {
         if (!id)
             return done(null, false);
@@ -21,17 +21,17 @@ async function Deserialize(id, done) {
         if (User) {
             done(null, User);
         } else {
-            log.warn('Deserialize', 'Request used an expired session');
+            req.warn('Deserialize', 'Request used an expired session');
             done(null, false);
         }
     } catch (Err) {
-        log.error('Deserialize', Err);
+        req.error('Deserialize', Err);
 
         done(Err);
     }
 }
 
-async function Strategy(Username, Password, done) {
+async function Strategy(req, Username, Password, done) {
     try {
         Username = Validate.Email(Username);
         Password = Validate.Password(Password);
@@ -41,18 +41,18 @@ async function Strategy(Username, Password, done) {
         }).select('password two_fa_enabled');
 
         if (User && await bcrypt.compare(Password, User.password)) {
-            log.info('Login', 'User', Username, 'logged in');
+            req.info('Login', 'User', Username, 'logged in');
             return done(null, User);
         } else {
-            log.warn('Login', 'Failed login attempt for user', Username);
+            req.warn('Login', 'Failed login attempt for user', Username);
             return done(null, false);
         }
     } catch (Err) {
         if (Err instanceof Validate.Error) {
-            log.warn('Login', 'Invalid credentials supplied');
+            req.warn('Login', 'Invalid credentials supplied');
             return done(null, false);
         } else {
-            log.error('Strategy', Err);
+            req.error('Strategy', Err);
             return done(Err);
         }
     }
@@ -84,6 +84,7 @@ async function VerifyPassword(Data, _id) {
     return false;
 }
 
+// TODO: Investigate how we can log the IP, maybe through User?
 async function Remember(User, done) {
     try {
         const RememberToken = new Token();

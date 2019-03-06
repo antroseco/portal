@@ -87,9 +87,11 @@ App.use(KoaFlash());
 KoaPassport.serializeUser(Auth.Serialize);
 KoaPassport.deserializeUser(Auth.Deserialize);
 
+// TODO: Name 'local' is uneccessary (Strategies expose this.name)
 KoaPassport.use('local', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'password'
+    passwordField: 'password',
+    passReqToCallback: true
 }, Auth.Strategy));
 
 KoaPassport.use('rememberme', new RememberMeStrategy({

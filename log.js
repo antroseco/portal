@@ -19,9 +19,14 @@ function info(Tag, ...Arguments) {
 }
 
 async function attach(ctx, next) {
-    ctx.error = error.bind(ctx);
-    ctx.warn = warn.bind(ctx);
-    ctx.info = info.bind(ctx);
+    const Methods = {
+        error: error.bind(ctx),
+        warn: warn.bind(ctx),
+        info: info.bind(ctx)
+    };
+
+    Object.assign(ctx, Methods);
+    Object.assign(ctx.request, Methods)
 
     await next();
 }
