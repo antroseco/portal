@@ -87,14 +87,13 @@ App.use(KoaFlash());
 KoaPassport.serializeUser(Auth.Serialize);
 KoaPassport.deserializeUser(Auth.Deserialize);
 
-// TODO: Name 'local' is uneccessary (Strategies expose this.name)
-KoaPassport.use('local', new LocalStrategy({
+KoaPassport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
 }, Auth.Strategy));
 
-KoaPassport.use('rememberme', new RememberMeStrategy({
+KoaPassport.use(new RememberMeStrategy({
     cookie: CookieSettings
 }, Auth.ValidateRemember, Auth.Remember));
 
@@ -215,7 +214,7 @@ Router.post('/api/register', Parse.UrlEnc, Auth.CheckCsrf, async ctx => {
     }
 });
 
-Router.use(KoaPassport.authenticate('rememberme'));
+Router.use(KoaPassport.authenticate('remember-me'));
 
 Router.get('/', async ctx => {
     if (ctx.isAuthenticated()) {
