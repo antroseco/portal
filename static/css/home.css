@@ -47,6 +47,6 @@ a.nav-link:not(.active):hover {
 
 /* Required for Firefox */
 
-div.card-footer h5 {
+.card-footer h5 {
     color: #212529;
 }
