@@ -18,11 +18,15 @@ div.card {
 }
 
 div.card:hover {
-    border-color: var(--primary) !important;
+    border-color: var(--primary);
     background-color: var(--light);
 }
 
 div.card {
     transition: all 600ms ease;
     transition-property: border-color, background-color;
+}
+
+.card .d-flex {
+    color: white;
 }
